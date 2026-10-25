@@ -1,0 +1,14 @@
+{
+  "name": "ubumwe-sacco-platform",
+  "version": "1.0.0",
+  "description": "Ubumwe SACCO Integrated Web Application and API Backend",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix usgweb-main run dev",
+    "dev:frontend": "npm --prefix usgweb-main run dev",
+    "dev:backend": "npm --prefix webusgbackend start",
+    "start": "npm --prefix webusgbackend start",
+    "test": "npm --prefix usgweb-main run build",
+    "build": "npm --prefix usgweb-main run build"
+  }
+}

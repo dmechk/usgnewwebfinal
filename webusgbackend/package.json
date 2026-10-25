@@ -1,0 +1,66 @@
+{
+  "name": "webusgbackend",
+  "version": "1.0.0",
+  "description": "Node.js Express API for WebUSG clinic ultrasound management",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "serve": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "seed:admin": "node scripts/seed-admin.js",
+    "seed:roles": "node scripts/seed-roles.js",
+    "seed:content": "node scripts/seed-initial-content.js",
+    "test": "jest --runInBand",
+    "test:unit": "jest tests/unit --runInBand",
+    "test:integration": "jest tests/integration --runInBand",
+    "lint": "eslint src scripts tests"
+  },
+  "keywords": [
+    "usg",
+    "ultrasound",
+    "express",
+    "api"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "jest": {
+    "testEnvironment": "node",
+    "testTimeout": 30000,
+    "setupFiles": [
+      "<rootDir>/tests/jest.env.js"
+    ],
+    "globalSetup": "<rootDir>/tests/globalSetup.js",
+    "globalTeardown": "<rootDir>/tests/globalTeardown.js",
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/setupAfterEnv.js"
+    ],
+    "testMatch": [
+      "<rootDir>/tests/**/*.test.js"
+    ]
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.8",
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.1",
+    "express-validator": "^7.3.2",
+    "helmet": "^8.3.0",
+    "http-status-codes": "^2.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.11.2",
+    "morgan": "^1.12.1",
+    "multer": "^2.4.0",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^10.13.0",
+    "jest": "^30.5.2",
+    "mongodb-memory-server": "^11.3.0",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.3.1"
+  }
+
+
+}

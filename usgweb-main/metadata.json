@@ -1,0 +1,6 @@
+{
+  "name": "UBUMWE SACCO GAKENKE",
+  "description": "Official financial cooperative portal for Ubumwe SACCO Gakenke in Rwanda, offering savings, loans, mobile banking, and member services.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
