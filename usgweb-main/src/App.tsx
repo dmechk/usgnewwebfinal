@@ -1212,7 +1212,7 @@ export default function App() {
         summary: newAnn.summaryEn || newAnn.summaryRw,
         content: newAnn.contentEn || newAnn.contentRw,
         category: newAnn.category || 'notice',
-        featuredImage: newAnn.featuredImage,
+        featuredImage: newAnn.featuredImage || newAnn.imageUrl,
         isPublished: newAnn.isPublished !== false,
       })
       .then((res) => {
@@ -1236,7 +1236,7 @@ export default function App() {
           summary: updated.summaryEn || updated.summaryRw,
           content: updated.contentEn || updated.contentRw,
           category: updated.category,
-          featuredImage: updated.featuredImage,
+          featuredImage: updated.featuredImage || updated.imageUrl,
           isPublished: updated.isPublished,
         })
         .catch((err) => {

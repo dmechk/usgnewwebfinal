@@ -1,6 +1,5 @@
 'use strict';
 
-const path = require('path');
 const mongoose = require('mongoose');
 const env = require('../src/config/env');
 const User = require('../src/models/User');

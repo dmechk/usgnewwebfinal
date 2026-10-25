@@ -23,6 +23,8 @@ describe('toPublicUser', () => {
       name: 'Ada',
       email: 'ada@example.com',
       role: 'admin',
+      phone: '',
+      department: '',
       isActive: true,
       passwordChangeRequired: false,
       lastLoginAt: user.lastLoginAt,

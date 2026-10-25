@@ -68,6 +68,8 @@ export interface Announcement {
   contentRw: string;
   contentFr?: string;
   imageUrl?: string;
+  featuredImage?: string;
+  isPublished?: boolean;
 }
 
 export interface LeaderMember {

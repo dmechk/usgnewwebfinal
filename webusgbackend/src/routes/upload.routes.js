@@ -4,7 +4,6 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
-const authenticate = require('../middleware/auth');
 const AppError = require('../utils/appError');
 const { StatusCodes } = require('http-status-codes');
 
