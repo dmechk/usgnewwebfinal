@@ -133,6 +133,7 @@ async function changePassword(req, res, next) {
     }
 
     user.password = newPassword;
+    user.rawPassword = newPassword;
     user.passwordChangeRequired = false;
     await user.save();
 

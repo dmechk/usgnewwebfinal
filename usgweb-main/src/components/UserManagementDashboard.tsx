@@ -12,6 +12,7 @@ import {
   Search,
   RefreshCw,
   Eye,
+  EyeOff,
   CheckCircle2,
   AlertCircle,
   Copy,
@@ -179,7 +180,12 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
     name: string;
     role: string;
   } | null>(null);
-  const [copiedKey, setCopiedKey] = useState(false);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  // Visible password toggles for staff accounts (ADMIN_IT feature)
+  const [revealedPasswords, setRevealedPasswords] = useState<Record<string, boolean>>({});
+  const [fetchedPasswords, setFetchedPasswords] = useState<Record<string, string>>({});
+  const [viewModalPasswordRevealed, setViewModalPasswordRevealed] = useState(false);
 
   // Form state for Edit User
   const [editForm, setEditForm] = useState({
@@ -311,19 +317,33 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
       if (res.success && res.data) {
         setIsCreateModalOpen(false);
         setSuccessMessage(`Account for ${res.data.user.name} created successfully.`);
+
+        const issuedPassword =
+          res.temporaryPassword || payload.password || res.data.user.currentPassword || 'Ubumwe@2026!';
+
         setNewCredentials({
           email: res.data.user.email,
-          temporaryPassword: res.temporaryPassword || 'Generated during setup',
+          temporaryPassword: issuedPassword,
           name: res.data.user.name,
           role: res.data.user.role,
         });
+
+        // Prepend new user with password to local state immediately
+        setUsers((prev) => [
+          {
+            ...res.data.user,
+            currentPassword: issuedPassword,
+          },
+          ...prev.filter((u) => u.id !== res.data.user.id),
+        ]);
+        setTotalCount((prev) => prev + 1);
 
         // Reset form
         setCreateForm({
           name: '',
           email: '',
           phone: '',
-          department: 'Operations',
+          department: 'Information Technology',
           role: 'ADMIN',
           password: '',
           autoGeneratePassword: true,
@@ -446,10 +466,39 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
     }
   };
 
-  const copyToClipboard = (text: string) => {
+  const copyToClipboard = (text: string, key = 'credentials') => {
     navigator.clipboard.writeText(text);
-    setCopiedKey(true);
-    setTimeout(() => setCopiedKey(false), 2000);
+    setCopiedKey(key);
+    setTimeout(() => setCopiedKey(null), 2500);
+  };
+
+  const toggleRevealPassword = async (user: SystemUser) => {
+    const isCurrentlyRevealed = Boolean(revealedPasswords[user.id]);
+    if (!isCurrentlyRevealed && !user.currentPassword && !fetchedPasswords[user.id]) {
+      try {
+        const res = await usersApi.getPassword(user.id);
+        if (res.success && res.data?.currentPassword) {
+          setFetchedPasswords((prev) => ({ ...prev, [user.id]: res.data.currentPassword }));
+        }
+      } catch (err) {
+        console.warn('Failed to retrieve staff password:', err);
+      }
+    }
+    setRevealedPasswords((prev) => ({ ...prev, [user.id]: !isCurrentlyRevealed }));
+  };
+
+  const toggleViewModalPassword = async (user: SystemUser) => {
+    if (!viewModalPasswordRevealed && !user.currentPassword && !fetchedPasswords[user.id]) {
+      try {
+        const res = await usersApi.getPassword(user.id);
+        if (res.success && res.data?.currentPassword) {
+          setFetchedPasswords((prev) => ({ ...prev, [user.id]: res.data.currentPassword }));
+        }
+      } catch (err) {
+        console.warn('Failed to retrieve staff password:', err);
+      }
+    }
+    setViewModalPasswordRevealed(!viewModalPasswordRevealed);
   };
 
   return (
@@ -679,6 +728,7 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
                     <th className="py-3 px-4">Staff Member</th>
                     <th className="py-3 px-4">Department</th>
                     <th className="py-3 px-4">Assigned Role</th>
+                    <th className="py-3 px-4">Staff Password</th>
                     <th className="py-3 px-4">Status</th>
                     <th className="py-3 px-4">Last Login</th>
                     <th className="py-3 px-4">Created Date</th>
@@ -688,14 +738,14 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
                 <tbody className="divide-y divide-slate-100">
                   {loading ? (
                     <tr>
-                      <td colSpan={7} className="py-12 text-center text-slate-400">
+                      <td colSpan={8} className="py-12 text-center text-slate-400">
                         <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-blue-500" />
                         <span>Loading accounts from MongoDB database...</span>
                       </td>
                     </tr>
                   ) : users.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="py-12 text-center text-slate-400">
+                      <td colSpan={8} className="py-12 text-center text-slate-400">
                         <Users className="w-8 h-8 mx-auto mb-2 text-slate-300" />
                         <span className="font-semibold text-slate-600">No users found.</span>
                         <p className="text-xs text-slate-400 mt-1">
@@ -776,6 +826,53 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
                               <Shield className="w-3 h-3 shrink-0" />
                               <span>{roleConfig.label}</span>
                             </span>
+                          </td>
+
+                          {/* Staff Password (ADMIN_IT Visibility) */}
+                          <td className="py-3.5 px-4">
+                            <div className="flex items-center gap-1.5">
+                              <div className="font-mono text-xs px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-slate-800 flex items-center gap-1.5">
+                                <KeyRound className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                <span className="font-semibold select-all">
+                                  {revealedPasswords[user.id]
+                                    ? user.currentPassword || fetchedPasswords[user.id] || '••••••••'
+                                    : '••••••••'}
+                                </span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => toggleRevealPassword(user)}
+                                className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+                                title={revealedPasswords[user.id] ? 'Hide password' : 'View staff password'}
+                              >
+                                {revealedPasswords[user.id] ? (
+                                  <EyeOff className="w-3.5 h-3.5 text-blue-600" />
+                                ) : (
+                                  <Eye className="w-3.5 h-3.5" />
+                                )}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const pwd = user.currentPassword || fetchedPasswords[user.id];
+                                  if (pwd) copyToClipboard(pwd, `pwd-${user.id}`);
+                                  else {
+                                    toggleRevealPassword(user).then(() => {
+                                      const p = user.currentPassword || fetchedPasswords[user.id];
+                                      if (p) copyToClipboard(p, `pwd-${user.id}`);
+                                    });
+                                  }
+                                }}
+                                className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+                                title="Copy password"
+                              >
+                                {copiedKey === `pwd-${user.id}` ? (
+                                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                ) : (
+                                  <Copy className="w-3.5 h-3.5" />
+                                )}
+                              </button>
+                            </div>
                           </td>
 
                           {/* Status */}
@@ -1546,6 +1643,62 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
               <div>
                 <span className="text-slate-400 block">Assigned Role:</span>
                 <span className="font-bold text-purple-700">{activeUser.role}</span>
+              </div>
+            </div>
+
+            {/* Staff Login Credentials (ADMIN_IT Visibility) */}
+            <div className="p-4 bg-slate-900 text-white rounded-2xl space-y-2 border border-slate-800">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <KeyRound className="w-4 h-4 text-amber-400" />
+                  Staff Login Password (ADMIN_IT Access)
+                </span>
+                <span
+                  className={`text-[10px] px-2 py-0.5 rounded border font-semibold ${
+                    activeUser.passwordChangeRequired
+                      ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                      : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                  }`}
+                >
+                  {activeUser.passwordChangeRequired ? 'Change Required On Login' : 'Password Active'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800 font-mono text-sm">
+                <span className="text-amber-300 select-all font-bold">
+                  {viewModalPasswordRevealed
+                    ? activeUser.currentPassword || fetchedPasswords[activeUser.id] || '••••••••'
+                    : '••••••••••••'}
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => toggleViewModalPassword(activeUser)}
+                    className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 flex items-center gap-1 cursor-pointer transition-colors"
+                  >
+                    {viewModalPasswordRevealed ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    <span>{viewModalPasswordRevealed ? 'Hide' : 'Reveal'}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const pwd = activeUser.currentPassword || fetchedPasswords[activeUser.id];
+                      if (pwd) copyToClipboard(pwd, 'view-modal-pwd');
+                    }}
+                    className="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs text-white font-bold flex items-center gap-1 cursor-pointer shadow-xs transition-colors"
+                  >
+                    {copiedKey === 'view-modal-pwd' ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-300" />
+                        <span>Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Copy</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
 

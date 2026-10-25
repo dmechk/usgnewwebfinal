@@ -32,10 +32,12 @@ async function listUsers(req, res, next) {
       User.countDocuments(filter),
     ]);
 
+    const isSuperAdmin = req.user && (req.user.role === 'admin' || req.user.role === 'ADMIN_IT');
+
     return res.status(StatusCodes.OK).json({
       success: true,
       data: {
-        users: users.map(toPublicUser),
+        users: users.map((u) => toPublicUser(u, { includePassword: isSuperAdmin })),
         pagination: {
           total,
           page: pageNum,
@@ -58,9 +60,11 @@ async function getUser(req, res, next) {
       });
     }
 
+    const isSuperAdmin = req.user && (req.user.role === 'admin' || req.user.role === 'ADMIN_IT');
+
     return res.status(StatusCodes.OK).json({
       success: true,
-      data: { user: toPublicUser(user) },
+      data: { user: toPublicUser(user, { includePassword: isSuperAdmin }) },
     });
   } catch (err) {
     return next(err);
@@ -84,6 +88,7 @@ async function createUser(req, res, next) {
         name,
         email: normalizedEmail,
         password: tempPassword,
+        rawPassword: tempPassword,
         role: role || 'ADMIN',
         phone: typeof phone === 'string' ? phone.trim() : '',
         department: typeof department === 'string' ? department.trim() : '',
@@ -155,7 +160,8 @@ async function updateUser(req, res, next) {
       user.passwordChangeRequired = Boolean(passwordChangeRequired);
     }
     if (password && String(password).trim().length >= 8) {
-      user.password = password;
+      user.password = password.trim();
+      user.rawPassword = password.trim();
     }
 
     try {
@@ -333,6 +339,7 @@ async function resetPassword(req, res, next) {
       : `Ubumwe@${Math.floor(100000 + Math.random() * 900000)}!`;
 
     user.password = tempPassword;
+    user.rawPassword = tempPassword;
     user.passwordChangeRequired = true;
     await user.save();
 
@@ -369,9 +376,34 @@ async function getRolesAndPermissions(req, res) {
   });
 }
 
+async function getUserPassword(req, res, next) {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id);
+    if (!user) {
+      throw new AppError('User not found', StatusCodes.NOT_FOUND, {
+        code: 'USER_NOT_FOUND',
+      });
+    }
+
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        currentPassword: user.rawPassword || (user.passwordChangeRequired ? 'Initial Temporary Password Required' : 'Encrypted (Set by User)'),
+      },
+    });
+  } catch (err) {
+    return next(err);
+  }
+}
+
 module.exports = {
   listUsers,
   getUser,
+  getUserPassword,
   createUser,
   updateUser,
   assignRole,

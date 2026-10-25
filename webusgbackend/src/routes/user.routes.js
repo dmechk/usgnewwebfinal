@@ -2,6 +2,7 @@ const express = require('express');
 const {
   listUsers,
   getUser,
+  getUserPassword,
   createUser,
   updateUser,
   assignRole,
@@ -30,6 +31,14 @@ router.get(
   '/',
   requirePermission(PERMISSIONS.USERS_READ),
   listUsers
+);
+
+router.get(
+  '/:id/password',
+  userIdParamValidation,
+  validate,
+  requirePermission(PERMISSIONS.USERS_READ),
+  getUserPassword
 );
 
 router.get(

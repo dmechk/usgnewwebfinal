@@ -57,6 +57,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    rawPassword: {
+      type: String,
+      default: '',
+    },
     lastLoginAt: {
       type: Date,
       default: null,

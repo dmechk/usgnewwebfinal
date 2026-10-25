@@ -128,6 +128,7 @@ export const authApi = {
           email: string;
           role: string;
           isActive: boolean;
+          passwordChangeRequired?: boolean;
           permissions: string[];
           dashboardUrl: string;
         };
@@ -153,6 +154,7 @@ export const authApi = {
           email: string;
           role: string;
           isActive: boolean;
+          passwordChangeRequired?: boolean;
           permissions: string[];
           dashboardUrl: string;
         };
@@ -595,6 +597,7 @@ export interface SystemUser {
   department?: string;
   isActive: boolean;
   passwordChangeRequired?: boolean;
+  currentPassword?: string;
   lastLoginAt?: string | null;
   createdAt?: string;
   updatedAt?: string;
@@ -632,6 +635,13 @@ export const usersApi = {
       success: boolean;
       data: { user: SystemUser };
     }>(`/users/${id}`);
+  },
+
+  async getPassword(id: string) {
+    return request<{
+      success: boolean;
+      data: { id: string; name: string; email: string; currentPassword: string };
+    }>(`/users/${id}/password`);
   },
 
   async create(userData: {
