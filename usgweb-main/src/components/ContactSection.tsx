@@ -180,12 +180,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
       console.warn('Backend inquiry submission fallback to local persistence:', apiErr);
     }
 
-    // Save to local storage for local cache & offline resilience
-    try {
-      const existing = JSON.parse(localStorage.getItem('ubumwe_contact_inquiries') || '[]');
-      localStorage.setItem('ubumwe_contact_inquiries', JSON.stringify([persistedInquiry, ...existing]));
-    } catch {}
-
     if (onNewInquiry) {
       try {
         onNewInquiry(persistedInquiry);

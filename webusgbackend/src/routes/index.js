@@ -13,6 +13,7 @@ const reportRoutes = require('./report.routes');
 const auditRoutes = require('./audit.routes');
 const uploadRoutes = require('./upload.routes');
 const inquiryRoutes = require('./inquiry.routes');
+const settingsRoutes = require('./settings.routes');
 
 const router = express.Router();
 
@@ -40,6 +41,7 @@ router.use('/inquiries', inquiryRoutes);
 router.use('/reports', reportRoutes);
 router.use('/audit-logs', authenticate, requirePasswordChanged, auditRoutes);
 router.use('/audit', authenticate, requirePasswordChanged, auditRoutes);
+router.use('/settings', settingsRoutes);
 
 module.exports = router;
 

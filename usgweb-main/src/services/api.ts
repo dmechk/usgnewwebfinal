@@ -838,4 +838,34 @@ export const inquiryService = {
   },
 };
 
+// 12. Site Settings Service - persists ALL site configuration in MongoDB
+export const settingsApi = {
+  async get() {
+    return request<{
+      success: boolean;
+      data: { settings: Record<string, any> };
+    }>('/settings');
+  },
 
+  async update(fields: Record<string, any>) {
+    return request<{
+      success: boolean;
+      message: string;
+      data: { settings: Record<string, any> };
+    }>('/settings', {
+      method: 'PATCH',
+      body: JSON.stringify(fields),
+    });
+  },
+
+  async updateSection(section: string, data: any) {
+    return request<{
+      success: boolean;
+      message: string;
+      data: { settings: Record<string, any> };
+    }>('/settings/' + section, {
+      method: 'PATCH',
+      body: JSON.stringify({ data }),
+    });
+  },
+};

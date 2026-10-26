@@ -77,7 +77,7 @@ import { ContactSection } from './components/ContactSection';
 import { FloatingWhatsApp } from './components/FloatingWhatsApp';
 import { Footer } from './components/Footer';
 import { Shield, Phone, ImageIcon, Compass, Settings, LogOut, Quote, Briefcase, Eye, ArrowRight, LayoutGrid, Users, Video, Archive, Layers, UserCheck, Bell } from 'lucide-react';
-import { galleryApi, newsApi, careersApi, applicantsApi, inquiryService, getUploadUrl, clearAuthToken } from './services/api';
+import { galleryApi, newsApi, careersApi, applicantsApi, inquiryService, getUploadUrl, clearAuthToken, settingsApi } from './services/api';
 
 export default function App() {
   const [currentLang, setCurrentLang] = useState<Language>(() => {
@@ -358,14 +358,7 @@ export default function App() {
     : null;
 
 
-  const [applications, setApplications] = useState<ApplicationRecord[]>(() => {
-    try {
-      const saved = localStorage.getItem('ubumwe_applications');
-      return saved ? JSON.parse(saved) : INITIAL_APPLICATIONS;
-    } catch {
-      return INITIAL_APPLICATIONS;
-    }
-  });
+  const [applications, setApplications] = useState<ApplicationRecord[]>(() => INITIAL_APPLICATIONS);
 
   const [branches, setBranches] = useState<BranchOutpost[]>(() => {
     try {
@@ -385,18 +378,7 @@ export default function App() {
     }
   });
 
-  const [contactInquiries, setContactInquiries] = useState<ContactInquiry[]>(() => {
-    try {
-      const saved = localStorage.getItem('ubumwe_contact_inquiries');
-      if (saved) {
-        const parsed: ContactInquiry[] = JSON.parse(saved);
-        if (parsed && parsed.length > 0) return parsed;
-      }
-      return INITIAL_CONTACT_INQUIRIES;
-    } catch {
-      return INITIAL_CONTACT_INQUIRIES;
-    }
-  });
+  const [contactInquiries, setContactInquiries] = useState<ContactInquiry[]>(() => INITIAL_CONTACT_INQUIRIES);
 
   // Dynamic Manager & Leadership Messages
   const [managerMessages, setManagerMessages] = useState<ManagerMessage[]>(() => {
@@ -438,21 +420,8 @@ export default function App() {
     }
   });
 
-  // Dynamic Job Applications Received
-  const [jobApplications, setJobApplications] = useState<JobApplication[]>(() => {
-    try {
-      const saved = localStorage.getItem('ubumwe_job_applications');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
-        }
-      }
-      return INITIAL_JOB_APPLICATIONS;
-    } catch {
-      return INITIAL_JOB_APPLICATIONS;
-    }
-  });
+  // Dynamic Job Applications Received (loaded directly from MongoDB via backend API)
+  const [jobApplications, setJobApplications] = useState<JobApplication[]>(() => INITIAL_JOB_APPLICATIONS);
 
   // Dynamic Community Impact Stories (CRUD)
   const [communityStories, setCommunityStories] = useState<CommunityImpactStory[]>(() => {
@@ -553,66 +522,68 @@ export default function App() {
   } | null>(null);
   const [prefillProductType, setPrefillProductType] = useState<string>('');
 
-  // Save states to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem('ubumwe_sacco_info', JSON.stringify(saccoInfo));
-    } catch (e) {
-      console.warn('Unable to save sacco info', e);
+  // ── Backend-first persistence: save each settings section to MongoDB ──────
+  // localStorage is kept as a fast local cache for offline resilience.
+  // Backend saves only fire after mount (skip the initial render) to avoid
+  // hammering the API with the default values on first load.
+  const isMounted = React.useRef(false);
+  React.useEffect(() => { isMounted.current = true; }, []);
+
+  // Helper: save a section to backend (authenticated users only) + local cache
+  const saveSectionToBackend = useCallback((section: string, value: any, localKey?: string) => {
+    // Cache locally first (fast, always works)
+    if (localKey) {
+      try { localStorage.setItem(localKey, JSON.stringify(value)); } catch { /* quota */ }
     }
-  }, [saccoInfo]);
+    // Save to backend only after initial mount and if user is authenticated
+    if (!isMounted.current) return;
+    const token = localStorage.getItem('ubumwe_access_token');
+    if (!token) return; // Skip network call if visitor is not logged in
+
+    settingsApi.updateSection(section, value).catch((err) => {
+      console.warn(`[Settings] Failed to save "${section}" to backend:`, (err as Error).message);
+    });
+  }, []);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('ubumwe_nav_items', JSON.stringify(navItems));
-    } catch (e) {
-      console.warn('Unable to save nav items', e);
-    }
-  }, [navItems]);
+    if (!isMounted.current) return;
+    saveSectionToBackend('saccoInfo', saccoInfo, 'ubumwe_sacco_info');
+  }, [saccoInfo, saveSectionToBackend]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('ubumwe_system_images', JSON.stringify(systemImages));
-    } catch (e) {
-      console.warn('Unable to save system images', e);
-    }
-  }, [systemImages]);
+    if (!isMounted.current) return;
+    saveSectionToBackend('navItems', navItems, 'ubumwe_nav_items');
+  }, [navItems, saveSectionToBackend]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('ubumwe_leaders', JSON.stringify(leaders));
-    } catch (e) {
-      console.warn('Unable to save leaders to localStorage', e);
-    }
-  }, [leaders]);
+    if (!isMounted.current) return;
+    saveSectionToBackend('systemImages', systemImages, 'ubumwe_system_images');
+  }, [systemImages, saveSectionToBackend]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('ubumwe_products', JSON.stringify(products));
-    } catch (e) {
-      console.warn('Unable to save products to localStorage', e);
-    }
-  }, [products]);
+    if (!isMounted.current) return;
+    saveSectionToBackend('leaders', leaders, 'ubumwe_leaders');
+  }, [leaders, saveSectionToBackend]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('ubumwe_announcements', JSON.stringify(announcements));
-    } catch (e) {
-      console.warn('Unable to save announcements to localStorage', e);
-    }
+    if (!isMounted.current) return;
+    saveSectionToBackend('products', products, 'ubumwe_products');
+  }, [products, saveSectionToBackend]);
+
+  // announcements are managed by the news API separately; just cache locally
+  useEffect(() => {
+    try { localStorage.setItem('ubumwe_announcements', JSON.stringify(announcements)); } catch { /* quota */ }
   }, [announcements]);
 
+  // moments are managed by the gallery API separately; just cache locally
   useEffect(() => {
     try {
-      // Try full save first
       localStorage.setItem('ubumwe_moments', JSON.stringify(moments));
-    } catch (e) {
-      // localStorage quota exceeded — strip large base64 images and save without them
-      console.warn('localStorage quota exceeded saving moments; stripping large base64 images', e);
+    } catch {
+      // Quota exceeded — strip large base64 images before local cache
       try {
         const stripped = moments.map((m) => ({
           ...m,
-          // Keep base64 only if small (<200KB), otherwise replace with placeholder
           imageUrl: m.imageUrl.startsWith('data:') && m.imageUrl.length > 200000
             ? '/src/assets/images/moment_cooperative_award_1791994900000.jpg'
             : m.imageUrl,
@@ -623,33 +594,24 @@ export default function App() {
           ),
         }));
         localStorage.setItem('ubumwe_moments', JSON.stringify(stripped));
-      } catch {
-        console.warn('Unable to save moments even after stripping images');
-      }
+      } catch { /* ignore */ }
     }
   }, [moments]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('ubumwe_applications', JSON.stringify(applications));
-    } catch (e) {
-      console.warn('Unable to save applications to localStorage', e);
-    }
+    try { localStorage.setItem('ubumwe_applications', JSON.stringify(applications)); } catch { /* quota */ }
   }, [applications]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('ubumwe_branches', JSON.stringify(branches));
-    } catch { }
-
+    // Keep local cache
+    try { localStorage.setItem('ubumwe_branches', JSON.stringify(branches)); } catch { /* quota */ }
+    // Save to backend
+    if (isMounted.current) {
+      saveSectionToBackend('branches', branches);
+    }
+    // Cross-sync metrics & saccoInfo with branch counts
     const subCount = branches.reduce((acc, b) => acc + (b.subBranches ? b.subBranches.length : 0), 0);
-    // Synchronize branchesCount & subBranchesCount across saccoInfo and all metrics whenever branches change
-    setSaccoInfo((prev) => ({
-      ...prev,
-      branchesCount: branches.length,
-      subBranchesCount: subCount,
-      sectorsCovered: 19
-    }));
+    setSaccoInfo((prev) => ({ ...prev, branchesCount: branches.length, subBranchesCount: subCount, sectorsCovered: 19 }));
     setHomeMetrics((prevMetrics) =>
       prevMetrics.map((m) => {
         if (m.id === 'metric-4' || m.labelEn.toLowerCase().includes('branch') || m.labelEn.toLowerCase().includes('outpost')) {
@@ -657,111 +619,94 @@ export default function App() {
             ...m,
             value: `${branches.length} Branches & ${subCount} Sub-Branches`,
             labelEn: `${branches.length} Branches & ${subCount} Sub-Branches`,
-            detailEn: `Covering all 19 Gakenke Sectors with ${subCount} Sub-Branches`
+            detailEn: `Covering all 19 Gakenke Sectors with ${subCount} Sub-Branches`,
           };
         }
         return m;
       })
     );
-  }, [branches]);
+  }, [branches, saveSectionToBackend]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('ubumwe_employment_types', JSON.stringify(employmentTypes));
-    } catch (e) {
-      console.warn('Unable to save employment types', e);
-    }
-  }, [employmentTypes]);
+    if (!isMounted.current) return;
+    saveSectionToBackend('employmentTypes', employmentTypes, 'ubumwe_employment_types');
+  }, [employmentTypes, saveSectionToBackend]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('ubumwe_qualifications', JSON.stringify(qualifications));
-    } catch (e) {
-      console.warn('Unable to save qualifications', e);
-    }
-  }, [qualifications]);
+    if (!isMounted.current) return;
+    saveSectionToBackend('qualifications', qualifications, 'ubumwe_qualifications');
+  }, [qualifications, saveSectionToBackend]);
 
+  // jobPostings are managed by the careers API; just cache locally
   useEffect(() => {
-    try {
-      localStorage.setItem('ubumwe_job_postings', JSON.stringify(jobPostings));
-    } catch (e) {
-      console.warn('Unable to save job postings', e);
-    }
+    try { localStorage.setItem('ubumwe_job_postings', JSON.stringify(jobPostings)); } catch { /* quota */ }
   }, [jobPostings]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('ubumwe_job_applications', JSON.stringify(jobApplications));
-    } catch (e) {
-      console.warn('Unable to save job applications', e);
-    }
+    try { localStorage.setItem('ubumwe_job_applications', JSON.stringify(jobApplications)); } catch { /* quota */ }
   }, [jobApplications]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('ubumwe_community_stories', JSON.stringify(communityStories));
-    } catch (e) {
-      console.warn('Unable to save community stories', e);
-    }
-  }, [communityStories]);
+    if (!isMounted.current) return;
+    saveSectionToBackend('communityStories', communityStories, 'ubumwe_community_stories');
+  }, [communityStories, saveSectionToBackend]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('ubumwe_home_videos', JSON.stringify(homeVideos));
-    } catch (e) {
-      console.warn('Unable to save home attraction videos', e);
-    }
-  }, [homeVideos]);
+    if (!isMounted.current) return;
+    saveSectionToBackend('homeVideos', homeVideos, 'ubumwe_home_videos');
+  }, [homeVideos, saveSectionToBackend]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('ubumwe_hero_content', JSON.stringify(heroContent));
-    } catch { }
-  }, [heroContent]);
+    if (!isMounted.current) return;
+    saveSectionToBackend('heroContent', heroContent, 'ubumwe_hero_content');
+  }, [heroContent, saveSectionToBackend]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('ubumwe_home_metrics', JSON.stringify(homeMetrics));
-    } catch { }
-  }, [homeMetrics]);
+    if (!isMounted.current) return;
+    saveSectionToBackend('homeMetrics', homeMetrics, 'ubumwe_home_metrics');
+  }, [homeMetrics, saveSectionToBackend]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('ubumwe_about_content', JSON.stringify(aboutContent));
-    } catch { }
-  }, [aboutContent]);
+    if (!isMounted.current) return;
+    saveSectionToBackend('aboutContent', aboutContent, 'ubumwe_about_content');
+  }, [aboutContent, saveSectionToBackend]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('ubumwe_contact_inquiries', JSON.stringify(contactInquiries));
-    } catch { }
+    try { localStorage.setItem('ubumwe_contact_inquiries', JSON.stringify(contactInquiries)); } catch { /* quota */ }
   }, [contactInquiries]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('ubumwe_manager_messages', JSON.stringify(managerMessages));
-    } catch { }
-  }, [managerMessages]);
+    if (!isMounted.current) return;
+    saveSectionToBackend('managerMessages', managerMessages, 'ubumwe_manager_messages');
+  }, [managerMessages, saveSectionToBackend]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('ubumwe_partners', JSON.stringify(partners));
-    } catch { }
-  }, [partners]);
+    if (!isMounted.current) return;
+    saveSectionToBackend('partners', partners, 'ubumwe_partners');
+  }, [partners, saveSectionToBackend]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('ubumwe_social_links', JSON.stringify(socialLinks));
-    } catch { }
-  }, [socialLinks]);
+    if (!isMounted.current) return;
+    saveSectionToBackend('socialLinks', socialLinks, 'ubumwe_social_links');
+  }, [socialLinks, saveSectionToBackend]);
 
   useEffect(() => {
     try {
       localStorage.setItem('ubumwe_theme_color', currentTheme);
       document.documentElement.setAttribute('data-theme', currentTheme);
       document.body.setAttribute('data-theme', currentTheme);
-    } catch { }
-  }, [currentTheme]);
+    } catch { /* quota */ }
+    if (isMounted.current) {
+      saveSectionToBackend('themeColor', currentTheme);
+    }
+  }, [currentTheme, saveSectionToBackend]);
+
+
+  // ─── Backend Data Sync ────────────────────────────────────────────────────
+  // Fetch live gallery items, news/announcements, and careers from the backend
+  // API on mount. Falls back to localStorage data gracefully if backend is down.
+
+
 
   // ─── Backend Data Sync ────────────────────────────────────────────────────
   // Fetch live gallery items, news/announcements, and careers from the backend
@@ -916,14 +861,79 @@ export default function App() {
     }
   }, []);
 
+  // ── Settings: load ALL site config from MongoDB ───────────────────────────
+  const fetchSettingsFromBackend = useCallback(async () => {
+    try {
+      const res = await settingsApi.get();
+      const s = res?.data?.settings;
+      if (!s) return;
+
+      // Only override state if backend has non-empty data for that field
+      if (s.saccoInfo && Object.keys(s.saccoInfo).length > 0) {
+        setSaccoInfo((prev) => ({ ...prev, ...s.saccoInfo }));
+      }
+      if (Array.isArray(s.navItems) && s.navItems.length > 0) {
+        setNavItems(s.navItems);
+      }
+      if (s.systemImages && Object.keys(s.systemImages).length > 0) {
+        setSystemImages((prev) => ({ ...prev, ...s.systemImages }));
+      }
+      if (Array.isArray(s.leaders) && s.leaders.length > 0) {
+        setLeaders(s.leaders);
+      }
+      if (Array.isArray(s.products) && s.products.length > 0) {
+        setProducts(s.products);
+      }
+      if (Array.isArray(s.branches) && s.branches.length > 0) {
+        setBranches(s.branches);
+      }
+      if (Array.isArray(s.managerMessages) && s.managerMessages.length > 0) {
+        setManagerMessages(s.managerMessages);
+      }
+      if (s.heroContent && Object.keys(s.heroContent).length > 0) {
+        setHeroContent((prev) => ({ ...prev, ...s.heroContent }));
+      }
+      if (Array.isArray(s.homeMetrics) && s.homeMetrics.length > 0) {
+        setHomeMetrics(s.homeMetrics);
+      }
+      if (s.aboutContent && Object.keys(s.aboutContent).length > 0) {
+        setAboutContent((prev) => ({ ...prev, ...s.aboutContent }));
+      }
+      if (Array.isArray(s.partners) && s.partners.length > 0) {
+        setPartners(s.partners);
+      }
+      if (Array.isArray(s.socialLinks) && s.socialLinks.length > 0) {
+        setSocialLinks(s.socialLinks);
+      }
+      if (Array.isArray(s.communityStories) && s.communityStories.length > 0) {
+        setCommunityStories(s.communityStories);
+      }
+      if (Array.isArray(s.homeVideos) && s.homeVideos.length > 0) {
+        setHomeVideos(s.homeVideos);
+      }
+      if (Array.isArray(s.employmentTypes) && s.employmentTypes.length > 0) {
+        setEmploymentTypes(s.employmentTypes);
+      }
+      if (Array.isArray(s.qualifications) && s.qualifications.length > 0) {
+        setQualifications(s.qualifications);
+      }
+      if (s.themeColor) {
+        setCurrentTheme(s.themeColor as any);
+      }
+    } catch (err) {
+      console.warn('[Backend] Settings fetch failed, using cached data:', (err as Error).message);
+    }
+  }, []);
+
   // On mount: load live data from backend
   useEffect(() => {
+    fetchSettingsFromBackend();
     fetchGalleryFromBackend();
     fetchNewsFromBackend();
     fetchCareersFromBackend();
     fetchApplicantsFromBackend();
     fetchInquiriesFromBackend();
-  }, [fetchGalleryFromBackend, fetchNewsFromBackend, fetchCareersFromBackend, fetchApplicantsFromBackend, fetchInquiriesFromBackend]);
+  }, [fetchSettingsFromBackend, fetchGalleryFromBackend, fetchNewsFromBackend, fetchCareersFromBackend, fetchApplicantsFromBackend, fetchInquiriesFromBackend]);
 
   // ─────────────────────────────────────────────────────────────────────────
 

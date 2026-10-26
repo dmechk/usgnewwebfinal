@@ -11,6 +11,8 @@ import {
   EyeOff,
   ArrowRight,
   ShieldCheck,
+  Mail,
+  Phone,
 } from 'lucide-react';
 import { ImigongoRibbon } from './ImigongoPattern';
 import { authApi, clearAuthToken, setAuthToken } from '../services/api';
@@ -49,6 +51,7 @@ export const ManagerLoginModal: React.FC<ManagerLoginModalProps> = ({
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [changeSuccessMessage, setChangeSuccessMessage] = useState<string | null>(null);
+  const [isForgotPasswordStep, setIsForgotPasswordStep] = useState(false);
 
   if (!isOpen) return null;
 
@@ -58,6 +61,7 @@ export const ManagerLoginModal: React.FC<ManagerLoginModalProps> = ({
       clearAuthToken();
     }
     setIsPasswordChangeStep(false);
+    setIsForgotPasswordStep(false);
     setPendingUser(null);
     setChangeSuccessMessage(null);
     setError('');
@@ -302,9 +306,66 @@ export const ManagerLoginModal: React.FC<ManagerLoginModalProps> = ({
         </button>
 
         {/* ========================================================================= */}
-        {/* VIEW 1: MANDATORY PASSWORD CHANGE STEP BEFORE LOGIN                      */}
+        {/* VIEW 0: FORGOT PASSWORD RECOVERY SUPPORT                                 */}
         {/* ========================================================================= */}
-        {isPasswordChangeStep ? (
+        {isForgotPasswordStep ? (
+          <div>
+            <div className="text-center pt-1 pb-3">
+              <div className="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-red-100 text-red-700 mb-2 shadow-xs border border-red-200">
+                <KeyRound className="w-6 h-6 text-red-600" />
+              </div>
+              <div className="inline-block px-2.5 py-0.5 rounded-full bg-red-100 text-red-800 text-[10px] font-bold tracking-wide uppercase mb-1">
+                Password Recovery &amp; Support
+              </div>
+              <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-tight">
+                Forgot Your Password?
+              </h3>
+              <p className="text-[11px] text-slate-500 mt-1 max-w-sm mx-auto">
+                For security reasons, SACCO staff passwords must be reset directly by the IT Administrator or Management Desk.
+              </p>
+            </div>
+
+            <div className="space-y-2.5 bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs my-3">
+              <div className="flex items-center justify-between text-slate-700">
+                <span className="font-semibold text-slate-600">IT Helpdesk Email:</span>
+                <a href="mailto:ubumwesaccogakenke@gmail.com" className="text-emerald-700 font-bold hover:underline flex items-center gap-1">
+                  <Mail className="w-3 h-3" /> ubumwesaccogakenke@gmail.com
+                </a>
+              </div>
+              <div className="flex items-center justify-between text-slate-700">
+                <span className="font-semibold text-slate-600">Direct Support Line:</span>
+                <a href="tel:+250788563568" className="text-emerald-700 font-bold hover:underline flex items-center gap-1">
+                  <Phone className="w-3 h-3" /> +250 788 563 568
+                </a>
+              </div>
+              <div className="text-[11px] text-slate-500 pt-1.5 border-t border-slate-200">
+                Location: UBUMWE SACCO Headquarters, Gakenke District, Northern Province.
+              </div>
+            </div>
+
+            <div className="pt-2 space-y-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsForgotPasswordStep(false);
+                  openDirectPasswordChange();
+                }}
+                className="w-full py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+              >
+                <KeyRound className="w-3.5 h-3.5" />
+                <span>I Have a Temporary Password &mdash; Change It Now</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsForgotPasswordStep(false)}
+                className="w-full py-1.5 text-center text-xs text-slate-500 hover:text-slate-800 cursor-pointer font-medium"
+              >
+                Return to SIGN IN
+              </button>
+            </div>
+          </div>
+        ) : isPasswordChangeStep ? (
           <div>
             <div className="text-center pt-1 pb-3">
               <div className="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-amber-100 text-amber-800 mb-2 shadow-xs border border-amber-200">
@@ -571,18 +632,25 @@ export const ManagerLoginModal: React.FC<ManagerLoginModalProps> = ({
                 </button>
 
                 {/* Forgot password / Change default password link in RED text color */}
-                <div className="text-center pt-2 border-t border-slate-100 space-y-1">
+                <div className="text-center pt-2 border-t border-slate-100 space-y-1.5">
                   <button
                     type="button"
-                    onClick={openDirectPasswordChange}
+                    onClick={() => setIsForgotPasswordStep(true)}
                     className="text-[11px] text-red-600 hover:text-red-700 font-bold flex items-center justify-center gap-1 mx-auto cursor-pointer transition-colors"
                   >
                     <KeyRound className="w-3.5 h-3.5 text-red-600" />
-                    <span>Forgot Password? / Change Default Password Before Login</span>
+                    <span>FORGOT PASSWORD? (For those who don&apos;t remember current password)</span>
                     <ArrowRight className="w-3 h-3 text-red-600" />
                   </button>
                   <p className="text-[10px] text-slate-500">
-                    Don&apos;t remember your current password? Contact SACCO IT Admin to reset it.
+                    Have a temporary/default password?{' '}
+                    <button
+                      type="button"
+                      onClick={openDirectPasswordChange}
+                      className="text-emerald-700 hover:underline font-bold cursor-pointer"
+                    >
+                      Change Default Password
+                    </button>
                   </p>
                 </div>
               </div>
