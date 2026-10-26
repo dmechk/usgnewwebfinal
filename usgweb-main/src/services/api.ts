@@ -5,6 +5,15 @@
 
 const getApiBaseUrl = (): string => {
   const envUrl = import.meta.env.VITE_API_BASE_URL;
+  // If running in browser over HTTPS but envUrl points to insecure http://localhost, use relative /api
+  if (
+    typeof window !== 'undefined' &&
+    window.location.protocol === 'https:' &&
+    envUrl &&
+    envUrl.includes('localhost')
+  ) {
+    return '/api';
+  }
   if (envUrl && typeof envUrl === 'string' && envUrl.trim().length > 0) {
     return envUrl.replace(/\/+$/, '');
   }
@@ -92,6 +101,10 @@ async function request<T>(
     const data = isJson ? await response.json() : await response.text();
 
     if (!response.ok) {
+      if (response.status === 401) {
+        // Clear expired or invalid token so subsequent requests do not fail with stale token
+        clearAuthToken();
+      }
       const errorMessage =
         (typeof data === 'object' && data?.message) ||
         (typeof data === 'string' && data) ||

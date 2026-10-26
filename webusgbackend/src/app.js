@@ -34,14 +34,28 @@ app.use(
       if (!origin) {
         return callback(null, true);
       }
+      // Allow localhost and 127.0.0.1 on any port (development and local testing)
+      if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+        return callback(null, true);
+      }
+      // Allow local network IPs (e.g. 192.168.x.x, 10.x.x.x, 172.16-31.x.x)
+      if (/^https?:\/\/(192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+)(:\d+)?$/.test(origin)) {
+        return callback(null, true);
+      }
+      // Allow Netlify deployment domains (*.netlify.app)
+      if (/^https?:\/\/([a-zA-Z0-9-]+\.)*netlify\.app$/.test(origin)) {
+        return callback(null, true);
+      }
+      // Allow empty CORS_ORIGINS in development mode
       if (env.isDevelopment && env.CORS_ORIGINS.length === 0) {
         return callback(null, true);
       }
+      // Allow explicitly configured origins from env
       if (env.CORS_ORIGINS.includes(origin)) {
         return callback(null, true);
       }
       return callback(
-        new AppError('Not allowed by CORS', 403, { code: 'CORS_REJECTED' })
+        new AppError(`Not allowed by CORS: ${origin}`, 403, { code: 'CORS_REJECTED' })
       );
     },
     credentials: true,
