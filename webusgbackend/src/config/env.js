@@ -119,8 +119,10 @@ const env = Object.freeze({
   SMTP_SECURE: process.env.SMTP_SECURE === 'true' || process.env.SMTP_PORT === '465',
   SMTP_USER: process.env.SMTP_USER || null,
   SMTP_PASS: process.env.SMTP_PASS || null,
-  EMAIL_FROM: process.env.EMAIL_FROM || 'Ubumwe SACCO <no-reply@ubumwesacco.rw>',
-  EMAIL_REPLY_TO: process.env.EMAIL_REPLY_TO || 'info@ubumwesacco.rw',
+  OFFICIAL_CONTACT_EMAIL: process.env.OFFICIAL_CONTACT_EMAIL || 'ubumwesaccogakenke@gmail.com',
+  EMAIL_FROM_NAME: process.env.EMAIL_FROM_NAME || 'Ubumwe SACCO Gakenke',
+  EMAIL_FROM: process.env.EMAIL_FROM || 'Ubumwe SACCO Gakenke <ubumwesaccogakenke1@gmail.com>',
+  EMAIL_REPLY_TO: process.env.EMAIL_REPLY_TO || 'ubumwesaccogakenke@gmail.com',
   CLIENT_APP_URL: process.env.CLIENT_APP_URL || 'http://localhost:3000',
   TRUST_PROXY: process.env.TRUST_PROXY || 'loopback',
 });

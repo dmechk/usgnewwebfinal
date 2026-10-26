@@ -313,10 +313,20 @@ async function sendStaffOnboardingEmail({
   });
 }
 
+/**
+ * 5. Verify SMTP Transport Connection without sending an email
+ */
+async function verifySmtpConnection() {
+  const client = getTransporter();
+  return client.verify();
+}
+
 module.exports = {
   sendMail,
   sendJobApplicationConfirmation,
   sendInquiryAcknowledgment,
   sendInquiryReply,
   sendStaffOnboardingEmail,
+  verifySmtpConnection,
 };
+
