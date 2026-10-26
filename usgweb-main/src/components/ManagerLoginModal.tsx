@@ -565,22 +565,25 @@ export const ManagerLoginModal: React.FC<ManagerLoginModalProps> = ({
                   ) : (
                     <>
                       <UserCheck className="w-3.5 h-3.5" />
-                      <span>Sign In to Admin Hub</span>
+                      <span>SIGN IN</span>
                     </>
                   )}
                 </button>
 
-                {/* Option to change default password directly before login */}
-                <div className="text-center pt-1 border-t border-slate-100">
+                {/* Forgot password / Change default password link in RED text color */}
+                <div className="text-center pt-2 border-t border-slate-100 space-y-1">
                   <button
                     type="button"
                     onClick={openDirectPasswordChange}
-                    className="text-[11px] text-amber-700 hover:text-amber-900 font-semibold flex items-center justify-center gap-1 mx-auto cursor-pointer"
+                    className="text-[11px] text-red-600 hover:text-red-700 font-bold flex items-center justify-center gap-1 mx-auto cursor-pointer transition-colors"
                   >
-                    <KeyRound className="w-3 h-3" />
-                    <span>Change default / temporary password before login</span>
-                    <ArrowRight className="w-3 h-3" />
+                    <KeyRound className="w-3.5 h-3.5 text-red-600" />
+                    <span>Forgot Password? / Change Default Password Before Login</span>
+                    <ArrowRight className="w-3 h-3 text-red-600" />
                   </button>
+                  <p className="text-[10px] text-slate-500">
+                    Don&apos;t remember your current password? Contact SACCO IT Admin to reset it.
+                  </p>
                 </div>
               </div>
             </form>

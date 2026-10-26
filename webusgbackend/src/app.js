@@ -54,7 +54,7 @@ if (!env.isTest) {
 
 app.use(express.json({ limit: env.JSON_BODY_LIMIT }));
 app.use(express.urlencoded({ extended: true, limit: env.JSON_BODY_LIMIT }));
-app.use('/uploads', express.static(uploadsDir));
+app.use('/uploads', express.static(uploadsDir, { maxAge: '7d', etag: true }));
 
 app.use(
   '/api/docs',
