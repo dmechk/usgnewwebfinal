@@ -69,6 +69,42 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    isActivated: {
+      type: Boolean,
+      default: true,
+    },
+    activationTokenHash: {
+      type: String,
+      default: null,
+      select: false,
+    },
+    activationExpiresAt: {
+      type: Date,
+      default: null,
+    },
+    onboardingEmailStatus: {
+      status: {
+        type: String,
+        enum: ['PENDING', 'SENT', 'FAILED', 'NOT_REQUIRED'],
+        default: 'NOT_REQUIRED',
+      },
+      sentAt: {
+        type: Date,
+        default: null,
+      },
+      failedAt: {
+        type: Date,
+        default: null,
+      },
+      attempts: {
+        type: Number,
+        default: 0,
+      },
+      lastError: {
+        type: String,
+        default: null,
+      },
+    },
   },
   { timestamps: true }
 );

@@ -58,6 +58,13 @@ const applicantFeedbackSchema = new mongoose.Schema(
 
 const applicantSchema = new mongoose.Schema(
   {
+    referenceNumber: {
+      type: String,
+      unique: true,
+      sparse: true,
+      trim: true,
+      index: true,
+    },
     careerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Career',
@@ -166,6 +173,30 @@ const applicantSchema = new mongoose.Schema(
     messages: {
       type: [applicantMessageSchema],
       default: [],
+    },
+    emailNotification: {
+      status: {
+        type: String,
+        enum: ['PENDING', 'SENT', 'FAILED'],
+        default: 'PENDING',
+        index: true,
+      },
+      sentAt: {
+        type: Date,
+        default: null,
+      },
+      failedAt: {
+        type: Date,
+        default: null,
+      },
+      attempts: {
+        type: Number,
+        default: 0,
+      },
+      lastError: {
+        type: String,
+        default: null,
+      },
     },
   },
   { timestamps: true }

@@ -112,8 +112,17 @@ const env = Object.freeze({
   BCRYPT_SALT_ROUNDS: bcryptSaltRounds,
   CORS_ORIGINS: parseOrigins(process.env.CORS_ORIGINS),
   AUTH_RATE_LIMIT_WINDOW_MS: parsePositiveInt(process.env.AUTH_RATE_LIMIT_WINDOW_MS, 15 * 60 * 1000),
-  AUTH_RATE_LIMIT_MAX: parsePositiveInt(process.env.AUTH_RATE_LIMIT_MAX, isTest ? 20 : 10),
+  AUTH_RATE_LIMIT_MAX: parsePositiveInt(process.env.AUTH_RATE_LIMIT_MAX, 10),
   JSON_BODY_LIMIT: process.env.JSON_BODY_LIMIT || '100kb',
+  SMTP_HOST: process.env.SMTP_HOST || null,
+  SMTP_PORT: parsePositiveInt(process.env.SMTP_PORT, 587),
+  SMTP_SECURE: process.env.SMTP_SECURE === 'true' || process.env.SMTP_PORT === '465',
+  SMTP_USER: process.env.SMTP_USER || null,
+  SMTP_PASS: process.env.SMTP_PASS || null,
+  EMAIL_FROM: process.env.EMAIL_FROM || 'Ubumwe SACCO <no-reply@ubumwesacco.rw>',
+  EMAIL_REPLY_TO: process.env.EMAIL_REPLY_TO || 'info@ubumwesacco.rw',
+  CLIENT_APP_URL: process.env.CLIENT_APP_URL || 'http://localhost:3000',
+  TRUST_PROXY: process.env.TRUST_PROXY || 'loopback',
 });
 
 function getAdminSeedConfig() {

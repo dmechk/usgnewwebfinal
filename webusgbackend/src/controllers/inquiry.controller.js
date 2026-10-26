@@ -4,6 +4,8 @@ const { StatusCodes } = require('http-status-codes');
 const Inquiry = require('../models/Inquiry');
 const AppError = require('../utils/appError');
 const { logAudit } = require('../services/audit.service');
+const { generateInquiryReference } = require('../utils/referenceNumber');
+const { sendInquiryAcknowledgment, sendInquiryReply } = require('../services/email.service');
 
 const INITIAL_SEED_INQUIRIES = [
   {
@@ -188,25 +190,65 @@ async function createInquiry(req, res, next) {
       throw new AppError('Message is required', StatusCodes.BAD_REQUEST);
     }
 
+    const referenceNumber = await generateInquiryReference(Inquiry);
+    const dateFormatted = new Date().toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
+
     const newInquiry = new Inquiry({
+      referenceNumber,
       name: String(name).trim(),
       email: email ? String(email).trim().toLowerCase() : '',
       phone: String(phone).trim(),
       subject: String(subject).trim(),
       message: String(message).trim(),
       sector: String(sector).trim(),
-      status,
-      priority,
-      source,
+      status: status || 'pending',
+      priority: priority || 'medium',
+      source: source || 'website',
       notes: String(notes).trim(),
-      date: new Date().toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      }),
+      date: dateFormatted,
+      emailNotification: {
+        status: email && String(email).includes('@') ? 'PENDING' : 'NOT_REQUIRED',
+        sentAt: null,
+        failedAt: null,
+        attempts: 0,
+        lastError: null,
+      },
     });
 
     await newInquiry.save();
+
+    // Send acknowledgment email if client provided an email address
+    if (newInquiry.email && newInquiry.email.includes('@')) {
+      try {
+        newInquiry.emailNotification.attempts += 1;
+        const mailResult = await sendInquiryAcknowledgment({
+          to: newInquiry.email,
+          clientName: newInquiry.name,
+          subject: newInquiry.subject,
+          referenceNumber: newInquiry.referenceNumber,
+          submissionDate: dateFormatted,
+        });
+
+        if (mailResult.success) {
+          newInquiry.emailNotification.status = 'SENT';
+          newInquiry.emailNotification.sentAt = new Date();
+        } else {
+          newInquiry.emailNotification.status = 'FAILED';
+          newInquiry.emailNotification.failedAt = new Date();
+          newInquiry.emailNotification.lastError = mailResult.error;
+        }
+        await newInquiry.save();
+      } catch (mailErr) {
+        newInquiry.emailNotification.status = 'FAILED';
+        newInquiry.emailNotification.failedAt = new Date();
+        newInquiry.emailNotification.lastError = mailErr.message;
+        await newInquiry.save();
+      }
+    }
 
     if (req.user) {
       await logAudit({
@@ -214,7 +256,12 @@ async function createInquiry(req, res, next) {
         action: 'INQUIRY_CREATED',
         resourceType: 'Inquiry',
         resourceId: newInquiry.id,
-        details: { subject: newInquiry.subject, sender: newInquiry.name },
+        details: {
+          subject: newInquiry.subject,
+          sender: newInquiry.name,
+          referenceNumber: newInquiry.referenceNumber,
+          emailStatus: newInquiry.emailNotification.status,
+        },
         req,
       });
     }
@@ -222,6 +269,8 @@ async function createInquiry(req, res, next) {
     return res.status(StatusCodes.CREATED).json({
       success: true,
       message: 'Inquiry submitted successfully',
+      referenceNumber: newInquiry.referenceNumber,
+      emailStatus: newInquiry.emailNotification.status,
       data: { inquiry: newInquiry },
     });
   } catch (err) {
@@ -363,6 +412,11 @@ async function sendFeedback(req, res, next) {
     const senderRole = user.role || 'ADMIN';
     const senderEmail = user.email || 'ubumwesaccogakenke@gmail.com';
 
+    // Ensure legacy inquiries have a reference number
+    if (!inquiry.referenceNumber) {
+      inquiry.referenceNumber = await generateInquiryReference(Inquiry);
+    }
+
     const feedbackItem = {
       senderName,
       senderEmail,
@@ -370,7 +424,37 @@ async function sendFeedback(req, res, next) {
       sentBy: user.id || user._id || null,
       message: String(message).trim(),
       createdAt: new Date(),
+      emailStatus: 'pending',
+      emailError: null,
     };
+
+    // Attempt to dispatch real email reply to the client's submitted email
+    if (inquiry.email && inquiry.email.includes('@')) {
+      try {
+        const mailResult = await sendInquiryReply({
+          to: inquiry.email,
+          clientName: inquiry.name,
+          inquirySubject: inquiry.subject,
+          referenceNumber: inquiry.referenceNumber,
+          staffName: senderName,
+          staffRole: senderRole,
+          replyMessage: String(message).trim(),
+        });
+
+        if (mailResult.success) {
+          feedbackItem.emailStatus = 'sent';
+        } else {
+          feedbackItem.emailStatus = 'failed';
+          feedbackItem.emailError = mailResult.error || 'Email dispatch failed';
+        }
+      } catch (mailErr) {
+        feedbackItem.emailStatus = 'failed';
+        feedbackItem.emailError = mailErr.message;
+      }
+    } else {
+      feedbackItem.emailStatus = 'pending';
+      feedbackItem.emailError = 'No client email address on record';
+    }
 
     inquiry.feedbacks.push(feedbackItem);
     inquiry.adminReply = String(message).trim();
@@ -402,17 +486,99 @@ async function sendFeedback(req, res, next) {
         recipient: inquiry.email || inquiry.phone,
         status: inquiry.status,
         senderRole,
+        referenceNumber: inquiry.referenceNumber,
+        emailDelivery: feedbackItem.emailStatus,
       },
       req,
     });
 
     return res.status(StatusCodes.OK).json({
       success: true,
-      message: 'Official feedback registered and saved to SACCO database successfully',
+      message: feedbackItem.emailStatus === 'sent'
+        ? 'Official response dispatched to client and recorded successfully'
+        : 'Official response registered and saved to database (email delivery pending or unconfigured)',
       data: {
         inquiry,
         feedback: feedbackItem,
       },
+    });
+  } catch (err) {
+    return next(err);
+  }
+}
+
+/**
+ * Retry delivering an inquiry feedback email to the client
+ */
+async function retryInquiryFeedbackEmail(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { feedbackId } = req.body;
+
+    const inquiry = await Inquiry.findById(id);
+    if (!inquiry) {
+      throw new AppError('Inquiry not found', StatusCodes.NOT_FOUND, {
+        code: 'INQUIRY_NOT_FOUND',
+      });
+    }
+
+    if (!inquiry.email || !inquiry.email.includes('@')) {
+      throw new AppError('Inquiry does not have a valid email address', StatusCodes.BAD_REQUEST);
+    }
+
+    let targetFeedback = null;
+    if (feedbackId) {
+      targetFeedback = inquiry.feedbacks.id(feedbackId);
+    } else if (inquiry.feedbacks.length > 0) {
+      targetFeedback = inquiry.feedbacks[inquiry.feedbacks.length - 1];
+    }
+
+    if (!targetFeedback) {
+      throw new AppError('No feedback response found to resend', StatusCodes.NOT_FOUND);
+    }
+
+    if (!inquiry.referenceNumber) {
+      inquiry.referenceNumber = await generateInquiryReference(Inquiry);
+    }
+
+    const mailResult = await sendInquiryReply({
+      to: inquiry.email,
+      clientName: inquiry.name,
+      inquirySubject: inquiry.subject,
+      referenceNumber: inquiry.referenceNumber,
+      staffName: targetFeedback.senderName,
+      staffRole: targetFeedback.senderRole,
+      replyMessage: targetFeedback.message,
+    });
+
+    if (mailResult.success) {
+      targetFeedback.emailStatus = 'sent';
+      targetFeedback.emailError = null;
+    } else {
+      targetFeedback.emailStatus = 'failed';
+      targetFeedback.emailError = mailResult.error;
+    }
+
+    await inquiry.save();
+
+    await logAudit({
+      actor: req.user,
+      action: 'INQUIRY_FEEDBACK_EMAIL_RETRIED',
+      resourceType: 'Inquiry',
+      resourceId: inquiry.id,
+      details: {
+        recipient: inquiry.email,
+        outcome: targetFeedback.emailStatus,
+      },
+      req,
+    });
+
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: mailResult.success
+        ? 'Customer response email delivered successfully'
+        : `Email delivery attempt failed: ${mailResult.error}`,
+      data: { inquiry, feedback: targetFeedback },
     });
   } catch (err) {
     return next(err);
@@ -426,4 +592,5 @@ module.exports = {
   updateInquiry,
   deleteInquiry,
   sendFeedback,
+  retryInquiryFeedbackEmail,
 };

@@ -13,7 +13,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { ImigongoRibbon } from './ImigongoPattern';
-import { authApi, clearAuthToken } from '../services/api';
+import { authApi, clearAuthToken, setAuthToken } from '../services/api';
 
 interface ManagerLoginModalProps {
   isOpen: boolean;
@@ -232,6 +232,11 @@ export const ManagerLoginModal: React.FC<ManagerLoginModalProps> = ({
       });
 
       if (res.success) {
+        // Store the fresh JWT returned by the backend (old token is invalid after passwordChangedAt changes)
+        if (res.accessToken) {
+          setAuthToken(res.accessToken);
+        }
+
         setChangeSuccessMessage('Default password successfully updated! Authorizing login session...');
 
         setTimeout(() => {

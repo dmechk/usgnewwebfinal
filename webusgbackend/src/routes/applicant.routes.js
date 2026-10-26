@@ -11,6 +11,7 @@ const {
   addFeedback,
   listMessages,
   addMessage,
+  retryConfirmationEmail,
 } = require('../controllers/applicant.controller');
 const authenticate = require('../middleware/auth');
 const { requirePermission } = require('../middleware/permission');
@@ -76,6 +77,13 @@ router.post(
   authenticate,
   requirePermission(PERMISSIONS.APPLICANTS_MESSAGES_CREATE),
   addMessage
+);
+
+router.post(
+  '/:id/retry-email',
+  authenticate,
+  requirePermission(PERMISSIONS.APPLICANTS_STATUS_UPDATE),
+  retryConfirmationEmail
 );
 
 module.exports = router;

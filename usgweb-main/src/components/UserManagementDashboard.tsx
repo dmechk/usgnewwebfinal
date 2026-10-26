@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Users,
   UserCheck,
@@ -1146,10 +1147,13 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
       )}
 
       {/* ───────────────────────────────────────────────────────────── */}
-      {/* 1. CREATE USER MODAL */}
+      {/* MODALS — rendered via portal so they overlay the full page  */}
+      {/* even when the parent has overflow-y-auto / overflow-hidden   */}
       {/* ───────────────────────────────────────────────────────────── */}
-      {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in">
+
+      {/* 1. CREATE USER MODAL */}
+      {isCreateModalOpen && createPortal(
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in">
           <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200">
             <div className="p-6 border-b border-slate-100 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -1402,13 +1406,12 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
             </form>
           </div>
         </div>
+        , document.body
       )}
 
-      {/* ───────────────────────────────────────────────────────────── */}
       {/* 2. NEW CREDENTIALS ISSUED MODAL */}
-      {/* ───────────────────────────────────────────────────────────── */}
-      {newCredentials && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in">
+      {newCredentials && createPortal(
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 text-center space-y-4">
             <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto">
               <CheckCircle2 className="w-6 h-6" />
@@ -1476,13 +1479,12 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
             </div>
           </div>
         </div>
+        , document.body
       )}
 
-      {/* ───────────────────────────────────────────────────────────── */}
       {/* 3. EDIT USER MODAL */}
-      {/* ───────────────────────────────────────────────────────────── */}
-      {isEditModalOpen && activeUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in">
+      {isEditModalOpen && activeUser && createPortal(
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in">
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
               <div className="flex items-center gap-3">
@@ -1589,13 +1591,12 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
             </form>
           </div>
         </div>
+        , document.body
       )}
 
-      {/* ───────────────────────────────────────────────────────────── */}
       {/* 4. VIEW USER DETAILS & PERMISSIONS MATRIX MODAL */}
-      {/* ───────────────────────────────────────────────────────────── */}
-      {isViewModalOpen && activeUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in">
+      {isViewModalOpen && activeUser && createPortal(
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in">
           <div className="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-3">
@@ -1734,13 +1735,12 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
             </div>
           </div>
         </div>
+        , document.body
       )}
 
-      {/* ───────────────────────────────────────────────────────────── */}
       {/* 5. RESET PASSWORD MODAL */}
-      {/* ───────────────────────────────────────────────────────────── */}
-      {isResetPasswordModalOpen && activeUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in">
+      {isResetPasswordModalOpen && activeUser && createPortal(
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
             <div className="flex items-center gap-3 pb-3 border-b border-slate-100">
               <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center">
@@ -1858,13 +1858,12 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
             )}
           </div>
         </div>
+        , document.body
       )}
 
-      {/* ───────────────────────────────────────────────────────────── */}
       {/* 6. STATUS TOGGLE CONFIRMATION MODAL */}
-      {/* ───────────────────────────────────────────────────────────── */}
-      {isStatusConfirmModalOpen && activeUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in">
+      {isStatusConfirmModalOpen && activeUser && createPortal(
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 text-center">
             <div
               className={`w-12 h-12 rounded-2xl flex items-center justify-center mx-auto ${
@@ -1910,13 +1909,12 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
             </div>
           </div>
         </div>
+        , document.body
       )}
 
-      {/* ───────────────────────────────────────────────────────────── */}
       {/* 7. DELETE ACCOUNT CONFIRMATION MODAL */}
-      {/* ───────────────────────────────────────────────────────────── */}
-      {isDeleteConfirmModalOpen && activeUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in">
+      {isDeleteConfirmModalOpen && activeUser && createPortal(
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 text-center">
             <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-700 flex items-center justify-center mx-auto">
               <Trash2 className="w-6 h-6" />
@@ -1950,6 +1948,7 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
             </div>
           </div>
         </div>
+        , document.body
       )}
     </div>
   );

@@ -1,0 +1,65 @@
+[
+  {
+    "_id": "6adcd555f968ec155ebf6df1",
+    "title": "Senior Credit & Risk Analyst",
+    "department": "Credit & Risk Management",
+    "location": "Headquarters, Gakenke",
+    "employmentType": "Full-Time",
+    "description": "Responsible for evaluating MSME and agricultural loan applications, monitoring credit portfolio quality, and mitigating non-performing loans (NPLs).",
+    "requirements": [
+      "Bachelor's degree in Banking, Finance, Economics, or Business Administration",
+      "At least 3 years experience in credit underwriting in a regulated financial institution or SACCO",
+      "Strong analytical abilities and deep familiarity with Rwanda financial sector regulations (BNR/RCA)",
+      "Fluent in Kinyarwanda and English or French"
+    ],
+    "deadline": "2026-11-23T15:57:03.604Z",
+    "isPublished": true,
+    "publishedAt": "2026-10-24T15:57:03.604Z",
+    "createdBy": null,
+    "__v": 0,
+    "createdAt": "2026-10-24T15:57:09.348Z",
+    "updatedAt": "2026-10-24T15:57:09.348Z"
+  },
+  {
+    "_id": "6adcd555f968ec155ebf6df2",
+    "title": "Branch Operations Officer & Cashier",
+    "department": "Branch Operations",
+    "location": "Nemba Branch",
+    "employmentType": "Full-Time",
+    "description": "Manage counter cash transactions, process member deposits, loan repayments, account openings, and provide first-class member service.",
+    "requirements": [
+      "Bachelor's degree or Advanced Diploma (A1) in Accounting, Management, or Finance",
+      "Minimum 1-2 years experience in cash handling and counter customer care in banking/microfinance",
+      "High level of integrity, meticulous attention to detail, and numeracy",
+      "Resident of or willing to relocate to Gakenke District"
+    ],
+    "deadline": "2026-11-18T15:57:03.604Z",
+    "isPublished": true,
+    "publishedAt": "2026-10-24T15:57:03.604Z",
+    "createdBy": null,
+    "__v": 0,
+    "createdAt": "2026-10-24T15:57:09.351Z",
+    "updatedAt": "2026-10-24T15:57:09.351Z"
+  },
+  {
+    "_id": "6adcd555f968ec155ebf6df3",
+    "title": "IT Systems & Digital Banking Administrator",
+    "department": "Information Technology",
+    "location": "Headquarters, Gakenke",
+    "employmentType": "Full-Time",
+    "description": "Oversee cooperative core banking servers, local network infrastructure, USSD integration (*541#), cybersecurity compliance, and system backups.",
+    "requirements": [
+      "Bachelor's degree in Computer Science, Information Technology, or Software Engineering",
+      "Knowledge of Linux, Node.js/Python, relational & NoSQL databases, and network administration",
+      "Demonstrated experience with financial software integration and API protocols",
+      "Familiarity with cybersecurity standards for microfinance institutions"
+    ],
+    "deadline": "2026-11-28T15:57:03.604Z",
+    "isPublished": true,
+    "publishedAt": "2026-10-24T15:57:03.604Z",
+    "createdBy": null,
+    "__v": 0,
+    "createdAt": "2026-10-24T15:57:09.351Z",
+    "updatedAt": "2026-10-24T15:57:09.351Z"
+  }
+]

@@ -13,6 +13,11 @@ const openapi = require('./docs/openapi');
 
 const app = express();
 
+// Configure trusted proxy to reliably resolve real client IP addresses
+if (env.TRUST_PROXY) {
+  app.set('trust proxy', env.TRUST_PROXY);
+}
+
 const uploadsDir = path.join(__dirname, '../uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });

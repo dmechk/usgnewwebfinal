@@ -163,7 +163,7 @@ export const authApi = {
   },
 
   async changePassword(passwords: { currentPassword: string; newPassword: string }) {
-    return request<{ success: boolean; message: string; data: { user: any } }>(
+    return request<{ success: boolean; message: string; accessToken?: string; tokenType?: string; data: { user: any } }>(
       '/auth/change-password',
       {
         method: 'POST',

@@ -1,0 +1,44 @@
+[
+  {
+    "_id": "6adcd554f968ec155ebf6dee",
+    "title": "16th Annual General Assembly & 2026 Dividend Distribution Announcement",
+    "content": "UBUMWE SACCO GAKENKE Management and Board of Directors are pleased to invite all member representatives to the 16th Ordinary General Assembly.\n\nAgenda:\n1. Review of Audited Financial Statements for FY2025\n2. Approval of 14.8% Dividend Distribution on Member Share Capital\n3. Launch of 2026 Digital Instant Loan Facility (*541#)\n4. Election of Supervisory Committee Members\n\nDividends will be credited directly to members' savings accounts and mobile wallets.",
+    "summary": "All registered members are cordially invited to the 16th Ordinary General Assembly at Gakenke Youth Centre. Dividend payout of 14.8% declared.",
+    "featuredImage": "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1200&q=80",
+    "category": "agm",
+    "isPublished": true,
+    "publishedAt": "2026-10-24T15:57:03.604Z",
+    "authorId": null,
+    "__v": 0,
+    "createdAt": "2026-10-24T15:57:08.115Z",
+    "updatedAt": "2026-10-24T15:57:08.115Z"
+  },
+  {
+    "_id": "6adcd554f968ec155ebf6def",
+    "title": "Agricultural Season A 2026 Input Financing Window Now Open",
+    "content": "Coffee, maize, and Irish potato cooperatives across Gakenke, Nemba, Rusasa, and Kivuruga sectors can now access flexible seasonal agricultural financing.\n\nFeatures:\n- Interest rate: 13.5% per annum\n- Grace period aligned with harvest cycles\n- Fast turnaround within 48 hours for verified farmer groups",
+    "summary": "Discounted 13.5% p.a. loans available for certified seeds, subsidized fertilizers, and cooperative storage equipment.",
+    "featuredImage": "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1200&q=80",
+    "category": "loan_window",
+    "isPublished": true,
+    "publishedAt": "2026-10-24T15:57:03.604Z",
+    "authorId": null,
+    "__v": 0,
+    "createdAt": "2026-10-24T15:57:08.116Z",
+    "updatedAt": "2026-10-24T15:57:08.116Z"
+  },
+  {
+    "_id": "6adcd554f968ec155ebf6df0",
+    "title": "Notice on Upgrade of Core Banking & Instant USSD Services (*541#)",
+    "content": "Dear Valued Members,\n\nPlease be informed of scheduled system optimization for our core banking infrastructure to increase transaction throughput and security.\n\nDuring maintenance, USSD *541# and teller operations will experience a brief 30-minute pause. We thank you for your continued partnership.",
+    "summary": "System maintenance scheduled for Sunday midnight. Instant mobile deposits, withdrawals, and balance inquiries fully active.",
+    "featuredImage": "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80",
+    "category": "notice",
+    "isPublished": true,
+    "publishedAt": "2026-10-24T15:57:03.604Z",
+    "authorId": null,
+    "__v": 0,
+    "createdAt": "2026-10-24T15:57:08.116Z",
+    "updatedAt": "2026-10-24T15:57:08.116Z"
+  }
+]

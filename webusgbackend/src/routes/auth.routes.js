@@ -3,7 +3,7 @@ const authenticate = require('../middleware/auth');
 const { requireRole } = require('../middleware/auth');
 const validate = require('../middleware/validate');
 const { authSigninLimiter } = require('../middleware/rateLimiter');
-const { signin, register, me, changePassword, getRolesAndPermissions } = require('../controllers/auth.controller');
+const { signin, register, me, changePassword, getRolesAndPermissions, activateAccount } = require('../controllers/auth.controller');
 const {
   signinValidation,
   registerValidation,
@@ -18,6 +18,7 @@ router.post('/login', authSigninLimiter, signinValidation, validate, signin);
 
 router.get('/me', authenticate, me);
 router.post('/change-password', authenticate, changePasswordValidation, validate, changePassword);
+router.post('/activate', activateAccount);
 
 router.get('/admin', authenticate, requireRole('admin', 'ADMIN_IT'), (req, res) => {
   res.json({

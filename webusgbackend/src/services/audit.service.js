@@ -1,6 +1,7 @@
 'use strict';
 
 const AuditLog = require('../models/AuditLog');
+const { extractClientIp } = require('../utils/ip');
 
 /**
  * Records an audit log entry.
@@ -39,11 +40,7 @@ async function logAudit({
     let userAgent = null;
 
     if (req) {
-      ipAddress =
-        req.ip ||
-        (req.headers && req.headers['x-forwarded-for']) ||
-        (req.socket && req.socket.remoteAddress) ||
-        null;
+      ipAddress = extractClientIp(req);
       userAgent = (req.headers && req.headers['user-agent']) || null;
       if (!actor && req.user) {
         actorId = req.user.id || req.user._id || null;

@@ -1,0 +1,43 @@
+[
+  {
+    "_id": "6add26b18a1b45e2442b21c4",
+    "name": "Test Member",
+    "email": "test.member@gmail.com",
+    "phone": "0788123456",
+    "subject": "Test Agri-Loan Inquiry",
+    "message": "Inquiring about coffee seasonal input loan terms",
+    "sector": "Gakenke",
+    "status": "in_review",
+    "priority": "medium",
+    "source": "website",
+    "recipientEmail": "ubumwesaccogakenke@gmail.com",
+    "notes": "Assigned to Loan Officer Emmanuel.",
+    "adminReply": "Dear member, our loan officer will contact you today at 2:00 PM.",
+    "assignedTo": null,
+    "resolvedAt": null,
+    "date": "24 Oct 2026",
+    "feedbacks": [
+      {
+        "senderName": "SACCO Representative",
+        "senderEmail": "ubumwesaccogakenke@gmail.com",
+        "senderRole": "ADMIN_IT",
+        "sentBy": "6ad7c9b0d7fb0ef5f4324dcf",
+        "message": "Dear member, our loan officer will contact you today at 2:00 PM.",
+        "createdAt": "2026-10-24T21:46:40.770Z",
+        "_id": "6add27408a1b45e2442b21c7"
+      },
+      {
+        "senderName": "SACCO Representative",
+        "senderEmail": "ubumwesaccogakenke@gmail.com",
+        "senderRole": "ADMIN_IT",
+        "sentBy": "6ade926faa63c6ebafedc5f0",
+        "message": "Dear member, our loan officer will contact you today at 2:00 PM.",
+        "createdAt": "2026-10-25T23:41:53.364Z",
+        "_id": "6ade93c1aa63c6ebafedc5f7"
+      }
+    ],
+    "createdAt": "2026-10-24T21:44:17.032Z",
+    "updatedAt": "2026-10-25T23:41:53.375Z",
+    "__v": 2
+  }
+]

@@ -8,6 +8,7 @@ const {
   updateInquiry,
   deleteInquiry,
   sendFeedback,
+  retryInquiryFeedbackEmail,
 } = require('../controllers/inquiry.controller');
 const authenticate = require('../middleware/auth');
 const { requirePermission } = require('../middleware/permission');
@@ -63,6 +64,13 @@ router.post(
   authenticate,
   requirePermission(PERMISSIONS.INQUIRIES_FEEDBACK),
   sendFeedback
+);
+
+router.post(
+  '/:id/retry-feedback-email',
+  authenticate,
+  requirePermission(PERMISSIONS.INQUIRIES_FEEDBACK),
+  retryInquiryFeedbackEmail
 );
 
 module.exports = router;

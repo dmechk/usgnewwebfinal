@@ -1,0 +1,67 @@
+[
+  {
+    "_id": "6adcd552f968ec155ebf6de9",
+    "title": "15th Annual General Meeting (AGM) & 14.8% Dividend Distribution",
+    "description": "General Assembly convening over 1,200 cooperative delegates celebrating 14.8% member dividend payouts and strategic expansion.",
+    "imageUrl": "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80",
+    "category": "agm_dividend",
+    "isPublished": true,
+    "publishedAt": "2026-10-24T15:57:03.604Z",
+    "createdBy": null,
+    "__v": 0,
+    "createdAt": "2026-10-24T15:57:06.124Z",
+    "updatedAt": "2026-10-24T15:57:06.124Z"
+  },
+  {
+    "_id": "6adcd552f968ec155ebf6dea",
+    "title": "Modern Coffee Washing & Processing Cooperative Financing",
+    "description": "Providing 185M RWF working capital financing to coffee smallholders across Nemba & Gakenke sectors.",
+    "imageUrl": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&q=80",
+    "category": "community",
+    "isPublished": true,
+    "publishedAt": "2026-10-24T15:57:03.604Z",
+    "createdBy": null,
+    "__v": 0,
+    "createdAt": "2026-10-24T15:57:06.128Z",
+    "updatedAt": "2026-10-24T15:57:06.128Z"
+  },
+  {
+    "_id": "6adcd552f968ec155ebf6deb",
+    "title": "District Best Financial Cooperative Award 2025",
+    "description": "Recognized by Northern Province leadership and Rwanda Cooperative Agency (RCA) for outstanding financial inclusion.",
+    "imageUrl": "https://images.unsplash.com/photo-1567521464027-f127ff144326?auto=format&fit=crop&w=1200&q=80",
+    "category": "award",
+    "isPublished": true,
+    "publishedAt": "2026-10-24T15:57:03.604Z",
+    "createdBy": null,
+    "__v": 0,
+    "createdAt": "2026-10-24T15:57:06.128Z",
+    "updatedAt": "2026-10-24T15:57:06.128Z"
+  },
+  {
+    "_id": "6adcd552f968ec155ebf6dec",
+    "title": "Commissioning of Kivuruga Digital Banking Branch",
+    "description": "Expanding branch network to 5 sectors with full MoMo interoperability, cash counters, and solar power backup.",
+    "imageUrl": "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80",
+    "category": "branch_opening",
+    "isPublished": true,
+    "publishedAt": "2026-10-24T15:57:03.604Z",
+    "createdBy": null,
+    "__v": 0,
+    "createdAt": "2026-10-24T15:57:06.128Z",
+    "updatedAt": "2026-10-24T15:57:06.128Z"
+  },
+  {
+    "_id": "6adcd552f968ec155ebf6ded",
+    "title": "Women Youth Agri-Entrepreneurs Financial Literacy Bootcamp",
+    "description": "Training 350 women and youth cooperative leaders in modern bookkeeping, digital savings, and seasonal loan management.",
+    "imageUrl": "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=80",
+    "category": "training",
+    "isPublished": true,
+    "publishedAt": "2026-10-24T15:57:03.604Z",
+    "createdBy": null,
+    "__v": 0,
+    "createdAt": "2026-10-24T15:57:06.128Z",
+    "updatedAt": "2026-10-24T15:57:06.128Z"
+  }
+]

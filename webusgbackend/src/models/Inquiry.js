@@ -32,12 +32,28 @@ const inquiryFeedbackSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    emailStatus: {
+      type: String,
+      enum: ['sent', 'failed', 'pending'],
+      default: 'pending',
+    },
+    emailError: {
+      type: String,
+      default: null,
+    },
   },
   { _id: true }
 );
 
 const inquirySchema = new mongoose.Schema(
   {
+    referenceNumber: {
+      type: String,
+      unique: true,
+      sparse: true,
+      trim: true,
+      index: true,
+    },
     name: {
       type: String,
       required: [true, 'Sender name is required'],
@@ -115,6 +131,30 @@ const inquirySchema = new mongoose.Schema(
     date: {
       type: String,
       default: '',
+    },
+    emailNotification: {
+      status: {
+        type: String,
+        enum: ['PENDING', 'SENT', 'FAILED'],
+        default: 'PENDING',
+        index: true,
+      },
+      sentAt: {
+        type: Date,
+        default: null,
+      },
+      failedAt: {
+        type: Date,
+        default: null,
+      },
+      attempts: {
+        type: Number,
+        default: 0,
+      },
+      lastError: {
+        type: String,
+        default: null,
+      },
     },
   },
   {

@@ -58,6 +58,8 @@ async function authenticate(req, res, next) {
 
     req.user = {
       id: String(user._id),
+      name: user.name,
+      email: user.email,
       role: user.role,
       passwordChangeRequired: user.passwordChangeRequired,
       isActive: user.isActive,

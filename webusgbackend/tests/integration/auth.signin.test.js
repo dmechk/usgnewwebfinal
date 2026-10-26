@@ -80,16 +80,19 @@ describe('POST /api/v1/auth/signin', () => {
   });
 
   it('rate limits repeated sign-in attempts', async () => {
-    const attempts = [];
-    for (let i = 0; i < env.AUTH_RATE_LIMIT_MAX + 1; i += 1) {
-      attempts.push(
-        request(app)
-          .post('/api/v1/auth/signin')
-          .send({ email: `unknown${i}@example.com`, password: 'whatever-password' })
-      );
+    const limit = env.AUTH_RATE_LIMIT_MAX + 2;
+    let got429 = false;
+    for (let i = 0; i < limit; i += 1) {
+      // Sequential requests so the in-memory counter accumulates reliably
+      // eslint-disable-next-line no-await-in-loop
+      const res = await request(app)
+        .post('/api/v1/auth/signin')
+        .send({ email: `ratelimituser${i}@example.com`, password: 'whatever-password' });
+      if (res.status === 429) {
+        got429 = true;
+        break;
+      }
     }
-
-    const responses = await Promise.all(attempts);
-    expect(responses.some((res) => res.status === 429)).toBe(true);
+    expect(got429).toBe(true);
   });
 });

@@ -10,6 +10,7 @@ const {
   deleteUser,
   resetPassword,
   getRolesAndPermissions,
+  resendOnboardingEmail,
 } = require('../controllers/user.controller');
 const validate = require('../middleware/validate');
 const { requirePermission } = require('../middleware/permission');
@@ -87,6 +88,14 @@ router.post(
   validate,
   requirePermission(PERMISSIONS.USERS_UPDATE),
   resetPassword
+);
+
+router.post(
+  '/:id/resend-onboarding',
+  userIdParamValidation,
+  validate,
+  requirePermission(PERMISSIONS.USERS_UPDATE),
+  resendOnboardingEmail
 );
 
 router.delete(

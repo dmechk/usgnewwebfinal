@@ -52,6 +52,7 @@
     "mongoose": "^9.11.2",
     "morgan": "^1.12.1",
     "multer": "^2.4.0",
+    "nodemailer": "^10.2.1",
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
@@ -61,6 +62,4 @@
     "nodemon": "^3.1.14",
     "supertest": "^7.3.1"
   }
-
-
 }

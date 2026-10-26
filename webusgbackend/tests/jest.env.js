@@ -6,7 +6,7 @@ process.env.JWT_AUDIENCE = 'webusg-client';
 process.env.BCRYPT_SALT_ROUNDS = '10';
 process.env.CORS_ORIGINS = 'http://localhost:3000';
 process.env.AUTH_RATE_LIMIT_WINDOW_MS = '60000';
-process.env.AUTH_RATE_LIMIT_MAX = '100';
+process.env.AUTH_RATE_LIMIT_MAX = '10';
 process.env.JSON_BODY_LIMIT = '100kb';
 
 // Load in‑memory MongoDB URI written by globalSetup

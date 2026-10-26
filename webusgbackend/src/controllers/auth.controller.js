@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const { StatusCodes } = require('http-status-codes');
 const User = require('../models/User');
 const AppError = require('../utils/appError');
@@ -6,6 +7,9 @@ const { toPublicUser } = require('../utils/userSerializer');
 const authService = require('../services/auth.service');
 const { getPermissionsForRole, getDashboardForRole, ROLE_LIST, ROLE_PERMISSIONS } = require('../config/roles');
 const { logAudit } = require('../services/audit.service');
+const { signAccessToken } = require('../utils/jwt');
+const { sendStaffOnboardingEmail } = require('../services/email.service');
+const env = require('../config/env');
 
 async function signin(req, res, next) {
   try {
@@ -137,6 +141,9 @@ async function changePassword(req, res, next) {
     user.passwordChangeRequired = false;
     await user.save();
 
+    // Issue a fresh token so the client session remains valid after passwordChangedAt changes
+    const newAccessToken = signAccessToken(user);
+
     await logAudit({
       actor: user,
       action: 'PASSWORD_CHANGED',
@@ -145,10 +152,86 @@ async function changePassword(req, res, next) {
       req,
     });
 
+    const publicUser = toPublicUser(user);
+    const userWithRbac = {
+      ...publicUser,
+      permissions: getPermissionsForRole(publicUser.role),
+      dashboardUrl: getDashboardForRole(publicUser.role),
+    };
+
     return res.status(StatusCodes.OK).json({
       success: true,
       message: 'Password changed successfully',
-      data: { user: toPublicUser(user) },
+      accessToken: newAccessToken,
+      tokenType: 'Bearer',
+      data: { user: userWithRbac },
+    });
+  } catch (err) {
+    return next(err);
+  }
+}
+
+async function activateAccount(req, res, next) {
+  try {
+    const { token, email, newPassword } = req.body;
+
+    if (!token || !email || !newPassword) {
+      throw new AppError('token, email and newPassword are required', StatusCodes.BAD_REQUEST, {
+        code: 'MISSING_FIELDS',
+      });
+    }
+    if (typeof newPassword !== 'string' || newPassword.trim().length < 8) {
+      throw new AppError('New password must be at least 8 characters', StatusCodes.BAD_REQUEST, {
+        code: 'WEAK_PASSWORD',
+      });
+    }
+
+    const normalizedEmail = normalizeEmail(email);
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+
+    const user = await User.findOne({
+      email: normalizedEmail,
+      activationTokenHash: tokenHash,
+      activationExpiresAt: { $gt: new Date() },
+    }).select('+activationTokenHash');
+
+    if (!user) {
+      throw new AppError('Invalid or expired activation link. Please ask your administrator to resend the invitation.', StatusCodes.BAD_REQUEST, {
+        code: 'INVALID_ACTIVATION_TOKEN',
+      });
+    }
+
+    user.password = newPassword.trim();
+    user.rawPassword = '';
+    user.passwordChangeRequired = false;
+    user.isActivated = true;
+    user.activationTokenHash = null;
+    user.activationExpiresAt = null;
+    await user.save();
+
+    const accessToken = signAccessToken(user);
+
+    await logAudit({
+      actor: user,
+      action: 'ACCOUNT_ACTIVATED',
+      resourceType: 'User',
+      resourceId: user.id,
+      req,
+    });
+
+    const publicUser = toPublicUser(user);
+    const userWithRbac = {
+      ...publicUser,
+      permissions: getPermissionsForRole(publicUser.role),
+      dashboardUrl: getDashboardForRole(publicUser.role),
+    };
+
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: 'Account activated successfully. Welcome to Ubumwe SACCO.',
+      accessToken,
+      tokenType: 'Bearer',
+      data: { user: userWithRbac },
     });
   } catch (err) {
     return next(err);
@@ -171,6 +254,7 @@ module.exports = {
   register,
   me,
   changePassword,
+  activateAccount,
   getRolesAndPermissions,
 };
 

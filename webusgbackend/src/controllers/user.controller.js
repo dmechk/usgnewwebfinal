@@ -1,9 +1,12 @@
+const crypto = require('crypto');
 const { StatusCodes } = require('http-status-codes');
 const User = require('../models/User');
 const AppError = require('../utils/appError');
 const { normalizeEmail } = require('../utils/email');
 const { toPublicUser } = require('../utils/userSerializer');
 const { logAudit } = require('../services/audit.service');
+const { sendStaffOnboardingEmail } = require('../services/email.service');
+const env = require('../config/env');
 
 async function listUsers(req, res, next) {
   try {
@@ -75,7 +78,7 @@ const { ROLES, ROLE_LIST, ROLE_PERMISSIONS, PERMISSIONS, ROLE_DASHBOARDS } = req
 
 async function createUser(req, res, next) {
   try {
-    const { name, email, password, role, phone = '', department = '', passwordChangeRequired = true } = req.body;
+    const { name, email, password, role, phone = '', department = '', passwordChangeRequired = true, sendOnboardingEmail = true } = req.body;
     const normalizedEmail = normalizeEmail(email);
 
     // Auto-generate secure temporary password if not provided
@@ -83,8 +86,14 @@ async function createUser(req, res, next) {
       ? password.trim()
       : `Ubumwe@${Math.floor(100000 + Math.random() * 900000)}!`;
 
+    // Generate tokenized activation link
+    const activationToken = crypto.randomBytes(32).toString('hex');
+    const activationTokenHash = crypto.createHash('sha256').update(activationToken).digest('hex');
+    const activationExpiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000); // 48 hours
+
+    let user;
     try {
-      const user = await User.create({
+      user = await User.create({
         name,
         email: normalizedEmail,
         password: tempPassword,
@@ -94,22 +103,10 @@ async function createUser(req, res, next) {
         department: typeof department === 'string' ? department.trim() : '',
         isActive: true,
         passwordChangeRequired: Boolean(passwordChangeRequired),
-      });
-
-      await logAudit({
-        actor: req.user,
-        action: 'USER_CREATED',
-        resourceType: 'User',
-        resourceId: user.id,
-        details: { email: user.email, role: user.role, department: user.department },
-        req,
-      });
-
-      return res.status(StatusCodes.CREATED).json({
-        success: true,
-        message: 'Staff user created successfully. Temporary credentials generated.',
-        temporaryPassword: tempPassword,
-        data: { user: toPublicUser(user) },
+        isActivated: false,
+        activationTokenHash,
+        activationExpiresAt,
+        onboardingEmailStatus: { status: 'PENDING', attempts: 0 },
       });
     } catch (err) {
       if (err && err.code === 11000) {
@@ -119,6 +116,57 @@ async function createUser(req, res, next) {
       }
       throw err;
     }
+
+    await logAudit({
+      actor: req.user,
+      action: 'USER_CREATED',
+      resourceType: 'User',
+      resourceId: user.id,
+      details: { email: user.email, role: user.role, department: user.department },
+      req,
+    });
+
+    // Send onboarding activation email asynchronously
+    let onboardingEmailSent = false;
+    if (sendOnboardingEmail) {
+      const clientAppUrl = env.CLIENT_APP_URL || 'http://localhost:5173';
+      const activationUrl = `${clientAppUrl}/activate-account?token=${activationToken}&email=${encodeURIComponent(normalizedEmail)}`;
+
+      sendStaffOnboardingEmail({
+        to: normalizedEmail,
+        staffName: name,
+        username: normalizedEmail,
+        role: user.role,
+        department: user.department || '',
+        activationUrl,
+        expiresHours: 48,
+      })
+        .then(async () => {
+          await User.findByIdAndUpdate(user._id, {
+            'onboardingEmailStatus.status': 'SENT',
+            'onboardingEmailStatus.sentAt': new Date(),
+            'onboardingEmailStatus.attempts': 1,
+          });
+        })
+        .catch(async (emailErr) => {
+          console.error('[createUser] Onboarding email failed:', emailErr.message);
+          await User.findByIdAndUpdate(user._id, {
+            'onboardingEmailStatus.status': 'FAILED',
+            'onboardingEmailStatus.failedAt': new Date(),
+            'onboardingEmailStatus.lastError': emailErr.message,
+            $inc: { 'onboardingEmailStatus.attempts': 1 },
+          });
+        });
+      onboardingEmailSent = true;
+    }
+
+    return res.status(StatusCodes.CREATED).json({
+      success: true,
+      message: 'Staff user created successfully. Onboarding email dispatched.',
+      temporaryPassword: tempPassword,
+      onboardingEmailSent,
+      data: { user: toPublicUser(user) },
+    });
   } catch (err) {
     return next(err);
   }
@@ -400,6 +448,87 @@ async function getUserPassword(req, res, next) {
   }
 }
 
+async function resendOnboardingEmail(req, res, next) {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id);
+    if (!user) {
+      throw new AppError('User not found', StatusCodes.NOT_FOUND, { code: 'USER_NOT_FOUND' });
+    }
+
+    if (user.isActivated) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        success: false,
+        message: 'User account is already activated. No resend necessary.',
+        code: 'ALREADY_ACTIVATED',
+      });
+    }
+
+    // Regenerate activation token
+    const activationToken = crypto.randomBytes(32).toString('hex');
+    const activationTokenHash = crypto.createHash('sha256').update(activationToken).digest('hex');
+    const activationExpiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000);
+
+    user.activationTokenHash = activationTokenHash;
+    user.activationExpiresAt = activationExpiresAt;
+    user['onboardingEmailStatus.status'] = 'PENDING';
+    await user.save();
+
+    // Also update via targeted update to make sure subdoc fields are set
+    await User.findByIdAndUpdate(user._id, {
+      activationTokenHash,
+      activationExpiresAt,
+      'onboardingEmailStatus.status': 'PENDING',
+    });
+
+    const clientAppUrl = env.CLIENT_APP_URL || 'http://localhost:5173';
+    const activationUrl = `${clientAppUrl}/activate-account?token=${activationToken}&email=${encodeURIComponent(user.email)}`;
+
+    try {
+      await sendStaffOnboardingEmail({
+        to: user.email,
+        staffName: user.name,
+        username: user.email,
+        role: user.role,
+        department: user.department || '',
+        activationUrl,
+        expiresHours: 48,
+      });
+
+      await User.findByIdAndUpdate(user._id, {
+        'onboardingEmailStatus.status': 'SENT',
+        'onboardingEmailStatus.sentAt': new Date(),
+        $inc: { 'onboardingEmailStatus.attempts': 1 },
+      });
+    } catch (emailErr) {
+      await User.findByIdAndUpdate(user._id, {
+        'onboardingEmailStatus.status': 'FAILED',
+        'onboardingEmailStatus.failedAt': new Date(),
+        'onboardingEmailStatus.lastError': emailErr.message,
+        $inc: { 'onboardingEmailStatus.attempts': 1 },
+      });
+      throw new AppError(`Failed to send onboarding email: ${emailErr.message}`, StatusCodes.INTERNAL_SERVER_ERROR, { code: 'EMAIL_SEND_FAILED' });
+    }
+
+    await logAudit({
+      actor: req.user,
+      action: 'ONBOARDING_EMAIL_RESENT',
+      resourceType: 'User',
+      resourceId: user.id,
+      details: { targetEmail: user.email },
+      req,
+    });
+
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: `Onboarding activation email resent to ${user.email}`,
+      data: { userId: user.id, email: user.email },
+    });
+  } catch (err) {
+    return next(err);
+  }
+}
+
 module.exports = {
   listUsers,
   getUser,
@@ -411,4 +540,5 @@ module.exports = {
   deleteUser,
   resetPassword,
   getRolesAndPermissions,
+  resendOnboardingEmail,
 };

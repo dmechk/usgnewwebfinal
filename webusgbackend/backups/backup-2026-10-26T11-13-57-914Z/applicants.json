@@ -1,0 +1,27 @@
+[
+  {
+    "_id": "6adcdd31a446617023fa2995",
+    "careerId": null,
+    "fullName": "Ubumwe Applicant Integration Test",
+    "email": "integration.applicant@ubumwesacco.rw",
+    "phone": "0788998877",
+    "resumeUrl": "",
+    "coverLetter": "Verification test application from integrated frontend API pipeline.",
+    "jobTitle": "Junior Branch Accountant",
+    "nationalId": "1199580012345678",
+    "residenceSector": "Gakenke",
+    "educationLevel": "Bachelor's Degree (A0)",
+    "yearsExperience": 2,
+    "cvFileName": "",
+    "motivationLetterFileName": "",
+    "motivationLetterUrl": "",
+    "notes": "",
+    "rating": 0,
+    "status": "APPLIED",
+    "feedbacks": [],
+    "messages": [],
+    "createdAt": "2026-10-24T16:30:41.575Z",
+    "updatedAt": "2026-10-24T16:30:41.575Z",
+    "__v": 0
+  }
+]
