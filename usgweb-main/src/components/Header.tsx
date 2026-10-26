@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { ImigongoRibbon } from './ImigongoPattern';
 import { TailwindClasses } from '../constants/tailwindClasses';
+import defaultLogo from '../assets/images/usglogo.png';
 
 interface HeaderProps {
   currentLang: Language;
@@ -386,26 +387,17 @@ export const Header: React.FC<HeaderProps> = ({
           title="UBUMWE SACCO GAKENKE - Home"
         >
           <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white border-2 border-emerald-600/40 text-emerald-900 flex items-center justify-center font-bold shadow-lg group-hover:border-emerald-500 group-hover:shadow-2xl group-hover:shadow-emerald-500/40 group-hover:-translate-y-0.5 group-hover:scale-110 transition-all duration-300 ease-out overflow-hidden p-1.5 bg-gradient-to-b from-white via-white to-slate-50 ring-2 ring-emerald-500/10 group-hover:ring-emerald-400/40">
-            {systemImages?.saccoLogo ? (
-              <img
-                src={systemImages.saccoLogo}
-                alt="UBUMWE SACCO GAKENKE Logo"
-                className="w-full h-full object-contain filter drop-shadow-sm transition-transform duration-300 ease-out group-hover:scale-125"
-                onError={(e) => {
-                  // Fallback to usglogo.png if custom path fails
-                  const target = e.currentTarget;
-                  if (!target.src.endsWith('/src/assets/images/usglogo.png')) {
-                    target.src = '/src/assets/images/usglogo.png';
-                  }
-                }}
-              />
-            ) : (
-              <img
-                src="/src/assets/images/usglogo.png"
-                alt="UBUMWE SACCO GAKENKE Logo"
-                className="w-full h-full object-contain transition-transform duration-300 ease-out group-hover:scale-125"
-              />
-            )}
+            <img
+              src={systemImages?.saccoLogo || defaultLogo}
+              alt="UBUMWE SACCO GAKENKE Logo"
+              className="w-full h-full object-contain filter drop-shadow-sm transition-transform duration-300 ease-out group-hover:scale-125"
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (target.src !== defaultLogo) {
+                  target.src = defaultLogo;
+                }
+              }}
+            />
           </div>
           <div className="flex flex-col justify-center">
             <span className="text-base sm:text-lg font-black tracking-tight text-black leading-tight group-hover:text-emerald-800 transition-colors">
