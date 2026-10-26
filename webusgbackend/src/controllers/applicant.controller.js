@@ -192,8 +192,10 @@ async function updateStatus(req, res, next) {
       'pending',
       'shortlisted',
       'not_shortlisted',
+      'interview',
       'accepted',
       'waitlisted',
+      'rejected',
     ];
 
     if (!validStatuses.includes(status)) {

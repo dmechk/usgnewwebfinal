@@ -443,6 +443,8 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
       });
     }
     setFeedbackSuccessMsg('Feedback dispatched and logged to candidate dossier!');
+    setFeedbackSubject('');
+    setFeedbackMessage('');
     setTimeout(() => {
       setFeedbackSuccessMsg('');
     }, 4000);

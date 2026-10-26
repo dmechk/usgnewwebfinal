@@ -802,6 +802,18 @@ export default function App() {
     try {
       const res = await applicantsApi.list({ limit: 100 });
       if (res?.data?.applicants && res.data.applicants.length > 0) {
+        // Map backend status values to frontend status values
+        const normalizeStatus = (s: string): JobApplication['status'] => {
+          switch (s) {
+            case 'APPLIED': return 'pending';
+            case 'SCREENING': return 'shortlisted';
+            case 'INTERVIEW': return 'interview';
+            case 'OFFER': return 'accepted';
+            case 'HIRED': return 'accepted';
+            case 'REJECTED': return 'rejected';
+            default: return (s as JobApplication['status']) || 'pending';
+          }
+        };
         const mapped: JobApplication[] = res.data.applicants.map((a: any) => ({
           id: a.id || a._id,
           jobId: a.careerId || a.jobId || 'job-general',
@@ -818,10 +830,14 @@ export default function App() {
           cvFileData: a.cvFileData,
           motivationLetterFileName: a.motivationLetterFileName,
           motivationLetterFileData: a.motivationLetterFileData,
-          appliedDate: a.appliedDate ? new Date(a.appliedDate).toISOString().split('T')[0] : new Date(a.createdAt || Date.now()).toISOString().split('T')[0],
-          status: a.status || 'pending',
+          appliedDate: a.appliedDate
+            ? new Date(a.appliedDate).toISOString().split('T')[0]
+            : new Date(a.createdAt || Date.now()).toISOString().split('T')[0],
+          status: normalizeStatus(a.status),
           notes: a.notes,
-          comment: a.comment,
+          comment: a.comment || a.notes,
+          rating: a.rating || 0,
+          verified: a.verified || false,
         }));
         setJobApplications(mapped);
       }
@@ -829,6 +845,7 @@ export default function App() {
       // Ignored if unauthenticated or offline
     }
   }, []);
+
 
   const fetchInquiriesFromBackend = useCallback(async () => {
     try {
@@ -1820,18 +1837,69 @@ export default function App() {
 
   const handleUpdateJobApplication = (id: string, updated: Partial<JobApplication>) => {
     setJobApplications((prev) => prev.map((a) => (a.id === id ? { ...a, ...updated } : a)));
+    // Persist status change to backend
+    if (updated.status !== undefined) {
+      applicantsApi.updateStatus(id, updated.status).catch((err) => {
+        console.warn('[Backend] Applicant status persist failed:', err?.message || err);
+      });
+    }
+    // Persist notes/comment to backend
+    if (updated.notes !== undefined || updated.comment !== undefined || updated.rating !== undefined) {
+      applicantsApi
+        .update(id, {
+          notes: updated.notes,
+          rating: updated.rating,
+        })
+        .catch((err) => {
+          console.warn('[Backend] Applicant update persist failed:', err?.message || err);
+        });
+    }
   };
 
+
   const handleAddJobApplication = (app: Omit<JobApplication, 'id'>) => {
+    const tempId = `job-app-${Date.now()}`;
     const newApp: JobApplication = {
       ...app,
-      id: `job-app-${Date.now()}`,
+      id: tempId,
     };
     setJobApplications((prev) => [newApp, ...prev]);
+    // Persist to backend
+    applicantsApi
+      .submit({
+        jobId: app.jobId,
+        jobTitle: app.jobTitle,
+        fullName: app.fullName,
+        email: app.email,
+        phone: app.phone,
+        nationalId: app.nationalId,
+        residenceSector: app.residenceSector,
+        educationLevel: app.educationLevel,
+        yearsExperience: app.yearsExperience,
+        coverLetter: app.coverLetter,
+        cvFileName: app.cvFileName,
+        motivationLetterFileName: app.motivationLetterFileName,
+        motivationLetterFileData: app.motivationLetterFileData,
+      })
+      .then((res) => {
+        if (res?.data?.applicant?.id) {
+          setJobApplications((prev) =>
+            prev.map((a) => (a.id === tempId ? { ...a, id: res.data.applicant.id } : a))
+          );
+        }
+      })
+      .catch((err) => {
+        console.warn('[Backend] Manual applicant submission fallback to local:', err?.message || err);
+      });
   };
+
 
   const handleDeleteJobApplication = (id: string) => {
     setJobApplications((prev) => prev.filter((a) => a.id !== id));
+    // Persist deletion to backend
+    applicantsApi.delete(id).catch((err) => {
+      console.warn('[Backend] Applicant delete persist failed:', err?.message || err);
+    });
   };
 
   const handleResetJobApplications = () => {
