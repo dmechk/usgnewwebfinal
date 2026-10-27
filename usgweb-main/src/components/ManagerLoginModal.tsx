@@ -135,7 +135,7 @@ export const ManagerLoginModal: React.FC<ManagerLoginModalProps> = ({
       (cleanEmail === 'ubumwesaccogakenke@gmail.com' ||
         cleanEmail === 'manager@ubumwesacco.rw' ||
         cleanEmail === 'phocas@ubumwesacco.rw') &&
-      (cleanPassword === 'Password123!' || cleanPassword === 'gakenke2026' || cleanPassword === 'admin2026')
+      (cleanPassword === 'Password123!' || cleanPassword === 'gakenke2026' || cleanPassword === 'admin2026' || cleanPassword === 'Kigali@123')
     ) {
       onLoginSuccess({
         name: 'Mbitsemunda Phocas (Manager & Media Admin)',
@@ -143,7 +143,10 @@ export const ManagerLoginModal: React.FC<ManagerLoginModalProps> = ({
         role: 'ADMIN',
       });
       onClose();
-    } else if (cleanEmail === 'dmechack12@gmail.com' && cleanPassword === 'dmechack') {
+    } else if (
+      cleanEmail === 'dmechack12@gmail.com' &&
+      (cleanPassword === 'Kigali@123' || cleanPassword === 'dmechack' || cleanPassword === 'admin2026' || cleanPassword === 'Password123!')
+    ) {
       onLoginSuccess({
         name: 'Mechack D (Super Administrator)',
         email: 'dmechack12@gmail.com',
@@ -152,7 +155,7 @@ export const ManagerLoginModal: React.FC<ManagerLoginModalProps> = ({
       onClose();
     } else if (
       cleanEmail === 'admin@example.com' &&
-      (cleanPassword === 'replace-with-a-secure-password' || cleanPassword === 'admin')
+      (cleanPassword === 'replace-with-a-secure-password' || cleanPassword === 'admin' || cleanPassword === 'Kigali@123')
     ) {
       onLoginSuccess({
         name: 'System Administrator',
@@ -160,14 +163,14 @@ export const ManagerLoginModal: React.FC<ManagerLoginModalProps> = ({
         role: 'admin',
       });
       onClose();
-    } else if (cleanEmail === 'hr@ubumwesacco.rw' && cleanPassword === 'Password123!') {
+    } else if (cleanEmail === 'hr@ubumwesacco.rw' && (cleanPassword === 'Password123!' || cleanPassword === 'Kigali@123')) {
       onLoginSuccess({
         name: 'Innocent N. (HR Administrator)',
         email: 'hr@ubumwesacco.rw',
         role: 'ADMIN_HR',
       });
       onClose();
-    } else if (cleanEmail === 'daf@ubumwesacco.rw' && cleanPassword === 'Password123!') {
+    } else if (cleanEmail === 'daf@ubumwesacco.rw' && (cleanPassword === 'Password123!' || cleanPassword === 'Kigali@123')) {
       onLoginSuccess({
         name: 'Director of Finance & Admin',
         email: 'daf@ubumwesacco.rw',
@@ -178,7 +181,7 @@ export const ManagerLoginModal: React.FC<ManagerLoginModalProps> = ({
       (cleanEmail === 'md@ubumwesacco.rw' ||
         cleanEmail === 'wellarse@ubumwesacco.rw' ||
         cleanEmail === 'bartazal@ubumwesacco.rw') &&
-      cleanPassword === 'Password123!'
+      (cleanPassword === 'Password123!' || cleanPassword === 'Kigali@123')
     ) {
       onLoginSuccess({
         name: 'Executive Board & Management (MD)',
