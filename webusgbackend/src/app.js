@@ -91,20 +91,7 @@ app.get('/api/docs.json', (req, res) => {
   res.json(openapi);
 });
 
-// Top-level root health & status
-app.get('/', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Ubumwe SACCO Gakenke Web API is active & operational',
-    service: 'webusgbackend',
-    version: '1.0.0',
-    status: 'healthy',
-    apiRoot: '/api',
-    healthCheck: '/health',
-  });
-});
-
-// Top-level health check
+// Health endpoints (must come before static/catch-all)
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -114,7 +101,6 @@ app.get('/health', (req, res) => {
   });
 });
 
-// /api/health — reachable through the Netlify /api/* proxy
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -124,15 +110,47 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// API routes
 app.use('/api/v1', routes);
 app.use('/api', routes);
 
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'Route not found',
+// ---------------------------------------------------------------------------
+// Serve the built React frontend (production only)
+// The build step copies usgweb-main/dist → webusgbackend/public/dist
+// ---------------------------------------------------------------------------
+const frontendDist = path.join(__dirname, '../public/dist');
+const frontendIndex = path.join(frontendDist, 'index.html');
+
+if (fs.existsSync(frontendDist)) {
+  // Serve static assets (JS, CSS, images)
+  app.use(express.static(frontendDist, { maxAge: '1d', etag: true }));
+
+  // React Router catch-all — serve index.html for all non-API routes
+  app.get('*', (req, res) => {
+    if (fs.existsSync(frontendIndex)) {
+      res.sendFile(frontendIndex);
+    } else {
+      res.status(404).json({ success: false, message: 'Frontend not built' });
+    }
   });
-});
+} else {
+  // No frontend built — API-only mode (development / Netlify frontend)
+  app.get('/', (req, res) => {
+    res.json({
+      success: true,
+      message: 'Ubumwe SACCO Gakenke Web API is active & operational',
+      service: 'webusgbackend',
+      version: '1.0.0',
+      status: 'healthy',
+      apiRoot: '/api',
+      healthCheck: '/health',
+    });
+  });
+
+  app.use((req, res) => {
+    res.status(404).json({ success: false, message: 'Route not found' });
+  });
+}
 
 app.use(errorHandler);
 

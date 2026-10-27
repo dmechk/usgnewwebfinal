@@ -1,10 +1,17 @@
 ﻿services:
-  # Backend API — Node.js / Express
+  # Backend API + Frontend UI served together from Node.js / Express
   - type: web
     name: usgnewwebfinal
     runtime: node
     rootDir: webusgbackend
-    buildCommand: npm install
+    buildCommand: >
+      cd ../usgweb-main &&
+      npm install &&
+      npm run build &&
+      cd ../webusgbackend &&
+      mkdir -p public &&
+      cp -r ../usgweb-main/dist public/dist &&
+      npm install
     startCommand: npm start
     plan: free
     healthCheckPath: /health
@@ -54,7 +61,7 @@
       - key: EMAIL_REPLY_TO
         value: ubumwesaccogakenke@gmail.com
       - key: CLIENT_APP_URL
-        value: https://ubumwesacco.netlify.app
+        value: https://usgnewwebfinal.onrender.com
       - key: ADMIN_NAME
         sync: false
       - key: ADMIN_EMAIL
