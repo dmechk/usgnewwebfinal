@@ -148,13 +148,16 @@ if (fs.existsSync(frontendDist)) {
   // Serve static assets (JS, CSS, images)
   app.use(express.static(frontendDist, { maxAge: '1d', etag: true }));
 
-  // React Router catch-all — serve index.html for all non-API routes
-  app.get('*', (req, res) => {
-    if (fs.existsSync(frontendIndex)) {
-      res.sendFile(frontendIndex);
-    } else {
-      res.status(404).json({ success: false, message: 'Frontend not built' });
+  // React Router catch-all — serve index.html for all non-API GET routes (Express 5 compatible)
+  app.use((req, res, next) => {
+    if (req.method === 'GET' && !req.path.startsWith('/api') && fs.existsSync(frontendIndex)) {
+      return res.sendFile(frontendIndex);
     }
+    next();
+  });
+
+  app.use((req, res) => {
+    res.status(404).json({ success: false, message: 'Route not found' });
   });
 } else {
   // No frontend built — API-only mode (development / Netlify frontend)
