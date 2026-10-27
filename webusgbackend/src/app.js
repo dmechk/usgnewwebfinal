@@ -83,6 +83,19 @@ app.get('/api/docs.json', (req, res) => {
   res.json(openapi);
 });
 
+// Top-level root health & status
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Ubumwe SACCO Gakenke Web API is active & operational',
+    service: 'webusgbackend',
+    version: '1.0.0',
+    status: 'healthy',
+    apiRoot: '/api',
+    healthCheck: '/health',
+  });
+});
+
 // Top-level health check
 app.get('/health', (req, res) => {
   res.json({

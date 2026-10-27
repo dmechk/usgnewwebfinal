@@ -251,59 +251,9 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
         setTotalCount(res.data.pagination.total || 0);
       }
     } catch (err: any) {
-      console.warn('Live users fetch fallback to local management profiles:', err?.message);
-      // Fallback to official SACCO administrative users when accessing from static frontend host
-      const fallbackUsers: SystemUser[] = [
-        {
-          id: 'user-mechack-01',
-          name: 'Mechack D',
-          email: 'dmechack12@gmail.com',
-          phone: '0786422080',
-          role: 'ADMIN_IT',
-          department: 'Information Technology',
-          isActive: true,
-          passwordChangeRequired: false,
-          createdAt: new Date().toISOString(),
-          lastLogin: new Date().toISOString(),
-        },
-        {
-          id: 'user-manager-02',
-          name: 'Mbitsemunda Phocas',
-          email: 'manager@ubumwesacco.rw',
-          phone: '0786422080',
-          role: 'ADMIN',
-          department: 'Executive Management',
-          isActive: true,
-          passwordChangeRequired: false,
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: 'user-hr-03',
-          name: 'Innocent N.',
-          email: 'hr@ubumwesacco.rw',
-          phone: '0786422080',
-          role: 'ADMIN_HR',
-          department: 'Human Resources',
-          isActive: true,
-          passwordChangeRequired: false,
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: 'user-daf-04',
-          name: 'Director of Finance & Administration',
-          email: 'daf@ubumwesacco.rw',
-          phone: '0786422080',
-          role: 'DAF',
-          department: 'Finance & Administration',
-          isActive: true,
-          passwordChangeRequired: false,
-          createdAt: new Date().toISOString(),
-        },
-      ];
-      setUsers(fallbackUsers);
-      setTotalPages(1);
-      setTotalCount(fallbackUsers.length);
-      setError(null);
+      console.error('Failed to load users from backend:', err?.message);
+      setError('Unable to load staff users. Please check your connection and try again.');
+      // Don't overwrite users with fallback — keep whatever was loaded before (or empty)
     } finally {
       setLoading(false);
     }
