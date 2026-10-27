@@ -378,7 +378,14 @@ export default function App() {
     }
   });
 
-  const [contactInquiries, setContactInquiries] = useState<ContactInquiry[]>(() => INITIAL_CONTACT_INQUIRIES);
+  const [contactInquiries, setContactInquiries] = useState<ContactInquiry[]>(() => {
+    try {
+      const saved = localStorage.getItem('ubumwe_contact_inquiries');
+      return saved ? JSON.parse(saved) : INITIAL_CONTACT_INQUIRIES;
+    } catch {
+      return INITIAL_CONTACT_INQUIRIES;
+    }
+  });
 
   // Dynamic Manager & Leadership Messages
   const [managerMessages, setManagerMessages] = useState<ManagerMessage[]>(() => {
@@ -420,8 +427,15 @@ export default function App() {
     }
   });
 
-  // Dynamic Job Applications Received (loaded directly from MongoDB via backend API)
-  const [jobApplications, setJobApplications] = useState<JobApplication[]>(() => INITIAL_JOB_APPLICATIONS);
+  // Dynamic Job Applications Received (loaded directly from MongoDB via backend API, cached locally)
+  const [jobApplications, setJobApplications] = useState<JobApplication[]>(() => {
+    try {
+      const saved = localStorage.getItem('ubumwe_job_applications');
+      return saved ? JSON.parse(saved) : INITIAL_JOB_APPLICATIONS;
+    } catch {
+      return INITIAL_JOB_APPLICATIONS;
+    }
+  });
 
   // Dynamic Community Impact Stories (CRUD)
   const [communityStories, setCommunityStories] = useState<CommunityImpactStory[]>(() => {
@@ -601,6 +615,14 @@ export default function App() {
   useEffect(() => {
     try { localStorage.setItem('ubumwe_applications', JSON.stringify(applications)); } catch { /* quota */ }
   }, [applications]);
+
+  useEffect(() => {
+    try { localStorage.setItem('ubumwe_contact_inquiries', JSON.stringify(contactInquiries)); } catch { /* quota */ }
+  }, [contactInquiries]);
+
+  useEffect(() => {
+    try { localStorage.setItem('ubumwe_job_applications', JSON.stringify(jobApplications)); } catch { /* quota */ }
+  }, [jobApplications]);
 
   useEffect(() => {
     // Keep local cache
