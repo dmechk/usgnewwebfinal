@@ -70,7 +70,7 @@ async function updateSettings(req, res, next) {
     const settings = await SiteSettings.findOneAndUpdate(
       { key: 'global' },
       { $set: updates },
-      { new: true, upsert: true, runValidators: false }
+      { returnDocument: 'after', upsert: true, runValidators: false }
     );
 
     return res.status(StatusCodes.OK).json({
@@ -130,7 +130,7 @@ async function updateSettingsSection(req, res, next) {
     const settings = await SiteSettings.findOneAndUpdate(
       { key: 'global' },
       { $set: update },
-      { new: true, upsert: true, runValidators: false }
+      { returnDocument: 'after', upsert: true, runValidators: false }
     );
 
     return res.status(StatusCodes.OK).json({

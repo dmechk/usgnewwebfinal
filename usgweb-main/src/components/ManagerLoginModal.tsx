@@ -118,18 +118,14 @@ export const ManagerLoginModal: React.FC<ManagerLoginModalProps> = ({
     } catch (apiErr: any) {
       console.warn('Backend authentication response:', apiErr.message);
 
-      // If backend explicitly rejected credentials with 401 or similar message
-      if (
-        apiErr.status === 401 ||
-        (apiErr.message &&
-          !apiErr.message.includes('timed out') &&
-          !apiErr.message.includes('Failed to fetch') &&
-          !apiErr.message.includes('backend server'))
-      ) {
+      // If backend explicitly rejected with 401 (meaning backend is online and credentials was wrong)
+      if (apiErr.status === 401) {
         setError(apiErr.message || 'Invalid email or password.');
         setLoading(false);
         return;
       }
+      // For any network failure, 404 (e.g. Netlify without backend), timeout, or 500, proceed to local fallback
+      console.info('Backend unreachable, falling back to local authentication mode.');
     }
 
     setLoading(false);

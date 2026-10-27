@@ -77,7 +77,7 @@ import { ContactSection } from './components/ContactSection';
 import { FloatingWhatsApp } from './components/FloatingWhatsApp';
 import { Footer } from './components/Footer';
 import { Shield, Phone, ImageIcon, Compass, Settings, LogOut, Quote, Briefcase, Eye, ArrowRight, LayoutGrid, Users, Video, Archive, Layers, UserCheck, Bell } from 'lucide-react';
-import { galleryApi, newsApi, careersApi, applicantsApi, inquiryService, getUploadUrl, clearAuthToken, settingsApi } from './services/api';
+import { galleryApi, newsApi, careersApi, applicantsApi, inquiryService, getUploadUrl, clearAuthToken, getAuthToken, settingsApi } from './services/api';
 
 export default function App() {
   const [currentLang, setCurrentLang] = useState<Language>(() => {
@@ -799,6 +799,8 @@ export default function App() {
   }, []);
 
   const fetchApplicantsFromBackend = useCallback(async () => {
+    // Only query protected applicants API if user has an active authenticated session
+    if (!getAuthToken()) return;
     try {
       const res = await applicantsApi.list({ limit: 100 });
       if (res?.data?.applicants && res.data.applicants.length > 0) {
@@ -846,8 +848,9 @@ export default function App() {
     }
   }, []);
 
-
   const fetchInquiriesFromBackend = useCallback(async () => {
+    // Only query protected inquiries API if user has an active authenticated session
+    if (!getAuthToken()) return;
     try {
       const res = await inquiryService.getAll({ limit: 150 });
       if (res?.data?.inquiries && res.data.inquiries.length > 0) {
@@ -942,14 +945,16 @@ export default function App() {
     }
   }, []);
 
-  // On mount: load live data from backend
+  // On mount: load live data from backend in parallel for maximum speed
   useEffect(() => {
-    fetchSettingsFromBackend();
-    fetchGalleryFromBackend();
-    fetchNewsFromBackend();
-    fetchCareersFromBackend();
-    fetchApplicantsFromBackend();
-    fetchInquiriesFromBackend();
+    Promise.allSettled([
+      fetchSettingsFromBackend(),
+      fetchGalleryFromBackend(),
+      fetchNewsFromBackend(),
+      fetchCareersFromBackend(),
+      fetchApplicantsFromBackend(),
+      fetchInquiriesFromBackend(),
+    ]);
   }, [fetchSettingsFromBackend, fetchGalleryFromBackend, fetchNewsFromBackend, fetchCareersFromBackend, fetchApplicantsFromBackend, fetchInquiriesFromBackend]);
 
   // ─────────────────────────────────────────────────────────────────────────

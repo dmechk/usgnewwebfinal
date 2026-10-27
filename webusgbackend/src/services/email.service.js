@@ -314,7 +314,98 @@ async function sendStaffOnboardingEmail({
 }
 
 /**
- * 5. Verify SMTP Transport Connection without sending an email
+ * 5. Job Application Status Update Notification Email
+ */
+async function sendApplicantStatusUpdateEmail({
+  to,
+  applicantName,
+  positionTitle,
+  referenceNumber,
+  newStatus,
+  notes,
+}) {
+  const normalized = String(newStatus || '').toLowerCase();
+  
+  let statusBadgeColor = '#3b82f6';
+  let statusBg = '#eff6ff';
+  let statusBorder = '#bfdbfe';
+  let statusText = 'Under Review';
+  let statusMessage = 'Your application dossier is currently undergoing administrative review.';
+
+  if (normalized === 'shortlisted') {
+    statusBadgeColor = '#2563eb';
+    statusBg = '#eff6ff';
+    statusBorder = '#93c5fd';
+    statusText = 'Shortlisted';
+    statusMessage = 'Congratulations! Your qualifications have met our competitive criteria and your dossier has been shortlisted for the next evaluation phase.';
+  } else if (normalized === 'interview') {
+    statusBadgeColor = '#7c3aed';
+    statusBg = '#faf5ff';
+    statusBorder = '#d8b4fe';
+    statusText = 'Invited for Interview';
+    statusMessage = 'You have been selected for an official interview with our Evaluation Committee. Our Human Resources team will contact you shortly with the exact schedule, location, and preparation details.';
+  } else if (normalized === 'accepted' || normalized === 'offer' || normalized === 'hired') {
+    statusBadgeColor = '#059669';
+    statusBg = '#ecfdf5';
+    statusBorder = '#a7f3d0';
+    statusText = 'Application Accepted';
+    statusMessage = 'Congratulations! We are pleased to inform you that your application for employment at Ubumwe SACCO has been accepted. Our Human Resources division will reach out with the onboarding documentation.';
+  } else if (normalized === 'rejected' || normalized === 'not_shortlisted') {
+    statusBadgeColor = '#dc2626';
+    statusBg = '#fef2f2';
+    statusBorder = '#fecaca';
+    statusText = 'Not Selected';
+    statusMessage = 'Thank you for taking the time to participate in our recruitment process. Following careful review of all dossiers against our current operational profiles, we regret to inform you that we are unable to advance your application at this time. We wish you continued success in your professional career.';
+  } else if (normalized === 'waitlisted') {
+    statusBadgeColor = '#d97706';
+    statusBg = '#fffbeb';
+    statusBorder = '#fde68a';
+    statusText = 'Waitlisted / Talent Pool';
+    statusMessage = 'Your dossier has been evaluated favorably and placed on our active reserve talent pool for future opportunities aligned with your background.';
+  }
+
+  const contentHtml = `
+    <p>Dear <strong>${applicantName}</strong>,</p>
+    <p>We are writing to inform you of an official status update regarding your employment application at <strong>Ubumwe SACCO</strong>.</p>
+
+    <div style="background-color: ${statusBg}; border: 1px solid ${statusBorder}; border-left: 5px solid ${statusBadgeColor}; padding: 16px 20px; margin: 20px 0; border-radius: 8px;">
+      <p style="margin: 0 0 6px 0; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: ${statusBadgeColor};">Updated Status: ${statusText}</p>
+      <p style="margin: 0 0 8px 0; font-size: 14px; line-height: 1.5; color: #1e293b;">${statusMessage}</p>
+      <p style="margin: 8px 0 0 0; font-size: 12px; color: #64748b;">
+        <strong>Position:</strong> ${positionTitle || 'Employment Application'} &middot;
+        <strong>Reference:</strong> <code style="background-color: #e2e8f0; color: #0f172a; padding: 2px 6px; border-radius: 4px;">${referenceNumber || 'N/A'}</code>
+      </p>
+    </div>
+
+    ${
+      notes && String(notes).trim()
+        ? `
+      <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 14px 18px; margin: 18px 0; border-radius: 6px;">
+        <p style="margin: 0 0 4px 0; font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase;">HR Committee Notes</p>
+        <p style="margin: 0; font-size: 13px; color: #334155; line-height: 1.5;">${String(notes).trim()}</p>
+      </div>
+    `
+        : ''
+    }
+
+    <p style="font-size: 13px; color: #475569; margin-top: 16px;">
+      If you have questions regarding your application, please retain reference code <strong>${referenceNumber}</strong> and contact our Human Resources team via our official email <a href="mailto:${env.OFFICIAL_CONTACT_EMAIL}" style="color: #047857; font-weight: 600;">${env.OFFICIAL_CONTACT_EMAIL}</a>.
+    </p>
+  `;
+
+  return sendMail({
+    to,
+    subject: `Application Update: ${positionTitle} [${statusText}] - ${referenceNumber || ''}`,
+    html: createEmailLayout({
+      title: 'Application Status Update',
+      subtitle: `Reference: ${referenceNumber || 'Recruitment Dossier'}`,
+      contentHtml,
+    }),
+  });
+}
+
+/**
+ * 6. Verify SMTP Transport Connection without sending an email
  */
 async function verifySmtpConnection() {
   const client = getTransporter();
@@ -324,9 +415,11 @@ async function verifySmtpConnection() {
 module.exports = {
   sendMail,
   sendJobApplicationConfirmation,
+  sendApplicantStatusUpdateEmail,
   sendInquiryAcknowledgment,
   sendInquiryReply,
   sendStaffOnboardingEmail,
   verifySmtpConnection,
 };
+
 

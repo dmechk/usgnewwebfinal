@@ -66,7 +66,7 @@ export const clearAuthToken = (): void => {
 async function request<T>(
   endpoint: string,
   options: RequestInit = {},
-  timeoutMs = 12000
+  timeoutMs = 6000
 ): Promise<T> {
   const token = getAuthToken();
   const headers: Record<string, string> = {
@@ -105,10 +105,24 @@ async function request<T>(
         // Clear expired or invalid token so subsequent requests do not fail with stale token
         clearAuthToken();
       }
-      const errorMessage =
-        (typeof data === 'object' && data?.message) ||
-        (typeof data === 'string' && data) ||
-        `Request failed with status ${response.status}`;
+
+      let errorMessage: string;
+      if (typeof data === 'object' && data?.message) {
+        errorMessage = String(data.message);
+      } else if (typeof data === 'string' && (data.includes('<!DOCTYPE') || data.includes('<html') || data.includes('<head>'))) {
+        if (response.status === 404) {
+          errorMessage = 'Backend API endpoint not found (404). If accessing from Netlify, ensure the live backend URL is configured.';
+        } else if (response.status >= 500) {
+          errorMessage = `Backend server error (${response.status}). Please check server logs.`;
+        } else {
+          errorMessage = `Server returned an HTML error page (Status ${response.status}).`;
+        }
+      } else if (typeof data === 'string' && data.trim()) {
+        errorMessage = data.trim();
+      } else {
+        errorMessage = `Request failed with status ${response.status}`;
+      }
+
       const error = new Error(errorMessage);
       (error as any).status = response.status;
       (error as any).data = data;

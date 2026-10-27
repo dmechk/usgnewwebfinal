@@ -5,7 +5,10 @@ const Applicant = require('../models/Applicant');
 const AppError = require('../utils/appError');
 const { logAudit } = require('../services/audit.service');
 const { generateApplicationReference } = require('../utils/referenceNumber');
-const { sendJobApplicationConfirmation } = require('../services/email.service');
+const {
+  sendJobApplicationConfirmation,
+  sendApplicantStatusUpdateEmail,
+} = require('../services/email.service');
 
 async function listApplicants(req, res, next) {
   try {
@@ -215,6 +218,20 @@ async function updateStatus(req, res, next) {
     applicant.status = status;
     await applicant.save();
 
+    // Notify applicant by email if status changed
+    if (previousStatus !== status && applicant.email) {
+      sendApplicantStatusUpdateEmail({
+        to: applicant.email,
+        applicantName: applicant.fullName,
+        positionTitle: applicant.jobTitle,
+        referenceNumber: applicant.referenceNumber,
+        newStatus: status,
+        notes: applicant.notes,
+      }).catch((mailErr) => {
+        console.error(`[Applicant Email] Failed to send status update to ${applicant.email}:`, mailErr.message);
+      });
+    }
+
     await logAudit({
       actor: req.user,
       action: 'APPLICANT_STATUS_UPDATED',
@@ -349,6 +366,7 @@ async function updateApplicant(req, res, next) {
     }
 
     const { status, rating, notes, comment } = req.body;
+    const previousStatus = applicant.status;
     if (status) applicant.status = status;
     if (rating !== undefined) applicant.rating = Number(rating);
     if (notes !== undefined) applicant.notes = String(notes);
@@ -363,6 +381,19 @@ async function updateApplicant(req, res, next) {
     }
 
     await applicant.save();
+
+    if (status && previousStatus !== status && applicant.email) {
+      sendApplicantStatusUpdateEmail({
+        to: applicant.email,
+        applicantName: applicant.fullName,
+        positionTitle: applicant.jobTitle,
+        referenceNumber: applicant.referenceNumber,
+        newStatus: status,
+        notes: applicant.notes,
+      }).catch((mailErr) => {
+        console.error(`[Applicant Email] Failed to send status update to ${applicant.email}:`, mailErr.message);
+      });
+    }
 
     await logAudit({
       actor: req.user,
