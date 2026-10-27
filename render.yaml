@@ -1,10 +1,10 @@
-﻿services:
+services:
   # Full-stack: React frontend + Express API served from one Node.js process
   - type: web
     name: usgnewwebfinal
     runtime: node
     rootDir: webusgbackend
-    buildCommand: bash build.sh
+    buildCommand: npm run build
     startCommand: node src/server.js
     plan: free
     healthCheckPath: /health

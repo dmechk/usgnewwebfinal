@@ -5,8 +5,10 @@ node_modules/
 # Production builds
 dist/
 build/
-*/dist/
-*/build/
+usgweb-main/dist/
+usgweb-main/build/
+!webusgbackend/public/
+!webusgbackend/public/**
 
 # Environment variables
 .env
