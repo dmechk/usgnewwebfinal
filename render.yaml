@@ -1,18 +1,11 @@
 ﻿services:
-  # Backend API + Frontend UI served together from Node.js / Express
+  # Full-stack: React frontend + Express API served from one Node.js process
   - type: web
     name: usgnewwebfinal
     runtime: node
     rootDir: webusgbackend
-    buildCommand: >
-      cd ../usgweb-main &&
-      npm install &&
-      npm run build &&
-      cd ../webusgbackend &&
-      mkdir -p public &&
-      cp -r ../usgweb-main/dist public/dist &&
-      npm install
-    startCommand: npm start
+    buildCommand: bash build.sh
+    startCommand: node src/server.js
     plan: free
     healthCheckPath: /health
     envVars:
@@ -20,6 +13,8 @@
         value: production
       - key: PORT
         value: 10000
+      - key: VITE_API_BASE_URL
+        value: https://usgnewwebfinal.onrender.com/api
       - key: MONGODB_URI
         sync: false
       - key: JWT_SECRET
@@ -68,4 +63,3 @@
         sync: false
       - key: ADMIN_PASSWORD
         sync: false
-

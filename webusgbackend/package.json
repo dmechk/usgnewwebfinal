@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node src/server.js",
     "serve": "node src/server.js",
+    "build": "bash build.sh",
     "dev": "nodemon src/server.js",
     "seed:admin": "node scripts/seed-admin.js",
     "seed:roles": "node scripts/seed-roles.js",
