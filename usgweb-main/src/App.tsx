@@ -979,6 +979,16 @@ export default function App() {
     ]);
   }, [fetchSettingsFromBackend, fetchGalleryFromBackend, fetchNewsFromBackend, fetchCareersFromBackend, fetchApplicantsFromBackend, fetchInquiriesFromBackend]);
 
+  // ── Keep-alive ping: prevents Render free tier from sleeping (spins down after 15min idle) ──
+  useEffect(() => {
+    const ping = () => {
+      fetch('/api/health', { method: 'GET', cache: 'no-store' }).catch(() => {/* silent */});
+    };
+    ping(); // Immediate ping on load
+    const interval = setInterval(ping, 10 * 60 * 1000); // Every 10 minutes
+    return () => clearInterval(interval);
+  }, []);
+
   // ─────────────────────────────────────────────────────────────────────────
 
   // Auth Handlers

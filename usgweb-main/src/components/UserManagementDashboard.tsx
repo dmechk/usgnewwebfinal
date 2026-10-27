@@ -251,13 +251,23 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
         setTotalCount(res.data.pagination.total || 0);
       }
     } catch (err: any) {
-      console.error('Failed to load users from backend:', err?.message);
-      setError('Unable to load staff users. Please check your connection and try again.');
-      // Don't overwrite users with fallback — keep whatever was loaded before (or empty)
+      const msg = err?.message || '';
+      console.error('Failed to load users from backend:', msg);
+      const isTimeout = msg.toLowerCase().includes('timeout') || msg.toLowerCase().includes('timed out') || msg.toLowerCase().includes('aborted');
+      const isAuth = err?.status === 401 || err?.status === 403;
+      if (isTimeout) {
+        setError('⏳ Backend is waking up (Render free tier). Retrying automatically in 15 seconds…');
+        setTimeout(() => fetchUsers(), 15000);
+      } else if (isAuth) {
+        setError('Session expired. Please log out and log back in.');
+      } else {
+        setError(`Failed to load staff users: ${msg || 'Unknown error. Please try again.'}`);
+      }
     } finally {
       setLoading(false);
     }
   }, [page, searchTerm, selectedRole, selectedStatus]);
+
 
   // Fetch Audit Logs from Backend MongoDB API
   const fetchAuditLogs = useCallback(async () => {

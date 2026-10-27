@@ -106,6 +106,16 @@ app.get('/health', (req, res) => {
   });
 });
 
+// /api/health — reachable through the Netlify /api/* proxy
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    service: 'webusgbackend',
+    timestamp: new Date().toISOString(),
+    environment: env.NODE_ENV,
+  });
+});
+
 app.use('/api/v1', routes);
 app.use('/api', routes);
 

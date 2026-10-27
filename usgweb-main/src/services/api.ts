@@ -66,7 +66,7 @@ export const clearAuthToken = (): void => {
 async function request<T>(
   endpoint: string,
   options: RequestInit = {},
-  timeoutMs = 6000
+  timeoutMs = 15000
 ): Promise<T> {
   const token = getAuthToken();
   const headers: Record<string, string> = {
@@ -648,13 +648,14 @@ export const usersApi = {
     if (params?.search && params.search.trim()) searchParams.set('search', params.search.trim());
 
     const qs = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    // Use 30s timeout — Render free tier may need up to 30s to wake from sleep
     return request<{
       success: boolean;
       data: {
         users: SystemUser[];
         pagination: { total: number; page: number; limit: number; pages: number };
       };
-    }>(`/users${qs}`);
+    }>(`/users${qs}`, {}, 30000);
   },
 
   async get(id: string) {
