@@ -46,12 +46,20 @@ app.use(
       if (/^https?:\/\/([a-zA-Z0-9-]+\.)*netlify\.app$/.test(origin)) {
         return callback(null, true);
       }
+      // Allow Render deployment domains (*.onrender.com)
+      if (/^https?:\/\/([a-zA-Z0-9-]+\.)*onrender\.com$/.test(origin)) {
+        return callback(null, true);
+      }
       // Allow empty CORS_ORIGINS in development mode
       if (env.isDevelopment && env.CORS_ORIGINS.length === 0) {
         return callback(null, true);
       }
       // Allow explicitly configured origins from env
       if (env.CORS_ORIGINS.includes(origin)) {
+        return callback(null, true);
+      }
+      // Allow CLIENT_APP_URL from env (production frontend URL)
+      if (env.CLIENT_APP_URL && origin === env.CLIENT_APP_URL) {
         return callback(null, true);
       }
       return callback(

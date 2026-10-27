@@ -1,0 +1,63 @@
+﻿services:
+  # Backend API — Node.js / Express
+  - type: web
+    name: usgnewwebfinal
+    runtime: node
+    rootDir: webusgbackend
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 8h
+      - key: JWT_ISSUER
+        value: webusg-api
+      - key: JWT_AUDIENCE
+        value: webusg-client
+      - key: BCRYPT_SALT_ROUNDS
+        value: 12
+      - key: CORS_ORIGINS
+        value: https://ubumwesacco.netlify.app,https://usgnewwebfinal.onrender.com
+      - key: TRUST_PROXY
+        value: 1
+      - key: JSON_BODY_LIMIT
+        value: 10mb
+      - key: AUTH_RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: AUTH_RATE_LIMIT_MAX
+        value: 30
+      - key: SMTP_HOST
+        value: smtp-relay.brevo.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_SECURE
+        value: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: OFFICIAL_CONTACT_EMAIL
+        value: ubumwesaccogakenke@gmail.com
+      - key: EMAIL_FROM_NAME
+        value: Ubumwe SACCO Gakenke
+      - key: EMAIL_FROM
+        value: "Ubumwe SACCO Gakenke <ubumwesaccogakenke1@gmail.com>"
+      - key: EMAIL_REPLY_TO
+        value: ubumwesaccogakenke@gmail.com
+      - key: CLIENT_APP_URL
+        value: https://ubumwesacco.netlify.app
+      - key: ADMIN_NAME
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false

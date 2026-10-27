@@ -1,6 +1,6 @@
 const express = require('express');
 const authenticate = require('../middleware/auth');
-const { requirePasswordChanged, requireRole } = require('../middleware/auth');
+const { requirePasswordChanged } = require('../middleware/auth');
 const authRoutes = require('./auth.routes');
 const patientRoutes = require('./patient.routes');
 const examRoutes = require('./exam.routes');
@@ -28,7 +28,7 @@ router.get('/health', (req, res) => {
 router.use('/auth', authRoutes);
 router.use('/upload', uploadRoutes);
 router.use('/uploads', uploadRoutes);
-router.use('/users', authenticate, requirePasswordChanged, requireRole('admin', 'ADMIN_IT'), userRoutes);
+router.use('/users', authenticate, requirePasswordChanged, userRoutes);
 router.use('/patients', authenticate, requirePasswordChanged, patientRoutes);
 router.use('/exams', authenticate, requirePasswordChanged, examRoutes);
 
