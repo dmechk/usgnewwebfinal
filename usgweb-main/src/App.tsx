@@ -142,6 +142,17 @@ export default function App() {
   };
 
 
+  // ── Keep-alive ping: prevents Render free-tier cold starts ───────────────
+  useEffect(() => {
+    const base = import.meta.env.VITE_API_BASE_URL || '/api';
+    const healthUrl = base.replace(/\/api$/, '') + '/api/health';
+    const ping = () => fetch(healthUrl, { method: 'GET', cache: 'no-store' }).catch(() => {});
+    ping(); // immediate ping on load
+    const id = setInterval(ping, 8 * 60 * 1000); // every 8 minutes
+    return () => clearInterval(id);
+  }, []);
+  // ─────────────────────────────────────────────────────────────────────────
+
   // Modal Visibility States
   const [isMembershipModalOpen, setIsMembershipModalOpen] = useState(false);
   const [isManagerLoginModalOpen, setIsManagerLoginModalOpen] = useState(false);

@@ -19,9 +19,15 @@ async function connectDB(uri = env.MONGODB_URI, maxRetries = 5) {
   const isLocalhost = /localhost|127\.0\.0\.1/.test(uri);
   const os = require('os');
   const options = {
-    autoIndex: !env.isProduction,
-    serverSelectionTimeoutMS: 15000,
-    maxPoolSize: 10,
+    autoIndex: !env.isProduction,       // Skip index building in prod (pre-built)
+    serverSelectionTimeoutMS: 10000,    // Fail fast if Atlas is unreachable
+    socketTimeoutMS: 45000,             // Drop idle sockets after 45s
+    connectTimeoutMS: 10000,            // TCP connection timeout
+    heartbeatFrequencyMS: 10000,        // Check connection health every 10s
+    maxPoolSize: 20,                    // More concurrent connections for prod
+    minPoolSize: 2,                     // Keep 2 connections warm at all times
+    maxIdleTimeMS: 60000,               // Close idle connections after 60s
+    bufferCommands: false,              // Fail fast instead of buffering
     runtimeAdapters: { os },
   };
 

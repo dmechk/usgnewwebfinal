@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const compression = require('compression');
 const path = require('path');
 const fs = require('fs');
 const swaggerUi = require('swagger-ui-express');
@@ -28,6 +29,27 @@ app.use(
     crossOriginResourcePolicy: { policy: 'cross-origin' },
   })
 );
+
+// Gzip compression — reduces payload by 60-80%, speeds up every response
+app.use(compression({
+  level: 6,         // Balanced speed vs compression ratio
+  threshold: 1024,  // Only compress responses > 1KB
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) return false;
+    return compression.filter(req, res);
+  },
+}));
+
+// HTTP keep-alive + cache-control defaults for API responses
+app.use((req, res, next) => {
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('Keep-Alive', 'timeout=30, max=100');
+  // API responses: no-store (always fresh data)
+  if (req.path.startsWith('/api')) {
+    res.setHeader('Cache-Control', 'no-store');
+  }
+  next();
+});
 app.use(
   cors({
     origin(origin, callback) {
