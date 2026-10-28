@@ -1,3 +1,8 @@
+
+
+
+
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -146,7 +151,7 @@ export default function App() {
   useEffect(() => {
     const base = import.meta.env.VITE_API_BASE_URL || '/api';
     const healthUrl = base.replace(/\/api$/, '') + '/api/health';
-    const ping = () => fetch(healthUrl, { method: 'GET', cache: 'no-store' }).catch(() => {});
+    const ping = () => fetch(healthUrl, { method: 'GET', cache: 'no-store' }).catch(() => { });
     ping(); // immediate ping on load
     const id = setInterval(ping, 8 * 60 * 1000); // every 8 minutes
     return () => clearInterval(id);
@@ -237,11 +242,11 @@ export default function App() {
         } else {
           const defaultTab: any =
             role === 'ADMIN_HR' ? 'job-applicants' :
-            role === 'ADMIN'    ? 'moments' :
-            role === 'DAF'      ? 'careers' :
-            role === 'MD'       ? 'messages' :
-            (role === 'ADMIN_IT' || role === 'ADMIN') ? 'users' :
-                                  'users';
+              role === 'ADMIN' ? 'moments' :
+                role === 'DAF' ? 'careers' :
+                  role === 'MD' ? 'messages' :
+                    (role === 'ADMIN_IT' || role === 'ADMIN') ? 'users' :
+                      'users';
           setAdminConsoleInitialTab(defaultTab);
           setIsAdminConsoleOpen(true);
           setActiveView('all');
@@ -251,7 +256,7 @@ export default function App() {
       setActiveView(rawPath || 'all');
     }
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname, isManagerLoggedIn, loggedInUser?.role]);
 
   // Dynamic Contact & Organization Information
@@ -993,7 +998,7 @@ export default function App() {
   // ── Keep-alive ping: prevents Render free tier from sleeping (spins down after 15min idle) ──
   useEffect(() => {
     const ping = () => {
-      fetch('/api/health', { method: 'GET', cache: 'no-store' }).catch(() => {/* silent */});
+      fetch('/api/health', { method: 'GET', cache: 'no-store' }).catch(() => {/* silent */ });
     };
     ping(); // Immediate ping on load
     const interval = setInterval(ping, 10 * 60 * 1000); // Every 10 minutes
@@ -1209,12 +1214,12 @@ export default function App() {
         setManagerMessages((prev) =>
           prev.map((m) =>
             m.authorName.toLowerCase().includes('mbitsemunda') ||
-            m.authorRole.toLowerCase().includes('manager')
+              m.authorRole.toLowerCase().includes('manager')
               ? {
-                  ...m,
-                  imageUrl: updated.imageUrl!,
-                  ...(updated.name ? { authorName: updated.name } : {}),
-                }
+                ...m,
+                imageUrl: updated.imageUrl!,
+                ...(updated.name ? { authorName: updated.name } : {}),
+              }
               : m
           )
         );
@@ -1231,12 +1236,12 @@ export default function App() {
         setManagerMessages((prev) =>
           prev.map((m) =>
             m.authorName.toLowerCase().includes('wellarse') ||
-            m.authorRole.toLowerCase().includes('chair')
+              m.authorRole.toLowerCase().includes('chair')
               ? {
-                  ...m,
-                  imageUrl: updated.imageUrl!,
-                  ...(updated.name ? { authorName: updated.name } : {}),
-                }
+                ...m,
+                imageUrl: updated.imageUrl!,
+                ...(updated.name ? { authorName: updated.name } : {}),
+              }
               : m
           )
         );
@@ -1556,13 +1561,13 @@ export default function App() {
         prev.map((i) =>
           i.id === id || i._id === id
             ? {
-                ...i,
-                status: updated.status,
-                resolvedAt: updated.resolvedAt,
-                feedbacks: updated.feedbacks,
-                adminReply: updated.adminReply,
-                notes: updated.notes || i.notes,
-              }
+              ...i,
+              status: updated.status,
+              resolvedAt: updated.resolvedAt,
+              feedbacks: updated.feedbacks,
+              adminReply: updated.adminReply,
+              notes: updated.notes || i.notes,
+            }
             : i
         )
       );
@@ -1624,13 +1629,13 @@ export default function App() {
         setLeaders((prev) =>
           prev.map((l) =>
             l.category === 'manager' ||
-            l.name.toLowerCase().includes('mbitsemunda') ||
-            l.roleEn.toLowerCase().includes('manager')
+              l.name.toLowerCase().includes('mbitsemunda') ||
+              l.roleEn.toLowerCase().includes('manager')
               ? {
-                  ...l,
-                  imageUrl: updated.imageUrl!,
-                  ...(updated.authorName ? { name: updated.authorName } : {}),
-                }
+                ...l,
+                imageUrl: updated.imageUrl!,
+                ...(updated.authorName ? { name: updated.authorName } : {}),
+              }
               : l
           )
         );
@@ -1643,10 +1648,10 @@ export default function App() {
           prev.map((l) =>
             l.name.toLowerCase().includes('wellarse')
               ? {
-                  ...l,
-                  imageUrl: updated.imageUrl!,
-                  ...(updated.authorName ? { name: updated.authorName } : {}),
-                }
+                ...l,
+                imageUrl: updated.imageUrl!,
+                ...(updated.authorName ? { name: updated.authorName } : {}),
+              }
               : l
           )
         );
@@ -1992,52 +1997,52 @@ export default function App() {
         return currentLang === 'fr'
           ? 'À Propos · Gouvernance Coopérative'
           : currentLang === 'rw'
-          ? "Abo Turibo · Amateka n'Imiyoborere"
-          : 'About Us · Cooperative Governance';
+            ? "Abo Turibo · Amateka n'Imiyoborere"
+            : 'About Us · Cooperative Governance';
       case 'products':
       case 'calculator':
         return currentLang === 'fr'
           ? 'Nos Services & Simulateur de Prêt'
           : currentLang === 'rw'
-          ? "Serivisi Zacu n'Imibare y'Inguzanyo"
-          : 'Our Services & Loan Calculator';
+            ? "Serivisi Zacu n'Imibare y'Inguzanyo"
+            : 'Our Services & Loan Calculator';
       case 'leadership':
         return currentLang === 'fr'
           ? "Conseil d'Administration & Direction"
           : currentLang === 'rw'
-          ? "Abayobozi n'Abakozi"
-          : 'Board of Directors & Management';
+            ? "Abayobozi n'Abakozi"
+            : 'Board of Directors & Management';
       case 'announcements':
       case 'news':
         return currentLang === 'fr'
           ? 'Bulletins Officiels & Presse'
           : currentLang === 'rw'
-          ? "Amakuru n'Amatangazo"
-          : 'Official News & Press Bulletins';
+            ? "Amakuru n'Amatangazo"
+            : 'Official News & Press Bulletins';
       case 'gallery':
         return currentLang === 'fr'
           ? 'Galerie & Moments Mémorables'
           : currentLang === 'rw'
-          ? "Amafoto y'Ikigo n'Ibihe Byiza"
-          : 'Gallery & Memorable Milestones';
+            ? "Amafoto y'Ikigo n'Ibihe Byiza"
+            : 'Gallery & Memorable Milestones';
       case 'careers':
         return currentLang === 'fr'
           ? 'Carrières & Postes Disponibles'
           : currentLang === 'rw'
-          ? "Imirimo n'Amahirwe y'Akazi"
-          : 'Careers & Employment Vacancies';
+            ? "Imirimo n'Amahirwe y'Akazi"
+            : 'Careers & Employment Vacancies';
       case 'branches':
         return currentLang === 'fr'
           ? 'Nos Agences & Points de Service'
           : currentLang === 'rw'
-          ? "Amashami n'Ibiro by'Imari"
-          : 'Branch Locator & Service Outposts';
+            ? "Amashami n'Ibiro by'Imari"
+            : 'Branch Locator & Service Outposts';
       case 'contact':
         return currentLang === 'fr'
           ? 'Contactez-nous & Carte des Agences'
           : currentLang === 'rw'
-          ? "Twandikire & Ikarita y'Ibiro"
-          : 'Contact Us & Headquarter Map';
+            ? "Twandikire & Ikarita y'Ibiro"
+            : 'Contact Us & Headquarter Map';
       default:
         return currentLang === 'fr' ? 'Toutes les Sections' : currentLang === 'rw' ? 'Ibice Byose' : 'All Sections';
     }
@@ -2138,170 +2143,170 @@ export default function App() {
             {/* 1. Home / Hero Section */}
             {(activeView === 'all' || activeView === 'hero') && (
               <>
-            <Hero
-              currentLang={currentLang}
-              onOpenMembershipModal={handleOpenMembershipModal}
-              onScrollToCalculator={() => handleNavigateToSection('products')}
-              onOpenMomoModal={() => handleNavigateToSection('branches')}
-              onScrollToContact={() => handleNavigateToSection('contact')}
-              saccoInfo={saccoInfo}
-              heroImage={systemImages.heroBanking}
-              heroSlides={systemImages.heroSlides}
-              heroContent={heroContent}
-              isAdmin={canAccessMedia || canAccessIT}
-              onOpenAdminConsole={handleOpenAdminConsole}
-              onUpdateSlides={(newSlides) => handleUpdateSystemImage('heroSlides', newSlides as any)}
-            />
+                <Hero
+                  currentLang={currentLang}
+                  onOpenMembershipModal={handleOpenMembershipModal}
+                  onScrollToCalculator={() => handleNavigateToSection('products')}
+                  onOpenMomoModal={() => handleNavigateToSection('branches')}
+                  onScrollToContact={() => handleNavigateToSection('contact')}
+                  saccoInfo={saccoInfo}
+                  heroImage={systemImages.heroBanking}
+                  heroSlides={systemImages.heroSlides}
+                  heroContent={heroContent}
+                  isAdmin={canAccessMedia || canAccessIT}
+                  onOpenAdminConsole={handleOpenAdminConsole}
+                  onUpdateSlides={(newSlides) => handleUpdateSystemImage('heroSlides', newSlides as any)}
+                />
 
-            {/* 4-Column Full-Width Metric Strip */}
-            <Metrics
-              currentLang={currentLang}
-              saccoInfo={saccoInfo}
-              metrics={homeMetrics}
-              isAdmin={canAccessFinance || canAccessIT}
-              onOpenAdminConsole={handleOpenAdminConsole}
-              onDeleteMetric={handleDeleteHomeMetric}
-              onUpdateSaccoInfo={handleUpdateSaccoInfo}
-            />
+                {/* 4-Column Full-Width Metric Strip */}
+                <Metrics
+                  currentLang={currentLang}
+                  saccoInfo={saccoInfo}
+                  metrics={homeMetrics}
+                  isAdmin={canAccessFinance || canAccessIT}
+                  onOpenAdminConsole={handleOpenAdminConsole}
+                  onDeleteMetric={handleDeleteHomeMetric}
+                  onUpdateSaccoInfo={handleUpdateSaccoInfo}
+                />
 
-            {/* Featured Manager Message on Home Page */}
-            {homeManagerMessage && (
-              <ManagerMessageCard
-                message={homeManagerMessage}
+                {/* Featured Manager Message on Home Page */}
+                {homeManagerMessage && (
+                  <ManagerMessageCard
+                    message={homeManagerMessage}
+                    currentLang={currentLang}
+                    isAdmin={canAccessLeadership || canAccessIT}
+                    onEdit={() => handleOpenAdminConsole('messages')}
+                    onUpdateImage={(newUrl) => handleUpdateManagerMessage(homeManagerMessage.id, { imageUrl: newUrl })}
+                    variant="home"
+                  />
+                )}
+
+                {/* Dynamic Client Attraction Video Showcase (Optional on Home Page) */}
+                <HomeVideoSection
+                  currentLang={currentLang}
+                  videos={homeVideos}
+                  isAdmin={canAccessMedia || canAccessIT}
+                  onOpenAdminConsole={handleOpenAdminConsole}
+                  onAddVideo={handleAddHomeVideo}
+                  onDeleteVideo={handleDeleteHomeVideo}
+                />
+              </>
+            )}
+
+            {/* 2. About Us Section (Cooperative History, Licensing, Mission & Leadership Message) */}
+            {(activeView === 'all' || activeView === 'about') && (
+              <AboutUs
                 currentLang={currentLang}
-                isAdmin={canAccessLeadership || canAccessIT}
-                onEdit={() => handleOpenAdminConsole('messages')}
-                onUpdateImage={(newUrl) => handleUpdateManagerMessage(homeManagerMessage.id, { imageUrl: newUrl })}
-                variant="home"
+                saccoInfo={saccoInfo}
+                aboutContent={aboutContent}
+                managerMessage={aboutManagerMessage}
+                isAdmin={canAccessLeadership || canAccessMedia || canAccessIT}
+                onOpenAdminConsole={handleOpenAdminConsole}
+                onUpdateManagerMessage={handleUpdateManagerMessage}
+                onDeleteValue={handleDeleteAboutValue}
               />
             )}
 
-            {/* Dynamic Client Attraction Video Showcase (Optional on Home Page) */}
-            <HomeVideoSection
-              currentLang={currentLang}
-              videos={homeVideos}
-              isAdmin={canAccessMedia || canAccessIT}
-              onOpenAdminConsole={handleOpenAdminConsole}
-              onAddVideo={handleAddHomeVideo}
-              onDeleteVideo={handleDeleteHomeVideo}
-            />
+            {/* 3. Our Services Section (Savings, Agri Loans, SME Microfinance, USSD *541# & Loan Calculator) */}
+            {(activeView === 'all' || activeView === 'products' || activeView === 'calculator') && (
+              <ProductCatalog
+                currentLang={currentLang}
+                products={products}
+                isAdmin={canAccessFinance || canAccessIT}
+                onOpenAdminConsole={() => handleOpenAdminConsole('products')}
+                onSelectProductForLoan={handleSelectProductForLoan}
+                onSelectProductForAccount={handleSelectProductForAccount}
+                onApplyWithCalculation={handleApplyWithCalculation}
+              />
+            )}
+
+            {/* 4. Board of Directors & Managers Section (Board Director: WELLARSE, Manager: MBITSEMUNDA PHOCAS, & Admin CRUD) */}
+            {(activeView === 'all' || activeView === 'leadership') && (
+              <BoardAndManagers
+                currentLang={currentLang}
+                leaders={leaders}
+                isAdmin={canAccessLeadership || canAccessIT}
+                onAddLeader={handleAddLeader}
+                onUpdateLeader={handleUpdateLeader}
+                onDeleteLeader={handleDeleteLeader}
+              />
+            )}
+
+            {/* 5. Official Announcements, News, & Community Impact Stories for UBUMWE SACCO GAKENKE */}
+            {(activeView === 'all' || activeView === 'announcements' || activeView === 'news') && (
+              <GovernanceAndNews
+                currentLang={currentLang}
+                announcements={announcements}
+                communityStories={communityStories}
+                isAdmin={canAccessMedia || canAccessIT}
+                onOpenAdminConsole={handleOpenAdminConsole}
+                onAddAnnouncement={handleAddAnnouncement}
+                onUpdateAnnouncement={handleUpdateAnnouncement}
+                onDeleteAnnouncement={handleDeleteAnnouncement}
+                onAddCommunityStory={handleAddCommunityStory}
+                onUpdateCommunityStory={handleUpdateCommunityStory}
+                onDeleteCommunityStory={handleDeleteCommunityStory}
+              />
+            )}
+
+            {/* 6. Place where we post Best Moments in our Institution & Gallery */}
+            {(activeView === 'all' || activeView === 'gallery') && (
+              <Gallery
+                currentLang={currentLang}
+                moments={moments}
+                isAdmin={canAccessMedia || canAccessIT}
+                onAddMoment={handleAddMoment}
+                onUpdateMoment={handleUpdateMoment}
+                onDeleteMoment={handleDeleteMoment}
+                onOpenAdminConsole={handleOpenAdminConsole}
+              />
+            )}
+
+            {/* 7. Careers & Job Postings for UBUMWE SACCO GAKENKE */}
+            {(activeView === 'all' || activeView === 'careers' || activeView === 'jobs' || activeView === 'job-applicants') && (
+              <CareersSection
+                currentLang={currentLang}
+                jobPostings={jobPostings}
+                jobApplications={jobApplications}
+                employmentTypes={employmentTypes}
+                isAdmin={canAccessCareers}
+                userRole={currentUserRole}
+                onOpenAdminConsole={handleOpenAdminConsole}
+                onAddJobPosting={handleAddJobPosting}
+                onUpdateJobPosting={handleUpdateJobPosting}
+                onDeleteJobPosting={handleDeleteJobPosting}
+                onSubmitJobApplication={handleSubmitJobApplication}
+                onAddJobApplication={handleAddJobApplication}
+                onUpdateJobApplicationStatus={handleUpdateJobApplicationStatus}
+                onUpdateJobApplication={handleUpdateJobApplication}
+                onDeleteJobApplication={handleDeleteJobApplication}
+                onResetJobApplications={handleResetJobApplications}
+              />
+            )}
+
+            {/* 8. Gakenke District Branch & Outpost Directory */}
+            {(activeView === 'all' || activeView === 'branches') && (
+              <BranchLocator
+                currentLang={currentLang}
+                branches={branches}
+                isAdmin={canAccessBranches || canAccessIT}
+                onOpenAdminConsole={handleOpenAdminConsole}
+              />
+            )}
+
+            {/* 9. Contact Us Section */}
+            {(activeView === 'all' || activeView === 'contact') && (
+              <ContactSection
+                currentLang={currentLang}
+                saccoInfo={saccoInfo}
+                isAdmin={canAccessIT}
+                onOpenAdminConsole={handleOpenAdminConsole}
+                onNewInquiry={(inq) => setContactInquiries((prev) => [inq, ...prev])}
+              />
+            )}
           </>
         )}
-
-        {/* 2. About Us Section (Cooperative History, Licensing, Mission & Leadership Message) */}
-        {(activeView === 'all' || activeView === 'about') && (
-          <AboutUs
-            currentLang={currentLang}
-            saccoInfo={saccoInfo}
-            aboutContent={aboutContent}
-            managerMessage={aboutManagerMessage}
-            isAdmin={canAccessLeadership || canAccessMedia || canAccessIT}
-            onOpenAdminConsole={handleOpenAdminConsole}
-            onUpdateManagerMessage={handleUpdateManagerMessage}
-            onDeleteValue={handleDeleteAboutValue}
-          />
-        )}
-
-        {/* 3. Our Services Section (Savings, Agri Loans, SME Microfinance, USSD *541# & Loan Calculator) */}
-        {(activeView === 'all' || activeView === 'products' || activeView === 'calculator') && (
-          <ProductCatalog
-            currentLang={currentLang}
-            products={products}
-            isAdmin={canAccessFinance || canAccessIT}
-            onOpenAdminConsole={() => handleOpenAdminConsole('products')}
-            onSelectProductForLoan={handleSelectProductForLoan}
-            onSelectProductForAccount={handleSelectProductForAccount}
-            onApplyWithCalculation={handleApplyWithCalculation}
-          />
-        )}
-
-        {/* 4. Board of Directors & Managers Section (Board Director: WELLARSE, Manager: MBITSEMUNDA PHOCAS, & Admin CRUD) */}
-        {(activeView === 'all' || activeView === 'leadership') && (
-          <BoardAndManagers
-            currentLang={currentLang}
-            leaders={leaders}
-            isAdmin={canAccessLeadership || canAccessIT}
-            onAddLeader={handleAddLeader}
-            onUpdateLeader={handleUpdateLeader}
-            onDeleteLeader={handleDeleteLeader}
-          />
-        )}
-
-        {/* 5. Official Announcements, News, & Community Impact Stories for UBUMWE SACCO GAKENKE */}
-        {(activeView === 'all' || activeView === 'announcements' || activeView === 'news') && (
-          <GovernanceAndNews
-            currentLang={currentLang}
-            announcements={announcements}
-            communityStories={communityStories}
-            isAdmin={canAccessMedia || canAccessIT}
-            onOpenAdminConsole={handleOpenAdminConsole}
-            onAddAnnouncement={handleAddAnnouncement}
-            onUpdateAnnouncement={handleUpdateAnnouncement}
-            onDeleteAnnouncement={handleDeleteAnnouncement}
-            onAddCommunityStory={handleAddCommunityStory}
-            onUpdateCommunityStory={handleUpdateCommunityStory}
-            onDeleteCommunityStory={handleDeleteCommunityStory}
-          />
-        )}
-
-        {/* 6. Place where we post Best Moments in our Institution & Gallery */}
-        {(activeView === 'all' || activeView === 'gallery') && (
-          <Gallery
-            currentLang={currentLang}
-            moments={moments}
-            isAdmin={canAccessMedia || canAccessIT}
-            onAddMoment={handleAddMoment}
-            onUpdateMoment={handleUpdateMoment}
-            onDeleteMoment={handleDeleteMoment}
-            onOpenAdminConsole={handleOpenAdminConsole}
-          />
-        )}
-
-        {/* 7. Careers & Job Postings for UBUMWE SACCO GAKENKE */}
-        {(activeView === 'all' || activeView === 'careers' || activeView === 'jobs' || activeView === 'job-applicants') && (
-          <CareersSection
-            currentLang={currentLang}
-            jobPostings={jobPostings}
-            jobApplications={jobApplications}
-            employmentTypes={employmentTypes}
-            isAdmin={canAccessCareers}
-            userRole={currentUserRole}
-            onOpenAdminConsole={handleOpenAdminConsole}
-            onAddJobPosting={handleAddJobPosting}
-            onUpdateJobPosting={handleUpdateJobPosting}
-            onDeleteJobPosting={handleDeleteJobPosting}
-            onSubmitJobApplication={handleSubmitJobApplication}
-            onAddJobApplication={handleAddJobApplication}
-            onUpdateJobApplicationStatus={handleUpdateJobApplicationStatus}
-            onUpdateJobApplication={handleUpdateJobApplication}
-            onDeleteJobApplication={handleDeleteJobApplication}
-            onResetJobApplications={handleResetJobApplications}
-          />
-        )}
-
-        {/* 8. Gakenke District Branch & Outpost Directory */}
-        {(activeView === 'all' || activeView === 'branches') && (
-          <BranchLocator
-            currentLang={currentLang}
-            branches={branches}
-            isAdmin={canAccessBranches || canAccessIT}
-            onOpenAdminConsole={handleOpenAdminConsole}
-          />
-        )}
-
-        {/* 9. Contact Us Section */}
-        {(activeView === 'all' || activeView === 'contact') && (
-          <ContactSection
-            currentLang={currentLang}
-            saccoInfo={saccoInfo}
-            isAdmin={canAccessIT}
-            onOpenAdminConsole={handleOpenAdminConsole}
-            onNewInquiry={(inq) => setContactInquiries((prev) => [inq, ...prev])}
-          />
-        )}
-      </>
-    )}
-  </main>
+      </main>
 
       {/* Footer with Imigongo Framing, Credentials, Manager Sign In, & Theme Customizer */}
       <Footer
