@@ -23,8 +23,29 @@ const careerSchema = new mongoose.Schema(
     },
     employmentType: {
       type: String,
-      enum: ['Full-Time', 'Part-Time', 'Contract', 'Internship'],
+      enum: [
+        'Full-Time',
+        'Part-Time',
+        'Contract',
+        'Internship',
+        'Temporary',
+        'full_time',
+        'part_time',
+        'contract',
+        'internship',
+        'Full-time',
+        'Part-time',
+      ],
       default: 'Full-Time',
+      set: (val) => {
+        if (!val) return 'Full-Time';
+        const lower = String(val).toLowerCase().replace(/[_-]/g, ' ').trim();
+        if (lower.includes('full')) return 'Full-Time';
+        if (lower.includes('part')) return 'Part-Time';
+        if (lower.includes('contract')) return 'Contract';
+        if (lower.includes('intern')) return 'Internship';
+        return val;
+      },
     },
     description: {
       type: String,

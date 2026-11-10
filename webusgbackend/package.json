@@ -1,7 +1,7 @@
 {
   "name": "webusgbackend",
   "version": "1.0.0",
-  "description": "Node.js Express API for WebUSG clinic ultrasound management",
+  "description": "Node.js Express API for Ubumwe SACCO Gakenke Official Website and AI Digital Assistant",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
@@ -14,7 +14,8 @@
     "test": "jest --runInBand",
     "test:unit": "jest tests/unit --runInBand",
     "test:integration": "jest tests/integration --runInBand",
-    "lint": "eslint src scripts tests"
+    "lint": "eslint src scripts tests",
+    "seed:ai": "node scripts/seed-ai-knowledge.js"
   },
   "keywords": [
     "usg",
@@ -38,7 +39,8 @@
     ],
     "testMatch": [
       "<rootDir>/tests/**/*.test.js"
-    ]
+    ],
+    "cacheDirectory": "<rootDir>/.jest-cache"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

@@ -171,10 +171,6 @@ export const BranchLocator: React.FC<BranchLocatorProps> = ({
 
           {/* Interactive Outpost Detail & Visual Map Box */}
           <div className="lg:col-span-7 bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs relative overflow-hidden">
-            {/* Top Imigongo accent */}
-            <div className="absolute top-0 left-0 right-0">
-              <ImigongoRibbon height={8} variant="light" bordered={false} />
-            </div>
 
             {/* Map Mode Selector & Actions Bar */}
             <div className="flex flex-wrap items-center justify-between gap-2 mt-2">

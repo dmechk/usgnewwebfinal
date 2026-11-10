@@ -502,6 +502,28 @@ export const applicantsApi = {
       method: 'DELETE',
     });
   },
+
+  async track(reference: string, email?: string) {
+    return request<{
+      success: boolean;
+      data: {
+        referenceNumber: string;
+        fullName: string;
+        jobTitle: string;
+        status: string;
+        submittedAt: string;
+        updatedAt: string;
+        messages: Array<{
+          senderRole: string;
+          message: string;
+          sentAt: string;
+        }>;
+      };
+    }>('/applicants/track', {
+      method: 'POST',
+      body: JSON.stringify({ reference, email }),
+    });
+  },
 };
 
 // 6. User Management Service is defined as usersApi at the bottom with full MongoDB CRUD, password reset, and role permissions capabilities.
@@ -894,6 +916,224 @@ export const settingsApi = {
     }>('/settings/' + section, {
       method: 'PATCH',
       body: JSON.stringify({ data }),
+    });
+  },
+};
+
+// 13. AI Digital Assistant & Knowledge Service
+export interface KnowledgeArticleItem {
+  id: string;
+  title: string;
+  category: string;
+  content: string;
+  summary?: string;
+  language: string;
+  tags: string[];
+  isPublished: boolean;
+  isApprovedForAI: boolean;
+  priority: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface FAQItem {
+  id: string;
+  question: string;
+  answer: string;
+  language: string;
+  category: string;
+  tags: string[];
+  isPublished: boolean;
+  isApprovedForAI: boolean;
+  priority: number;
+  translations?: {
+    en?: { question: string; answer: string };
+    rw?: { question: string; answer: string };
+    fr?: { question: string; answer: string };
+  };
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface AIChatSessionItem {
+  sessionId: string;
+  preferredLanguage: string;
+  escalated: boolean;
+  inquiryReference?: string;
+  messageCount: number;
+  preview: string;
+  createdAt: string;
+  lastActivityAt: string;
+}
+
+export const aiApi = {
+  // Public chat
+  async chat(data: { message: string; sessionId?: string; preferredLanguage?: string }) {
+    return request<{
+      success: boolean;
+      data: {
+        sessionId: string;
+        reply: string;
+        language: string;
+        sourcesUsed: string[];
+        isEscalated: boolean;
+        officialContact: {
+          email: string;
+          phone: string;
+          whatsapp: string;
+          headquarters: string;
+        };
+      };
+    }>('/ai/chat', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  // Public config
+  async getConfig() {
+    return request<{
+      success: boolean;
+      data: {
+        config: {
+          enabled: boolean;
+          name: string;
+          welcomeMessageEn: string;
+          welcomeMessageRw: string;
+          welcomeMessageFr: string;
+          officialContact: {
+            email: string;
+            phone: string;
+            whatsapp: string;
+            headquarters: string;
+          };
+        };
+      };
+    }>('/ai/config');
+  },
+
+  // Public submit inquiry from chat
+  async submitInquiry(data: {
+    name: string;
+    phone: string;
+    email?: string;
+    subject?: string;
+    message: string;
+    sector?: string;
+    sessionId?: string;
+  }) {
+    return request<{
+      success: boolean;
+      message: string;
+      data: {
+        referenceNumber: string;
+        inquiryId: string;
+        officialEmail: string;
+        officialPhone: string;
+      };
+    }>('/ai/inquiry', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  // Admin Knowledge CRUD
+  async listArticles(params?: { category?: string; search?: string; isPublished?: boolean; page?: number; limit?: number }) {
+    const q = new URLSearchParams();
+    if (params?.category) q.set('category', params.category);
+    if (params?.search) q.set('search', params.search);
+    if (params?.isPublished !== undefined) q.set('isPublished', String(params.isPublished));
+    if (params?.page) q.set('page', String(params.page));
+    if (params?.limit) q.set('limit', String(params.limit));
+    return request<{
+      success: boolean;
+      data: {
+        articles: KnowledgeArticleItem[];
+        pagination: { total: number; page: number; limit: number; pages: number };
+      };
+    }>('/ai/knowledge' + (q.toString() ? '?' + q.toString() : ''));
+  },
+
+  async createArticle(article: Partial<KnowledgeArticleItem>) {
+    return request<{ success: boolean; message: string; data: { article: KnowledgeArticleItem } }>('/ai/knowledge', {
+      method: 'POST',
+      body: JSON.stringify(article),
+    });
+  },
+
+  async updateArticle(id: string, article: Partial<KnowledgeArticleItem>) {
+    return request<{ success: boolean; message: string; data: { article: KnowledgeArticleItem } }>('/ai/knowledge/' + id, {
+      method: 'PUT',
+      body: JSON.stringify(article),
+    });
+  },
+
+  async deleteArticle(id: string) {
+    return request<{ success: boolean; message: string }>('/ai/knowledge/' + id, {
+      method: 'DELETE',
+    });
+  },
+
+  // Admin FAQ CRUD
+  async listFaqs(params?: { category?: string; search?: string; page?: number; limit?: number }) {
+    const q = new URLSearchParams();
+    if (params?.category) q.set('category', params.category);
+    if (params?.search) q.set('search', params.search);
+    if (params?.page) q.set('page', String(params.page));
+    if (params?.limit) q.set('limit', String(params.limit));
+    return request<{
+      success: boolean;
+      data: {
+        faqs: FAQItem[];
+        pagination: { total: number; page: number; limit: number; pages: number };
+      };
+    }>('/ai/faqs' + (q.toString() ? '?' + q.toString() : ''));
+  },
+
+  async createFaq(faq: Partial<FAQItem>) {
+    return request<{ success: boolean; message: string; data: { faq: FAQItem } }>('/ai/faqs', {
+      method: 'POST',
+      body: JSON.stringify(faq),
+    });
+  },
+
+  async updateFaq(id: string, faq: Partial<FAQItem>) {
+    return request<{ success: boolean; message: string; data: { faq: FAQItem } }>('/ai/faqs/' + id, {
+      method: 'PUT',
+      body: JSON.stringify(faq),
+    });
+  },
+
+  async deleteFaq(id: string) {
+    return request<{ success: boolean; message: string }>('/ai/faqs/' + id, {
+      method: 'DELETE',
+    });
+  },
+
+  // Admin Session Review
+  async listSessions(params?: { escalated?: boolean; page?: number; limit?: number }) {
+    const q = new URLSearchParams();
+    if (params?.escalated !== undefined) q.set('escalated', String(params.escalated));
+    if (params?.page) q.set('page', String(params.page));
+    if (params?.limit) q.set('limit', String(params.limit));
+    return request<{
+      success: boolean;
+      data: {
+        sessions: AIChatSessionItem[];
+        pagination: { total: number; page: number; limit: number; pages: number };
+      };
+    }>('/ai/sessions' + (q.toString() ? '?' + q.toString() : ''));
+  },
+
+  async getSession(sessionId: string) {
+    return request<{ success: boolean; data: { session: any } }>('/ai/sessions/' + sessionId);
+  },
+
+  // Admin AI Config
+  async updateConfig(config: any) {
+    return request<{ success: boolean; message: string; data: { aiConfig: any } }>('/ai/config', {
+      method: 'PUT',
+      body: JSON.stringify(config),
     });
   },
 };

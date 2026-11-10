@@ -5,6 +5,7 @@ const {
   listApplicants,
   getApplicant,
   createApplicant,
+  trackApplicant,
   updateApplicant,
   deleteApplicant,
   updateStatus,
@@ -21,6 +22,13 @@ const router = express.Router();
 
 // Public: Candidate submits job application
 router.post('/', createApplicant);
+
+// Public: Candidate tracks application status via reference number
+router.post('/track', trackApplicant);
+router.get('/track/:reference', (req, res, next) => {
+  req.body = { reference: req.params.reference, email: req.query.email };
+  return trackApplicant(req, res, next);
+});
 
 // Protected routes (ADMIN_HR, MD, ADMIN_IT)
 router.get(

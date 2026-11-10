@@ -224,11 +224,6 @@ export const BoardAndManagers: React.FC<BoardAndManagersProps> = ({
                 key={leader.id}
                 className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col justify-between group relative"
               >
-                {/* Subtle top Imigongo accent */}
-                <div className="absolute top-0 left-0 right-0 z-10">
-                  <ImigongoRibbon height={6} variant="light" bordered={false} />
-                </div>
-
                 <div>
                   {/* Photo Container */}
                   <div className="aspect-square w-full overflow-hidden relative bg-slate-100">
@@ -444,10 +439,6 @@ export const BoardAndManagers: React.FC<BoardAndManagersProps> = ({
         </div>
       )}
 
-      {/* Imigongo skeleton ribbon connecting to branches */}
-      <div className="mt-16">
-        <ImigongoRibbon height={16} variant="light" bordered={true} />
-      </div>
     </section>
   );
 };

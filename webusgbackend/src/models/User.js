@@ -1,4 +1,3 @@
-
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const env = require('../config/env');
@@ -34,7 +33,7 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: ROLES,
-      default: 'technician',
+      default: 'ADMIN_HR',
       index: true,
     },
     phone: {
@@ -56,10 +55,6 @@ const userSchema = new mongoose.Schema(
     passwordChangeRequired: {
       type: Boolean,
       default: false,
-    },
-    rawPassword: {
-      type: String,
-      default: '',
     },
     lastLoginAt: {
       type: Date,

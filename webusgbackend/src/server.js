@@ -1,12 +1,18 @@
+'use strict';
+
 const env = require('./config/env');
 const app = require('./app');
 const connectDB = require('./config/db');
+const { ensureInitialAIKnowledge } = require('./services/seedAiKnowledge.service');
 
 async function start() {
   await connectDB();
 
+  // Ensure initial verified SACCO knowledge & FAQs are present if collections are empty
+  await ensureInitialAIKnowledge();
+
   const server = app.listen(env.PORT, () => {
-    console.log(`WebUSG API listening on port ${env.PORT}`);
+    console.log(`Ubumwe SACCO Gakenke Web API listening on port ${env.PORT}`);
   });
 
   server.on('error', (err) => {

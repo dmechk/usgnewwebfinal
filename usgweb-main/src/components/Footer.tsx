@@ -82,9 +82,9 @@ export const Footer: React.FC<FooterProps> = ({
   const visibleNavs = navItems.filter((i) => i.visible);
 
   return (
-    <footer className="bg-slate-900 text-slate-300 text-xs border-t-4 border-emerald-600 relative">
-      {/* Top Imigongo Skeleton Ribbon */}
-      <ImigongoRibbon height={18} variant="dark" bordered={false} />
+    <footer className="bg-slate-900 text-slate-300 text-xs border-t-2 border-emerald-600 relative">
+      {/* Crisp & Small Imigongo Cultural Ribbon */}
+      <ImigongoRibbon height={10} variant="dark" bordered={true} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-12 lg:py-16 space-y-12">
         {/* Main 3-Column Info Grid */}
@@ -232,7 +232,7 @@ export const Footer: React.FC<FooterProps> = ({
                 <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">
                   {currentLang === 'rw' ? 'Abafatanyabikorwa' : currentLang === 'fr' ? 'Nos Partenaires' : 'Our Partners'}
                 </h4>
-                <div className="flex flex-wrap items-stretch gap-4">
+                <div className="flex flex-wrap items-center gap-3">
                   {partners
                     .filter((p) => p.visible !== false)
                     .map((partner) => (
@@ -242,25 +242,25 @@ export const Footer: React.FC<FooterProps> = ({
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={partner.name}
-                        title={partner.name}
+                        title={partner.fullName ? `${partner.name} - ${partner.fullName}` : partner.name}
                         className="group/card"
                       >
-                        <div className="bg-slate-800 border border-slate-700 rounded-xl p-3 transition-all duration-300 ease-out group-hover/card:shadow-2xl group-hover/card:shadow-emerald-500/30 group-hover/card:scale-110 group-hover/card:-translate-y-1 group-hover/card:border-emerald-500 flex flex-col items-center justify-center gap-2 min-w-[120px] min-h-[100px] max-w-[140px] cursor-pointer">
+                        <div className="bg-slate-800/90 border border-slate-700/80 rounded-xl p-2.5 transition-all duration-200 hover:border-emerald-500/80 hover:bg-slate-800 flex flex-col items-center justify-center gap-1.5 w-[110px] h-[82px] cursor-pointer shadow-xs hover:shadow-md">
                           {partner.logoUrl ? (
-                            <div className="w-full h-14 bg-white rounded-lg p-1.5 flex items-center justify-center shadow-sm overflow-hidden">
+                            <div className="w-full h-9 bg-white rounded-md p-1 flex items-center justify-center overflow-hidden">
                               <img
                                 src={partner.logoUrl}
                                 alt={`${partner.name} logo`}
-                                className="h-10 w-auto object-contain max-w-[110px] transition-transform duration-300 ease-out group-hover/card:scale-125"
+                                className="h-7 w-auto object-contain max-w-[85px] transition-transform duration-200 group-hover/card:scale-105"
                                 onError={(e) => {
                                   // Replace broken img with letter fallback
                                   const parent = e.currentTarget.parentElement;
                                   if (parent) {
-                                    parent.classList.remove('bg-white', 'p-1.5');
+                                    parent.classList.remove('bg-white', 'p-1');
                                     parent.classList.add('bg-emerald-950/60', 'border', 'border-emerald-800/40');
                                     e.currentTarget.style.display = 'none';
                                     const fallback = document.createElement('span');
-                                    fallback.className = 'text-xl font-extrabold text-emerald-400';
+                                    fallback.className = 'text-base font-extrabold text-emerald-400';
                                     fallback.textContent = partner.name.charAt(0);
                                     parent.appendChild(fallback);
                                   }
@@ -268,21 +268,16 @@ export const Footer: React.FC<FooterProps> = ({
                               />
                             </div>
                           ) : (
-                            <div className="w-14 h-14 rounded-lg bg-emerald-950/60 border border-emerald-800/40 flex items-center justify-center transition-transform duration-300 ease-out group-hover/card:scale-110">
-                              <span className="text-xl font-extrabold text-emerald-400 transition-all duration-300 group-hover/card:text-emerald-300">
+                            <div className="w-9 h-9 rounded-md bg-emerald-950/60 border border-emerald-800/40 flex items-center justify-center">
+                              <span className="text-base font-extrabold text-emerald-400">
                                 {partner.name.charAt(0)}
                               </span>
                             </div>
                           )}
-                          <div className="text-center">
-                            <div className="text-[11px] font-extrabold text-slate-200 group-hover/card:text-emerald-400 tracking-wide leading-tight transition-colors duration-200">
+                          <div className="text-center w-full px-1">
+                            <div className="text-[10px] font-bold text-slate-200 group-hover/card:text-emerald-400 tracking-wide truncate">
                               {partner.name}
                             </div>
-                            {partner.fullName && (
-                              <div className="text-[9px] text-slate-400 group-hover/card:text-slate-300 leading-tight mt-0.5 px-1 transition-colors duration-200">
-                                {partner.fullName}
-                              </div>
-                            )}
                           </div>
                         </div>
                       </a>
@@ -407,8 +402,8 @@ export const Footer: React.FC<FooterProps> = ({
           )}
         </div>
 
-        {/* Bottom Imigongo Skeleton Trim */}
-        <ImigongoRibbon height={12} variant="dark" bordered={false} />
+        {/* Subtle Bottom Imigongo Cultural Trim */}
+        <ImigongoRibbon height={8} variant="dark" bordered={false} />
 
         {/* Copyright & Disclaimer */}
         <div className="pt-2 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-400">

@@ -137,7 +137,6 @@ async function changePassword(req, res, next) {
     }
 
     user.password = newPassword;
-    user.rawPassword = newPassword;
     user.passwordChangeRequired = false;
     await user.save();
 
@@ -202,7 +201,6 @@ async function activateAccount(req, res, next) {
     }
 
     user.password = newPassword.trim();
-    user.rawPassword = '';
     user.passwordChangeRequired = false;
     user.isActivated = true;
     user.activationTokenHash = null;

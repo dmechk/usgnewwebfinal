@@ -56,6 +56,7 @@ async function authenticate(req, res, next) {
       });
     }
 
+    const { getPermissionsForRole } = require('../config/roles');
     req.user = {
       id: String(user._id),
       name: user.name,
@@ -63,6 +64,7 @@ async function authenticate(req, res, next) {
       role: user.role,
       passwordChangeRequired: user.passwordChangeRequired,
       isActive: user.isActive,
+      permissions: getPermissionsForRole(user.role),
     };
     req.authUser = user;
     req.tokenPayload = payload;

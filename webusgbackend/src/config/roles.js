@@ -85,6 +85,10 @@ const PERMISSIONS = Object.freeze({
   INQUIRIES_UPDATE: 'inquiries:update',
   INQUIRIES_DELETE: 'inquiries:delete',
   INQUIRIES_FEEDBACK: 'inquiries:feedback',
+
+  // AI Digital Assistant & Knowledge
+  AI_READ: 'ai:read',
+  AI_MANAGE: 'ai:manage',
 });
 
 // Role to permissions mapping
@@ -114,6 +118,8 @@ const ROLE_PERMISSIONS = Object.freeze({
     PERMISSIONS.INQUIRIES_FEEDBACK,
     PERMISSIONS.REPORTS_READ,
     PERMISSIONS.REPORTS_GALLERY_NEWS,
+    PERMISSIONS.AI_READ,
+    PERMISSIONS.AI_MANAGE,
   ]),
 
   // 3. ADMIN_HR: Human Resources Administrator - Applicants & Recruitment
@@ -156,6 +162,7 @@ const ROLE_PERMISSIONS = Object.freeze({
     PERMISSIONS.REPORTS_CAREERS,
     PERMISSIONS.REPORTS_OVERVIEW,
     PERMISSIONS.AUDIT_READ,
+    PERMISSIONS.AI_READ,
   ]),
 
   // Legacy mappings for backward compatibility

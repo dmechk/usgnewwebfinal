@@ -73,13 +73,15 @@ import { BoardAndManagers } from './components/BoardAndManagers';
 import { Gallery } from './components/Gallery';
 import { PhotoDetailPage } from './components/PhotoDetailPage';
 import { CareersSection } from './components/CareersSection';
+import { JobApplyPage } from './components/JobApplyPage';
+import { JobDetailsPage } from './components/JobDetailsPage';
 import { BranchLocator } from './components/BranchLocator';
 import { GovernanceAndNews } from './components/GovernanceAndNews';
 import { AccountApplicationModal } from './components/AccountApplicationModal';
 import { ManagerLoginModal } from './components/ManagerLoginModal';
 import { AdminConsoleModal } from './components/AdminConsoleModal';
 import { ContactSection } from './components/ContactSection';
-import { FloatingWhatsApp } from './components/FloatingWhatsApp';
+import { ChatWidget } from './components/ChatWidget';
 import { Footer } from './components/Footer';
 import { Shield, Phone, ImageIcon, Compass, Settings, LogOut, Quote, Briefcase, Eye, ArrowRight, LayoutGrid, Users, Video, Archive, Layers, UserCheck, Bell } from 'lucide-react';
 import { galleryApi, newsApi, careersApi, applicantsApi, inquiryService, getUploadUrl, clearAuthToken, getAuthToken, settingsApi } from './services/api';
@@ -132,6 +134,21 @@ export default function App() {
 
   // Navigation handler using react-router with automatic scroll to top
   const handleNavigateToSection = (sectionId: string) => {
+    const isAboutSubSection = ['mission', 'vision', 'history', 'objectives'].includes(sectionId);
+    if (isAboutSubSection) {
+      setActiveView('about');
+      navigate('/about');
+      setTimeout(() => {
+        const el = document.getElementById(sectionId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+        }
+      }, 100);
+      return;
+    }
+
     const targetPath = sectionId === 'all' ? '/' : `/${sectionId}`;
     const currentPath = location.pathname.replace(/^\//, '') || 'all';
 
@@ -253,7 +270,16 @@ export default function App() {
         }
       }
     } else {
-      setActiveView(rawPath || 'all');
+      const isAboutSub = ['mission', 'vision', 'history', 'objectives'].includes(rawPath);
+      if (isAboutSub) {
+        setActiveView('about');
+        setTimeout(() => {
+          const el = document.getElementById(rawPath);
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 120);
+      } else {
+        setActiveView(rawPath || 'all');
+      }
     }
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -371,6 +397,15 @@ export default function App() {
   const currentPhotoMomentId = isPhotoRoute ? activeView.replace(/^photos?\//, '') : null;
   const currentPhotoMoment = currentPhotoMomentId
     ? moments.find((m) => m.id === currentPhotoMomentId) || null
+    : null;
+
+  // Dedicated careers & apply route detection: /careers, /careers/:jobId, /careers/apply/:jobId
+  const isCareersApplyRoute = activeView.startsWith('careers/apply/');
+  const isCareersJobRoute = activeView.startsWith('careers/') && !isCareersApplyRoute;
+  const routeJobId = isCareersApplyRoute
+    ? activeView.replace('careers/apply/', '')
+    : isCareersJobRoute
+    ? activeView.replace('careers/', '')
     : null;
 
 
@@ -681,10 +716,6 @@ export default function App() {
   }, [jobPostings]);
 
   useEffect(() => {
-    try { localStorage.setItem('ubumwe_job_applications', JSON.stringify(jobApplications)); } catch { /* quota */ }
-  }, [jobApplications]);
-
-  useEffect(() => {
     if (!isMounted.current) return;
     saveSectionToBackend('communityStories', communityStories, 'ubumwe_community_stories');
   }, [communityStories, saveSectionToBackend]);
@@ -855,8 +886,8 @@ export default function App() {
           }
         };
         const mapped: JobApplication[] = res.data.applicants.map((a: any) => ({
-          id: a.id || a._id,
-          jobId: a.careerId || a.jobId || 'job-general',
+          id: String(a.id || a._id || ''),
+          jobId: String(a.careerId?._id || a.careerId || a.jobId || 'job-general'),
           jobTitle: a.jobTitle || 'SACCO Professional Position',
           fullName: a.fullName,
           email: a.email,
@@ -2095,8 +2126,35 @@ export default function App() {
   const canAccessCareers = isManagerLoggedIn && (isSuperAdminUser || isHRUser || isDAFUser || isMDUser);
   const canAccessBranches = isManagerLoggedIn && (isSuperAdminUser || isMediaAdminUser || isDAFUser);
 
+  // ── Full-page Job Apply Route ───────────────────────────────────────────────
+  if (isCareersApplyRoute) {
+    const applyJob = routeJobId ? jobPostings.find((j) => j.id === routeJobId) || null : null;
+    return (
+      <JobApplyPage
+        job={applyJob}
+        jobPostings={jobPostings}
+        currentLang={currentLang}
+        onBack={() => setActiveView('careers')}
+        onSubmit={handleSubmitJobApplication}
+      />
+    );
+  }
+
+  // ── Full-page Job Details Route ─────────────────────────────────────────────
+  if (isCareersJobRoute) {
+    const detailJob = routeJobId ? jobPostings.find((j) => j.id === routeJobId) || null : null;
+    return (
+      <JobDetailsPage
+        job={detailJob}
+        currentLang={currentLang}
+        onBack={() => setActiveView('careers')}
+        onApply={(job) => setActiveView(`careers/apply/${job.id}`)}
+      />
+    );
+  }
+
   return (
-    <div className={`min-h-screen flex flex-col font-sans selection:bg-emerald-100 selection:text-emerald-900 ${currentTheme === 'black' ? 'bg-[#09090b] text-zinc-100' : 'bg-slate-50 text-slate-900'}`}>
+    <div className={`min-h-screen flex flex-col font-sans overflow-x-hidden w-full max-w-full selection:bg-emerald-100 selection:text-emerald-900 ${currentTheme === 'black' ? 'bg-[#09090b] text-zinc-100' : 'bg-slate-50 text-slate-900'}`}>
       {/* Universal Top Header with Active Section Highlighting */}
       <Header
         currentLang={currentLang}
@@ -2194,7 +2252,7 @@ export default function App() {
             )}
 
             {/* 2. About Us Section (Cooperative History, Licensing, Mission & Leadership Message) */}
-            {(activeView === 'all' || activeView === 'about') && (
+            {(activeView === 'all' || activeView === 'about' || activeView === 'mission' || activeView === 'vision' || activeView === 'history' || activeView === 'objectives') && (
               <AboutUs
                 currentLang={currentLang}
                 saccoInfo={saccoInfo}
@@ -2263,7 +2321,7 @@ export default function App() {
             )}
 
             {/* 7. Careers & Job Postings for UBUMWE SACCO GAKENKE */}
-            {(activeView === 'all' || activeView === 'careers' || activeView === 'jobs' || activeView === 'job-applicants') && (
+            {(activeView === 'all' || activeView === 'careers' || activeView === 'jobs' || activeView === 'job-applicants' || isCareersJobRoute || isCareersApplyRoute) && (
               <CareersSection
                 currentLang={currentLang}
                 jobPostings={jobPostings}
@@ -2271,6 +2329,8 @@ export default function App() {
                 employmentTypes={employmentTypes}
                 isAdmin={canAccessCareers}
                 userRole={currentUserRole}
+                initialJobId={routeJobId}
+                openApplyInitially={isCareersApplyRoute}
                 onOpenAdminConsole={handleOpenAdminConsole}
                 onAddJobPosting={handleAddJobPosting}
                 onUpdateJobPosting={handleUpdateJobPosting}
@@ -2281,6 +2341,7 @@ export default function App() {
                 onUpdateJobApplication={handleUpdateJobApplication}
                 onDeleteJobApplication={handleDeleteJobApplication}
                 onResetJobApplications={handleResetJobApplications}
+                onNavigate={(view) => setActiveView(view)}
               />
             )}
 
@@ -2456,7 +2517,10 @@ export default function App() {
       />
 
       {/* Persistent Floating WhatsApp Quick-Action Widget */}
-      <FloatingWhatsApp currentLang={currentLang} saccoInfo={saccoInfo} />
+
+
+      {/* Official UBUMWE SACCO AI Digital Assistant Widget */}
+      <ChatWidget currentLang={currentLang} onLanguageChange={handleLanguageChange} />
 
       {/* Active Manager Floating Quick Bar (Strictly Tailored by Staff User Role) */}
       {isManagerLoggedIn && (() => {
@@ -2616,3 +2680,4 @@ export default function App() {
     </div>
   );
 }
+

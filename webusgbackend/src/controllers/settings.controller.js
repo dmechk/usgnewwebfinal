@@ -50,6 +50,7 @@ async function updateSettings(req, res, next) {
       'employmentTypes',
       'qualifications',
       'themeColor',
+      'aiConfig',
     ];
 
     const updates = {};
@@ -110,6 +111,7 @@ async function updateSettingsSection(req, res, next) {
       'employmentTypes',
       'qualifications',
       'themeColor',
+      'aiConfig',
     ];
 
     if (!allowedSections.includes(section)) {

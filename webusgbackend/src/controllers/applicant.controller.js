@@ -1,5 +1,6 @@
 'use strict';
 
+const mongoose = require('mongoose');
 const { StatusCodes } = require('http-status-codes');
 const Applicant = require('../models/Applicant');
 const AppError = require('../utils/appError');
@@ -96,9 +97,12 @@ async function createApplicant(req, res, next) {
 
     const referenceNumber = await generateApplicationReference(Applicant);
 
+    const rawCareerId = careerId || jobId || null;
+    const safeCareerId = rawCareerId && mongoose.isValidObjectId(rawCareerId) ? rawCareerId : null;
+
     const applicant = await Applicant.create({
       referenceNumber,
-      careerId: careerId || jobId || null,
+      careerId: safeCareerId,
       jobTitle: jobTitle || '',
       fullName,
       email,
@@ -506,10 +510,63 @@ async function retryConfirmationEmail(req, res, next) {
   }
 }
 
+/**
+ * Public endpoint allowing applicants to track their submission using their reference number
+ * Privacy-preserving: only returns non-sensitive status and public applicant notices
+ */
+async function trackApplicant(req, res, next) {
+  try {
+    const { reference, email } = req.body;
+    const query = {};
+
+    if (reference && String(reference).trim()) {
+      query.referenceNumber = String(reference).trim().toUpperCase();
+    } else {
+      throw new AppError('Application reference number is required (e.g. APP-2026-XXXX)', StatusCodes.BAD_REQUEST, {
+        code: 'REFERENCE_REQUIRED',
+      });
+    }
+
+    if (email && String(email).trim()) {
+      query.email = String(email).trim().toLowerCase();
+    }
+
+    const applicant = await Applicant.findOne(query)
+      .populate('careerId', 'title department location')
+      .select('referenceNumber fullName email jobTitle status createdAt updatedAt messages');
+
+    if (!applicant) {
+      throw new AppError('No application found with the provided reference number. Please check and try again.', StatusCodes.NOT_FOUND, {
+        code: 'APPLICATION_NOT_FOUND',
+      });
+    }
+
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: {
+        referenceNumber: applicant.referenceNumber,
+        fullName: applicant.fullName,
+        jobTitle: applicant.jobTitle || (applicant.careerId && applicant.careerId.title) || 'General Role',
+        status: applicant.status,
+        submittedAt: applicant.createdAt,
+        updatedAt: applicant.updatedAt,
+        messages: (applicant.messages || []).map((m) => ({
+          senderRole: m.senderRole,
+          message: m.message,
+          sentAt: m.sentAt,
+        })),
+      },
+    });
+  } catch (err) {
+    return next(err);
+  }
+}
+
 module.exports = {
   listApplicants,
   getApplicant,
   createApplicant,
+  trackApplicant,
   updateApplicant,
   deleteApplicant,
   updateStatus,

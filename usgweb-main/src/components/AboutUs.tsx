@@ -14,6 +14,8 @@ import {
   Trash2,
   Sparkles,
   Camera,
+  Compass,
+  Trophy,
 } from 'lucide-react';
 import { ImigongoRibbon } from './ImigongoPattern';
 import { ManagerMessageCard } from './ManagerMessageCard';
@@ -148,7 +150,7 @@ export const AboutUs: React.FC<AboutUsProps> = ({
         </div>
 
         {/* 2-Column Story and Assembly Visual */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <div id="history" className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center scroll-mt-24">
           <div className="lg:col-span-6 space-y-5 text-slate-700 leading-relaxed text-sm sm:text-base">
             <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-100 flex items-start gap-3 text-xs sm:text-sm text-emerald-950">
               <Award className="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" />
@@ -190,7 +192,7 @@ export const AboutUs: React.FC<AboutUsProps> = ({
                   return (
                     <div
                       key={val.id}
-                      className="relative group p-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-emerald-300 transition-colors"
+                      className="relative group p-3.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-emerald-300 transition-colors"
                     >
                       <Icon className="w-4 h-4 text-emerald-700 mb-1" />
                       <span className="font-bold text-slate-900 block truncate">{title}</span>
@@ -227,7 +229,7 @@ export const AboutUs: React.FC<AboutUsProps> = ({
           </div>
 
           <div className="lg:col-span-6 relative">
-            <div className="relative rounded-3xl overflow-hidden border border-slate-300 shadow-xl bg-slate-900 aspect-[4/3] group">
+            <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-lg bg-slate-900 aspect-[4/3] group">
               <img
                 src={assemblyImage}
                 alt="UBUMWE SACCO Gakenke General Assembly"
@@ -256,6 +258,97 @@ export const AboutUs: React.FC<AboutUsProps> = ({
           </div>
         </div>
 
+        {/* Structured Institutional Pillars: Vision, Mission, Objectives & Verified Milestones */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-4">
+          {/* Vision */}
+          <div id="vision" className="p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-emerald-300 transition-all shadow-xs flex flex-col justify-between scroll-mt-24">
+            <div>
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center mb-4">
+                <Compass className="w-5 h-5 text-emerald-700" />
+              </div>
+              <h3 className="text-base font-bold text-slate-900 mb-2">
+                {currentLang === 'fr' ? 'Notre Vision' : currentLang === 'rw' ? 'Icyerekezo Cyacu' : 'Our Vision'}
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                {currentLang === 'fr'
+                  ? 'Être une institution financière coopérative modèle, moderne et pérenne, moteur du développement socio-économique inclusif à Gakenke et au Rwanda.'
+                  : currentLang === 'rw'
+                  ? "Kuba koperative y'imari y'intangarugero, igezweho kandi irambye, ifasha abanyamuryango kwiteza imbere muri Gakenke no mu Rwanda hose."
+                  : 'To be a premier, resilient, and member-centric financial cooperative driving sustainable socio-economic prosperity across Gakenke District.'}
+              </p>
+            </div>
+            <div className="mt-4 pt-3 border-t border-slate-200/60 text-[11px] font-semibold text-emerald-700">
+              UBUMWE SACCO · 2026+
+            </div>
+          </div>
+
+          {/* Mission */}
+          <div id="mission" className="p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-emerald-300 transition-all shadow-xs flex flex-col justify-between scroll-mt-24">
+            <div>
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center mb-4">
+                <Target className="w-5 h-5 text-emerald-700" />
+              </div>
+              <h3 className="text-base font-bold text-slate-900 mb-2">
+                {currentLang === 'fr' ? 'Notre Mission' : currentLang === 'rw' ? 'Inshingano Zacu' : 'Our Mission'}
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                {currentLang === 'fr'
+                  ? 'Offrir des services d\'épargne, de crédit et de paiement accessibles, sécurisés et abordables pour autonomiser les ménages ruraux, coopératives et entrepreneurs.'
+                  : currentLang === 'rw'
+                  ? "Guteza imbere abanyamuryango binyuze mu kubitsa, kugurizwa no kubona serivisi z'imari zizewe, zidahenze kandi zibegereye."
+                  : 'To mobilize savings, provide affordable credit facilities, and deliver digital financial solutions tailored to farmers, entrepreneurs, and families.'}
+              </p>
+            </div>
+            <div className="mt-4 pt-3 border-t border-slate-200/60 text-[11px] font-semibold text-emerald-700">
+              {currentLang === 'rw' ? 'Umutekano n\'Iterambere' : 'Security & Growth'}
+            </div>
+          </div>
+
+          {/* Strategic Objectives */}
+          <div id="objectives" className="p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-emerald-300 transition-all shadow-xs flex flex-col justify-between scroll-mt-24">
+            <div>
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center mb-4">
+                <ShieldCheck className="w-5 h-5 text-emerald-700" />
+              </div>
+              <h3 className="text-base font-bold text-slate-900 mb-2">
+                {currentLang === 'fr' ? 'Objectifs Clés' : currentLang === 'rw' ? 'Intego Z\'ingenzi' : 'Core Objectives'}
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                {currentLang === 'fr'
+                  ? 'Inclusion financière totale, financement de l\'agriculture et de l\'élevage, numérisation des paiements et renforcement des fonds propres institutionnels.'
+                  : currentLang === 'rw'
+                  ? "Kwagura serivisi z'imari mu mirenge yose ya Gakenke, gutera inkunga ubuhinzi n'ubworozi, no gukoresha ikoranabuhanga (*541#)."
+                  : 'Universal financial inclusion across all Gakenke sectors, agricultural value-chain financing, digital banking adoption, and institutional sustainability.'}
+              </p>
+            </div>
+            <div className="mt-4 pt-3 border-t border-slate-200/60 text-[11px] font-semibold text-emerald-700">
+              {currentLang === 'rw' ? 'Ikoranabuhanga *541#' : 'Digital Banking USSD'}
+            </div>
+          </div>
+
+          {/* Institutional Achievements */}
+          <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-emerald-300 transition-all shadow-xs flex flex-col justify-between">
+            <div>
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center mb-4">
+                <Trophy className="w-5 h-5 text-emerald-700" />
+              </div>
+              <h3 className="text-base font-bold text-slate-900 mb-2">
+                {currentLang === 'fr' ? 'Réalisations & Gouvernance' : currentLang === 'rw' ? 'Ibyagezweho n\'Ubuyobozi' : 'Achievements & Governance'}
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                {currentLang === 'fr'
+                  ? 'Agréé par la Banque Nationale du Rwanda (BNR) et RICA. Plus de 9 800 membres actifs servis à travers nos guichets avec audit régulier.'
+                  : currentLang === 'rw'
+                  ? "Koperative yemewe na BNR na RICA. Abanyamuryango basaga 9,800 bakorerwa ubuvugizi n'ubufatanye mu gihugu hose."
+                  : 'Full regulatory compliance with BNR & RICA licensing, servicing over 9,800 active cooperative members across multiple sector branches.'}
+              </p>
+            </div>
+            <div className="mt-4 pt-3 border-t border-slate-200/60 text-[11px] font-semibold text-emerald-700">
+              BNR / RICA Verified
+            </div>
+          </div>
+        </div>
+
         {/* Manager / Institutional Leadership Message in About Page */}
         {managerMessage && managerMessage.active && (
           <div className="pt-6">
@@ -271,9 +364,9 @@ export const AboutUs: React.FC<AboutUsProps> = ({
         )}
       </div>
 
-      {/* Imigongo skeleton ribbon connecting to services */}
+      {/* Crisp & Small Imigongo Cultural Divider */}
       <div className="mt-16">
-        <ImigongoRibbon height={16} variant="light" bordered={true} />
+        <ImigongoRibbon height={10} variant="light" bordered={true} />
       </div>
     </section>
   );

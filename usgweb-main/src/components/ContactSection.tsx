@@ -297,11 +297,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Card 1: WhatsApp (Primary digital chat) */}
           <div className="bg-gradient-to-b from-emerald-50/70 to-white rounded-3xl border-2 border-emerald-500/40 p-6 sm:p-7 shadow-xs hover:shadow-md transition-all flex flex-col justify-between relative group">
-            <div className="absolute top-0 left-0 right-0">
-              <ImigongoRibbon height={5} variant="light" bordered={false} />
-            </div>
-
-            <div className="space-y-4 pt-2">
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md shadow-emerald-600/30">
                   <MessageSquare className="w-6 h-6" />
@@ -357,11 +353,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
 
           {/* Card 2: Phone Calling */}
           <div className="bg-slate-50 rounded-3xl border border-slate-200 p-6 sm:p-7 shadow-xs hover:shadow-md transition-all flex flex-col justify-between relative group">
-            <div className="absolute top-0 left-0 right-0">
-              <ImigongoRibbon height={5} variant="light" bordered={false} />
-            </div>
-
-            <div className="space-y-4 pt-2">
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center shadow-md shadow-slate-900/20">
                   <Phone className="w-6 h-6 text-emerald-400" />
@@ -421,11 +413,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
 
           {/* Card 3: Official Email */}
           <div className="bg-slate-50 rounded-3xl border border-slate-200 p-6 sm:p-7 shadow-xs hover:shadow-md transition-all flex flex-col justify-between relative group">
-            <div className="absolute top-0 left-0 right-0">
-              <ImigongoRibbon height={5} variant="light" bordered={false} />
-            </div>
-
-            <div className="space-y-4 pt-2">
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="w-12 h-12 rounded-2xl bg-emerald-800 text-white flex items-center justify-center shadow-md shadow-emerald-800/20">
                   <Mail className="w-6 h-6 text-emerald-200" />

@@ -1,5 +1,4 @@
 export const TailwindClasses = {
-  // Header navigation class – used in Header component for the primary nav bar.
-  // Update this value and all references will auto‑update.
-  HEADER_NAV: "hidden lg:flex items-center gap-1.5 xl:gap-2.5 text-sm xl:text-base font-extrabold text-black whitespace-nowrap justify-center",
+  // Header navigation class – responsive, perfectly fitting all languages without blowout
+  HEADER_NAV: "hidden lg:flex flex-1 items-center justify-center gap-0.5 lg:gap-1 xl:gap-2 2xl:gap-3 text-xs lg:text-[13px] xl:text-sm font-bold text-black whitespace-nowrap min-w-0"
 };

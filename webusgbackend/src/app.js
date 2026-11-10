@@ -11,6 +11,7 @@ const AppError = require('./utils/appError');
 const routes = require('./routes');
 const errorHandler = require('./middleware/errorHandler');
 const openapi = require('./docs/openapi');
+const { generalApiLimiter } = require('./middleware/rateLimiter');
 
 const app = express();
 
@@ -132,6 +133,9 @@ app.get('/api/health', (req, res) => {
     environment: env.NODE_ENV,
   });
 });
+
+// Rate limit public API requests
+app.use('/api', generalApiLimiter);
 
 // API routes
 app.use('/api/v1', routes);

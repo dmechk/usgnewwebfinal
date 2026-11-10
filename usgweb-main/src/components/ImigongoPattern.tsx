@@ -32,26 +32,26 @@ export const ImigongoRibbon: React.FC<ImigongoRibbonProps> = ({
     return () => observer.disconnect();
   }, [animated]);
 
-  // Color tokens matching the uploaded Imigongo image
+  // Color tokens matching authentic Rwandan Imigongo contrasting geometry
   let bgFill = '#ffffff';
-  let triangleFill = '#cbd5e1'; // Slate-300 / subtle grey as in image.png
-  let strokeColor = '#94a3b8';
+  let triangleFill = '#1e293b'; // Slate-800 - crisp, sharp and clearly visible
+  let strokeColor = '#0f172a';
 
   if (variant === 'dark') {
     bgFill = '#0f172a'; // Deep slate-900
-    triangleFill = '#1e293b'; // Slate-800
-    strokeColor = '#334155';
+    triangleFill = '#34d399'; // Emerald-400 / high contrast on dark
+    strokeColor = '#10b981';
   } else if (variant === 'black') {
     bgFill = '#09090b';
-    triangleFill = '#27272a';
-    strokeColor = '#3f3f46';
+    triangleFill = '#f4f4f5'; // Zinc-100 crisp contrast
+    strokeColor = '#a1a1aa';
   } else if (variant === 'emerald') {
     bgFill = '#064e3b'; // Emerald-900
-    triangleFill = '#047857'; // Emerald-700
-    strokeColor = '#059669';
+    triangleFill = '#34d399'; // Emerald-400
+    strokeColor = '#10b981';
   } else if (variant === 'gold') {
     bgFill = '#78350f';
-    triangleFill = '#d97706';
+    triangleFill = '#fbbf24';
     strokeColor = '#f59e0b';
   }
 

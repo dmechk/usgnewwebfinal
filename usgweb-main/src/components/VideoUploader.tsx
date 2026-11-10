@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Upload, Link as LinkIcon, Video as VideoIcon, X, Check, Play, AlertCircle } from 'lucide-react';
+import { API_BASE_URL, getUploadUrl, getAuthToken } from '../services/api';
 
 interface VideoUploaderProps {
   value: string;
@@ -12,41 +13,96 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
   value,
   onChange,
   label = 'Client Attraction Video',
-  helpText = 'Upload an MP4/WebM video file (up to 30MB) or paste a direct video URL or YouTube embed link.',
+  helpText = 'Upload any video file (any format and size) or paste a direct video URL or YouTube embed link.',
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [inputUrl, setInputUrl] = useState(value);
   const [isUrlMode, setIsUrlMode] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [fileName, setFileName] = useState<string | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Accept any video file format (MP4, WebM, MOV, AVI, MKV, 3GP, OGG, FLV, WMV, etc.)
-    const isVideo = file.type.startsWith('video/') || 
-      /\.(mp4|webm|mkv|mov|avi|wmv|flv|3gp|m4v|ogv|ts)$/i.test(file.name);
-
-    if (!isVideo) {
-      setErrorMsg('Please select a video file (MP4, WebM, MOV, AVI, MKV, 3GP, etc.)');
-      return;
-    }
-
-    // Limit to 60MB for local browser base64 storage
-    if (file.size > 60 * 1024 * 1024) {
-      setErrorMsg('Direct video file size should be under 60MB. For larger videos, please paste a YouTube, Vimeo, or hosted video link.');
-      return;
-    }
-
     setErrorMsg(null);
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        onChange(reader.result);
-        setInputUrl(reader.result);
+    const sizeStr = formatFileSize(file.size);
+    setFileName(`${file.name} (${sizeStr})`);
+    setIsLoading(true);
+
+    // 1. Try uploading to backend /api/upload/video (streams directly to disk with 1GB limit)
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const endpoint = API_BASE_URL ? `${API_BASE_URL}/upload/video` : '/api/upload/video';
+      const token = getAuthToken();
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers,
+        body: formData,
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        if (json?.data?.fileUrl) {
+          const finalUrl = getUploadUrl(json.data.fileUrl);
+          onChange(finalUrl);
+          setInputUrl(finalUrl);
+          setIsLoading(false);
+          return;
+        }
       }
-    };
-    reader.readAsDataURL(file);
+    } catch {
+      // Backend unavailable or network error — fall through to browser playback
+    }
+
+    // 2. Direct browser playback handling (works with ANY size and never throws out-of-memory errors)
+    try {
+      if (file.size <= 20 * 1024 * 1024) {
+        // Smaller files (<=20MB) can be safely read as DataURL for offline localStorage persistence
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === 'string') {
+            onChange(reader.result);
+            setInputUrl(reader.result);
+          }
+          setIsLoading(false);
+        };
+        reader.onerror = () => {
+          // If browser string allocation fails, use ObjectURL
+          const objUrl = URL.createObjectURL(file);
+          onChange(objUrl);
+          setInputUrl(objUrl);
+          setIsLoading(false);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        // Large files (>20MB): URL.createObjectURL creates an instant blob: URL with zero memory overhead!
+        const objUrl = URL.createObjectURL(file);
+        onChange(objUrl);
+        setInputUrl(objUrl);
+        setIsLoading(false);
+      }
+    } catch (err: any) {
+      // Final fallback
+      const objUrl = URL.createObjectURL(file);
+      onChange(objUrl);
+      setInputUrl(objUrl);
+      setIsLoading(false);
+    }
   };
 
   const handleApplyUrl = () => {
@@ -124,34 +180,52 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
           </button>
         </div>
       ) : (
-        <div className="flex items-center gap-3">
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            accept="video/*,.mp4,.webm,.mkv,.mov,.avi,.wmv,.flv,.3gp,.m4v,.ts"
-            className="hidden"
-          />
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 rounded-xl text-xs font-bold flex items-center gap-2 cursor-pointer transition-colors shadow-2xs"
-          >
-            <Upload className="w-4 h-4 text-emerald-700" />
-            <span>Choose Video File from Device</span>
-          </button>
-          {value && (
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="video/*,*/*"
+              className="hidden"
+            />
             <button
               type="button"
-              onClick={() => {
-                onChange('');
-                setInputUrl('');
-              }}
-              className="px-3 py-2 text-slate-500 hover:text-rose-600 text-xs font-semibold cursor-pointer flex items-center gap-1"
+              disabled={isLoading}
+              onClick={() => fileInputRef.current?.click()}
+              className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 disabled:opacity-50 text-slate-800 border border-slate-300 rounded-xl text-xs font-bold flex items-center gap-2 cursor-pointer transition-colors shadow-2xs"
             >
-              <X className="w-3.5 h-3.5" />
-              <span>Remove Video</span>
+              <Upload className="w-4 h-4 text-emerald-700" />
+              <span>Choose Video File from Device</span>
             </button>
+            {value && (
+              <button
+                type="button"
+                onClick={() => {
+                  onChange('');
+                  setInputUrl('');
+                  setFileName(null);
+                }}
+                className="px-3 py-2 text-slate-500 hover:text-rose-600 text-xs font-semibold cursor-pointer flex items-center gap-1"
+              >
+                <X className="w-3.5 h-3.5" />
+                <span>Remove Video</span>
+              </button>
+            )}
+          </div>
+
+          {isLoading && (
+            <div className="flex items-center gap-2 text-xs text-emerald-700 font-semibold p-2 bg-emerald-50 rounded-lg border border-emerald-200">
+              <span className="w-3.5 h-3.5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin shrink-0" />
+              <span>Processing {fileName || 'video file'}...</span>
+            </div>
+          )}
+
+          {!isLoading && fileName && value && (
+            <div className="text-[11px] text-slate-600 flex items-center gap-1.5 px-2">
+              <VideoIcon className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span className="font-medium truncate">{fileName}</span>
+            </div>
           )}
         </div>
       )}

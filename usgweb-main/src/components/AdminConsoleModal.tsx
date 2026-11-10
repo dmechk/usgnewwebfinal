@@ -33,7 +33,9 @@ import { ImageUploader } from './ImageUploader';
 import { VideoUploader } from './VideoUploader';
 import { InquiriesDashboard } from './InquiriesDashboard';
 import { UserManagementDashboard } from './UserManagementDashboard';
+import { AiManagementDashboard } from './AiManagementDashboard';
 import {
+  Bot,
   X,
   Layers,
   Bell,
@@ -98,18 +100,19 @@ import {
   Youtube,
   Upload,
   Archive,
+  FileSpreadsheet,
 } from 'lucide-react';
 import { ImigongoRibbon } from './ImigongoPattern';
 import { ApplicantFeedbackModal } from './ApplicantFeedbackModal';
 import { ApplicantDossierModal } from './ApplicantDossierModal';
-import { exportApplicantsToExcel } from '../utils/applicantExport';
+import { exportApplicantsToExcel, exportApplicantsToPDF, normalizeApplicantStatus } from '../utils/applicantExport';
 
 
 interface AdminConsoleModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentLang: Language;
-  initialTab?: 'users' | 'contact' | 'pictures' | 'navigation' | 'leaders' | 'moments' | 'products' | 'announcements' | 'applications' | 'careers' | 'job-applicants' | 'theme' | 'guide' | 'branches' | 'inquiries' | 'messages' | 'impact' | 'home-hero' | 'home-metrics' | 'about' | 'videos' | 'partners' | 'employment-types' | 'qualifications' | 'archive';
+  initialTab?: 'users' | 'contact' | 'pictures' | 'navigation' | 'leaders' | 'moments' | 'products' | 'announcements' | 'applications' | 'careers' | 'job-applicants' | 'theme' | 'guide' | 'branches' | 'inquiries' | 'messages' | 'impact' | 'home-hero' | 'home-metrics' | 'about' | 'videos' | 'partners' | 'employment-types' | 'qualifications' | 'archive' | 'ai-assistant';
   saccoInfo: SaccoContactInfo;
   onUpdateSaccoInfo: (updated: Partial<SaccoContactInfo>) => void;
   navItems: NavItemConfig[];
@@ -327,10 +330,10 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
       'users', 'contact', 'pictures', 'navigation', 'home-hero', 'home-metrics', 'about',
       'leaders', 'moments', 'products', 'announcements', 'job-applicants',
       'careers', 'applications', 'branches', 'employment-types', 'qualifications',
-      'impact', 'videos', 'partners', 'messages', 'inquiries', 'theme', 'guide', 'archive'
+      'impact', 'videos', 'partners', 'messages', 'inquiries', 'theme', 'guide', 'archive', 'ai-assistant'
     ],
     ADMIN: [
-      'moments', 'announcements', 'branches', 'impact', 'videos', 'partners', 'inquiries'
+      'moments', 'announcements', 'branches', 'impact', 'videos', 'partners', 'inquiries', 'ai-assistant'
     ],
     ADMIN_HR: [
       'job-applicants', 'careers', 'employment-types', 'qualifications', 'inquiries'
@@ -339,7 +342,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
       'careers', 'applications', 'products', 'home-metrics', 'inquiries'
     ],
     MD: [
-      'messages', 'leaders', 'moments', 'announcements', 'job-applicants', 'applications', 'impact', 'inquiries'
+      'messages', 'leaders', 'moments', 'announcements', 'job-applicants', 'applications', 'impact', 'inquiries', 'ai-assistant'
     ],
     admin: [
       'users', 'contact', 'pictures', 'navigation', 'home-hero', 'home-metrics', 'about',
@@ -384,6 +387,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
     | 'employment-types'
     | 'qualifications'
     | 'archive'
+    | 'ai-assistant'
   >(getInitialActiveTab);
 
   useEffect(() => {
@@ -1252,27 +1256,101 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
     });
   };
 
-  const filteredJobApplications = jobApplications.filter((app) => {
-    if (applicantStatusFilter !== 'all' && app.status !== applicantStatusFilter) {
-      return false;
-    }
-    if (applicantJobFilter !== 'all' && app.jobId !== applicantJobFilter && app.jobTitle !== applicantJobFilter) {
-      return false;
-    }
-    if (applicantSearch.trim()) {
-      const q = applicantSearch.toLowerCase().trim();
-      const matchName = app.fullName.toLowerCase().includes(q);
-      const matchNid = app.nationalId.toLowerCase().includes(q);
-      const matchPhone = app.phone.toLowerCase().includes(q);
-      const matchTitle = app.jobTitle.toLowerCase().includes(q);
-      const matchSector = app.residenceSector.toLowerCase().includes(q);
-      const matchComment = (app.comment || app.notes || '').toLowerCase().includes(q);
-      if (!matchName && !matchNid && !matchPhone && !matchTitle && !matchSector && !matchComment) {
+  // Dynamic list of all positions across both jobPostings and applicant records
+  const availablePositions = React.useMemo(() => {
+    const map = new Map<string, { id: string; title: string; count: number }>();
+
+    // 1. Add all defined job postings
+    jobPostings.forEach((j) => {
+      const title =
+        currentLang === 'rw'
+          ? j.titleRw
+          : currentLang === 'fr'
+          ? j.titleFr || j.titleEn
+          : j.titleEn;
+      map.set(j.id, { id: j.id, title, count: 0 });
+    });
+
+    // 2. Tally candidate counts and register any custom positions from submissions
+    jobApplications.forEach((a) => {
+      const jId = String(a.jobId || '').trim();
+      const jTitle = String(a.jobTitle || '').trim();
+
+      let matchedKey = '';
+      if (jId && map.has(jId)) {
+        matchedKey = jId;
+      } else {
+        for (const [k, v] of map.entries()) {
+          if (v.title.toLowerCase() === jTitle.toLowerCase()) {
+            matchedKey = k;
+            break;
+          }
+        }
+      }
+
+      if (matchedKey) {
+        const item = map.get(matchedKey)!;
+        item.count += 1;
+      } else if (jTitle || jId) {
+        const key = jId || jTitle;
+        map.set(key, { id: key, title: jTitle || jId, count: 1 });
+      }
+    });
+
+    return Array.from(map.values());
+  }, [jobPostings, jobApplications, currentLang]);
+
+  const filteredJobApplications = React.useMemo(() => {
+    return jobApplications.filter((app) => {
+      // 1. Normalized status filter
+      if (applicantStatusFilter !== 'all' && normalizeApplicantStatus(app.status) !== applicantStatusFilter) {
         return false;
       }
-    }
-    return true;
-  });
+
+      // 2. Position filter
+      if (applicantJobFilter !== 'all') {
+        const filterLower = applicantJobFilter.toLowerCase().trim();
+        const targetJob = jobPostings.find((j) => String(j.id).toLowerCase() === filterLower);
+        const targetTitleEn = targetJob?.titleEn?.toLowerCase();
+        const targetTitleRw = targetJob?.titleRw?.toLowerCase();
+        const targetTitleFr = targetJob?.titleFr?.toLowerCase();
+
+        const appJobId = String(app.jobId ?? '').toLowerCase().trim();
+        const appJobTitle = String(app.jobTitle ?? '').toLowerCase().trim();
+
+        const matchId = appJobId === filterLower;
+        const matchTitle = appJobTitle === filterLower;
+        const matchPosting =
+          (targetTitleEn && appJobTitle.includes(targetTitleEn)) ||
+          (targetTitleRw && appJobTitle.includes(targetTitleRw)) ||
+          (targetTitleFr && appJobTitle.includes(targetTitleFr));
+
+        if (!matchId && !matchTitle && !matchPosting) {
+          return false;
+        }
+      }
+
+      // 3. Search query across all candidate details
+      if (applicantSearch.trim()) {
+        const q = applicantSearch.toLowerCase().trim();
+        const matchName = String(app.fullName ?? '').toLowerCase().includes(q);
+        const matchNid = String(app.nationalId ?? '').toLowerCase().includes(q);
+        const matchPhone = String(app.phone ?? '').toLowerCase().includes(q);
+        const matchEmail = String(app.email ?? '').toLowerCase().includes(q);
+        const matchTitle = String(app.jobTitle ?? '').toLowerCase().includes(q);
+        const matchSector = String(app.residenceSector ?? '').toLowerCase().includes(q);
+        const matchComment = String(app.comment || app.notes || '').toLowerCase().includes(q);
+        const matchRef = String(app.referenceNumber ?? app.id ?? '').toLowerCase().includes(q);
+        const matchEdu = String(app.educationLevel ?? '').toLowerCase().includes(q);
+
+        if (!matchName && !matchNid && !matchPhone && !matchEmail && !matchTitle && !matchSector && !matchComment && !matchRef && !matchEdu) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [jobApplications, applicantStatusFilter, applicantJobFilter, applicantSearch, jobPostings]);
 
   const handleOpenFeedback = (app: JobApplication) => {
     setFeedbackApplicant(app);
@@ -1375,13 +1453,13 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
 
   const renderJobApplicantsWorkspace = () => {
     const totalCount = jobApplications.length;
-    const pendingCount = jobApplications.filter((a) => a.status === 'pending').length;
-    const shortlistedCount = jobApplications.filter((a) => a.status === 'shortlisted').length;
-    const notShortlistedCount = jobApplications.filter((a) => a.status === 'not_shortlisted').length;
-    const interviewCount = jobApplications.filter((a) => a.status === 'interview').length;
-    const acceptedCount = jobApplications.filter((a) => a.status === 'accepted').length;
-    const rejectedCount = jobApplications.filter((a) => a.status === 'rejected').length;
-    const waitlistedCount = jobApplications.filter((a) => a.status === 'waitlisted').length;
+    const pendingCount = jobApplications.filter((a) => normalizeApplicantStatus(a.status) === 'pending').length;
+    const shortlistedCount = jobApplications.filter((a) => normalizeApplicantStatus(a.status) === 'shortlisted').length;
+    const notShortlistedCount = jobApplications.filter((a) => normalizeApplicantStatus(a.status) === 'not_shortlisted').length;
+    const interviewCount = jobApplications.filter((a) => normalizeApplicantStatus(a.status) === 'interview').length;
+    const acceptedCount = jobApplications.filter((a) => normalizeApplicantStatus(a.status) === 'accepted').length;
+    const rejectedCount = jobApplications.filter((a) => normalizeApplicantStatus(a.status) === 'rejected').length;
+    const waitlistedCount = jobApplications.filter((a) => normalizeApplicantStatus(a.status) === 'waitlisted').length;
 
     return (
       <div className="space-y-4 animate-in fade-in">
@@ -1424,18 +1502,50 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
                 <span>Reset Sample Data</span>
               </button>
             )}
+
+            {/* Filtered Excel Download Button */}
             <button
               type="button"
-              onClick={() =>
+              onClick={() => {
+                const targetList = filteredJobApplications.length > 0 ? filteredJobApplications : jobApplications;
+                const statusTag = applicantStatusFilter !== 'all' ? `_${applicantStatusFilter}` : '';
+                const dateTag = new Date().toISOString().split('T')[0];
                 exportApplicantsToExcel(
-                  jobApplications,
-                  `UBUMWE_SACCO_Job_Applicants_${new Date().toISOString().split('T')[0]}.csv`
-                )
-              }
-              className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-100 rounded-xl text-xs font-bold flex items-center gap-1.5 border border-slate-600 shadow-sm transition-all cursor-pointer"
+                  targetList,
+                  `UBUMWE_SACCO_Job_Applicants${statusTag}_${dateTag}.xls`
+                );
+              }}
+              className="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+              title="Download Excel spreadsheet with full applicant details based on current filter"
             >
-              <Download className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Export All (Excel / CSV)</span>
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-200" />
+              <span>
+                {filteredJobApplications.length !== totalCount
+                  ? `Download Filtered Excel (${filteredJobApplications.length})`
+                  : `Export All Excel (${totalCount})`}
+              </span>
+            </button>
+
+            {/* Filtered PDF Report Button */}
+            <button
+              type="button"
+              onClick={() => {
+                const targetList = filteredJobApplications.length > 0 ? filteredJobApplications : jobApplications;
+                const filterTitle =
+                  applicantStatusFilter !== 'all'
+                    ? `CANDIDATE APPLICATIONS REPORT (Status: ${applicantStatusFilter.toUpperCase()})`
+                    : 'OFFICIAL CANDIDATE EVALUATION & ROSTER REPORT';
+                exportApplicantsToPDF(targetList, filterTitle);
+              }}
+              className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-100 rounded-xl text-xs font-bold flex items-center gap-1.5 border border-slate-600 shadow-sm transition-all cursor-pointer"
+              title="Download official PDF evaluation dossier report based on current filter"
+            >
+              <Printer className="w-3.5 h-3.5 text-emerald-400" />
+              <span>
+                {filteredJobApplications.length !== totalCount
+                  ? `Download Filtered PDF (${filteredJobApplications.length})`
+                  : `Export All PDF (${totalCount})`}
+              </span>
             </button>
           </div>
         </div>
@@ -1563,20 +1673,58 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
               <select
                 value={applicantJobFilter}
                 onChange={(e) => setApplicantJobFilter(e.target.value)}
-                className="px-2.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 cursor-pointer focus:outline-hidden"
+                className="px-2.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 cursor-pointer focus:outline-hidden max-w-[260px] truncate"
               >
-                <option value="all">All Vacancy Positions</option>
-                {jobPostings.map((job) => (
-                  <option key={job.id} value={job.id}>
-                    {currentLang === 'fr' ? (job.titleFr || job.titleEn) : currentLang === 'rw' ? job.titleRw : job.titleEn}
+                <option value="all">All Vacancy Positions ({jobApplications.length})</option>
+                {availablePositions.map((pos) => (
+                  <option key={pos.id} value={pos.id}>
+                    {pos.title} {pos.count > 0 ? `(${pos.count})` : ''}
                   </option>
                 ))}
               </select>
             </div>
           </div>
 
-          <div className="text-xs font-semibold text-slate-500">
-            Showing <span className="font-bold text-slate-900">{filteredJobApplications.length}</span> of {totalCount} candidates
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-slate-500">
+              Showing <span className="font-bold text-slate-900">{filteredJobApplications.length}</span> of {totalCount} candidates
+            </span>
+            {filteredJobApplications.length > 0 && (
+              <div className="flex items-center gap-1.5 ml-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const statusTag = applicantStatusFilter !== 'all' ? `_${applicantStatusFilter}` : '';
+                    const dateTag = new Date().toISOString().split('T')[0];
+                    exportApplicantsToExcel(
+                      filteredJobApplications,
+                      `UBUMWE_SACCO_Filtered_Applicants${statusTag}_${dateTag}.xls`
+                    );
+                  }}
+                  className="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-[11px] font-bold flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
+                  title="Export currently filtered candidates to Excel"
+                >
+                  <FileSpreadsheet className="w-3 h-3 text-emerald-700" />
+                  <span>Excel ({filteredJobApplications.length})</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const statusLabel = applicantStatusFilter !== 'all' ? `Status: ${applicantStatusFilter.toUpperCase()}` : 'All Statuses';
+                    const positionLabel = applicantJobFilter !== 'all' ? ` | Position: ${applicantJobFilter}` : '';
+                    exportApplicantsToPDF(
+                      filteredJobApplications,
+                      `CANDIDATE APPLICATIONS REPORT (${statusLabel}${positionLabel})`
+                    );
+                  }}
+                  className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 rounded-lg text-[11px] font-bold flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
+                  title="Print or export currently filtered candidates to PDF"
+                >
+                  <Printer className="w-3 h-3 text-slate-700" />
+                  <span>PDF ({filteredJobApplications.length})</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -1959,6 +2107,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
             { id: 'partners', label: `Partners & Socials (${partners.length + socialLinks.length})`, icon: <Share2 className="w-3.5 h-3.5 text-emerald-400" />, activeClass: 'bg-emerald-700 text-white shadow-xs ring-1 ring-emerald-500' },
             { id: 'messages', label: `Manager Messages (${managerMessages.length})`, icon: <Quote className="w-3.5 h-3.5 text-emerald-700" />, activeClass: 'bg-white text-slate-900 shadow-xs' },
             { id: 'inquiries', label: `Inquiries (${contactInquiries.length})`, icon: <MessageSquare className="w-3.5 h-3.5 text-emerald-700" />, activeClass: 'bg-white text-slate-900 shadow-xs' },
+            { id: 'ai-assistant', label: 'AI Digital Assistant', icon: <Bot className="w-3.5 h-3.5 text-emerald-400" />, activeClass: 'bg-emerald-700 text-white shadow-xs ring-1 ring-emerald-500' },
             { id: 'theme', label: 'Theme', icon: <Palette className="w-3.5 h-3.5 text-amber-500" />, activeClass: 'bg-white text-slate-900 shadow-xs' },
             { id: 'guide', label: 'Guide', icon: <BookOpen className="w-3.5 h-3.5" />, activeClass: 'bg-emerald-900 text-white shadow-xs' },
             { id: 'archive', label: 'Archive & Backup', icon: <Archive className="w-3.5 h-3.5 text-indigo-400" />, activeClass: 'bg-indigo-700 text-white shadow-xs ring-1 ring-indigo-500' },
@@ -5461,7 +5610,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
                       value={videoUrl}
                       onChange={setVideoUrl}
                       label="Video Source (File Upload or YouTube / MP4 Link) *"
-                      helpText="Select an MP4/WebM video file from your computer or paste a direct video / YouTube URL."
+                      helpText="Select any video file (any size or format) from your computer or paste a direct video / YouTube URL."
                     />
                   </div>
 
@@ -6391,6 +6540,14 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
           )}
 
           {/* TAB: INQUIRIES */}
+          
+          {/* TAB: AI DIGITAL ASSISTANT & KNOWLEDGE MANAGEMENT */}
+          {activeTab === 'ai-assistant' && (
+            <div className="animate-in fade-in">
+              <AiManagementDashboard userRole={userRole} />
+            </div>
+          )}
+
           {activeTab === 'inquiries' && (
             <InquiriesDashboard
               inquiries={contactInquiries}

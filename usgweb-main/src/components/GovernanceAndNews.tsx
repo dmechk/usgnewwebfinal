@@ -114,17 +114,17 @@ export const GovernanceAndNews: React.FC<GovernanceAndNewsProps> = ({
             {storiesList.map((item) => (
               <div
                 key={item.id}
-                className="bg-white rounded-3xl border border-slate-200 overflow-hidden flex flex-col justify-between shadow-xs hover:border-slate-300 transition-colors relative group"
+                className="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col justify-between shadow-xs hover:border-emerald-300 hover:shadow-md transition-all relative group"
               >
-                <div className="h-56 sm:h-64 overflow-hidden relative">
+                <div className="h-56 sm:h-64 overflow-hidden relative bg-slate-100">
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     referrerPolicy="no-referrer"
                     loading="lazy"
                   />
-                  <div className="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-md text-emerald-300 text-xs font-bold px-3 py-1 rounded-full border border-slate-700">
+                  <div className="absolute top-3 right-3 bg-slate-900/85 backdrop-blur-md text-emerald-300 text-xs font-bold px-3 py-1 rounded-full border border-slate-700 shadow-sm">
                     {item.metric}
                   </div>
 
@@ -157,12 +157,12 @@ export const GovernanceAndNews: React.FC<GovernanceAndNewsProps> = ({
                   )}
                 </div>
 
-                <div className="p-6 sm:p-8 flex-1 flex flex-col justify-between">
+                <div className="p-6 sm:p-7 flex-1 flex flex-col justify-between space-y-4">
                   <blockquote className="text-sm sm:text-base text-slate-700 leading-relaxed italic">
                     "{currentLang === 'fr' ? ((item as CommunityImpactStory).quoteFr || item.quoteEn) : currentLang === 'rw' ? item.quoteRw || item.quoteEn : item.quoteEn}"
                   </blockquote>
 
-                  <div className="pt-6 mt-6 border-t border-slate-100 flex items-center justify-between">
+                  <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
                     <div>
                       <h4 className="text-base font-bold text-slate-900">{item.name}</h4>
                       <p className="text-xs text-slate-500 mt-0.5">
@@ -233,77 +233,82 @@ export const GovernanceAndNews: React.FC<GovernanceAndNewsProps> = ({
 
           {/* News Cards Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {announcements.map((ann) => (
-              <div
-                key={ann.id}
-                className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-xs hover:border-emerald-300 hover:shadow-md transition-all flex flex-col group"
-              >
-                {/* Card Image */}
-                <div className="relative aspect-video overflow-hidden bg-slate-100">
-                  {ann.imageUrl ? (
-                    <img
-                      src={ann.imageUrl}
-                      alt={currentLang === 'fr' ? ann.titleFr || ann.titleEn : currentLang === 'rw' ? ann.titleRw || ann.titleEn : ann.titleEn}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <ImageIcon className="w-12 h-12 text-slate-300" />
-                    </div>
-                  )}
-                  {/* Category badge */}
-                  <span className={`absolute top-3 left-3 text-[10px] font-bold uppercase px-2.5 py-1 rounded-full ${getCategoryColor(ann.category)}`}>
-                    {ann.category.replace('_', ' ')}
-                  </span>
-                  {/* Admin overlay */}
-                  {isAdmin && (
-                    <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        type="button"
-                        onClick={() => onOpenAdminConsole?.('announcements')}
-                        className="p-1.5 bg-white/90 backdrop-blur-xs rounded-lg text-slate-600 hover:text-emerald-700 border border-slate-200 shadow-xs"
-                        title="Edit notice"
-                      >
-                        <Edit2 className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => onDeleteAnnouncement?.(ann.id)}
-                        className="p-1.5 bg-white/90 backdrop-blur-xs rounded-lg text-slate-400 hover:text-red-600 border border-slate-200 shadow-xs"
-                        title="Delete notice"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  )}
-                </div>
+            {announcements.map((ann) => {
+              const displayImg = ann.imageUrl || ann.featuredImage;
+              return (
+                <div
+                  key={ann.id}
+                  className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs hover:border-emerald-300 hover:shadow-md transition-all flex flex-col group"
+                >
+                  {/* Card Image */}
+                  <div className="relative aspect-video overflow-hidden bg-slate-100">
+                    {displayImg ? (
+                      <img
+                        src={displayImg}
+                        alt={currentLang === 'fr' ? ann.titleFr || ann.titleEn : currentLang === 'rw' ? ann.titleRw || ann.titleEn : ann.titleEn}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <ImageIcon className="w-12 h-12 text-slate-300" />
+                      </div>
+                    )}
+                    {/* Category badge */}
+                    <span className={`absolute top-3 left-3 text-[10px] font-bold uppercase px-2.5 py-1 rounded-full ${getCategoryColor(ann.category)}`}>
+                      {ann.category.replace('_', ' ')}
+                    </span>
+                    {/* Admin overlay */}
+                    {isAdmin && (
+                      <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          type="button"
+                          onClick={() => onOpenAdminConsole?.('announcements')}
+                          className="p-1.5 bg-white/90 backdrop-blur-xs rounded-lg text-slate-600 hover:text-emerald-700 border border-slate-200 shadow-xs cursor-pointer"
+                          title="Edit notice"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onDeleteAnnouncement?.(ann.id)}
+                          className="p-1.5 bg-white/90 backdrop-blur-xs rounded-lg text-slate-400 hover:text-red-600 border border-slate-200 shadow-xs cursor-pointer"
+                          title="Delete notice"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
 
-                {/* Card Body */}
-                <div className="p-5 flex flex-col flex-1">
-                  <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
-                    <Calendar className="w-3.5 h-3.5 text-emerald-700" />
-                    <span>{ann.date}</span>
-                  </div>
-                  <h4 className="text-sm sm:text-base font-bold text-slate-900 leading-snug mb-2">
-                    {currentLang === 'fr' ? ann.titleFr || ann.titleEn : currentLang === 'rw' ? ann.titleRw || ann.titleEn : ann.titleEn}
-                  </h4>
-                  <p className="text-xs text-slate-600 line-clamp-3 flex-1">
-                    {currentLang === 'fr' ? ann.summaryFr || ann.summaryEn : currentLang === 'rw' ? ann.summaryRw || ann.summaryEn : ann.summaryEn}
-                  </p>
-                  <div className="mt-4 pt-4 border-t border-slate-100">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedAnnouncement(ann)}
-                      className="w-full px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
-                    >
-                      <span>{t.governance.learnMore}</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
+                  {/* Card Body */}
+                  <div className="p-5 sm:p-6 flex flex-col flex-1 justify-between">
+                    <div>
+                      <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
+                        <Calendar className="w-3.5 h-3.5 text-emerald-700" />
+                        <span>{ann.date}</span>
+                      </div>
+                      <h4 className="text-sm sm:text-base font-bold text-slate-900 leading-snug mb-2 line-clamp-2">
+                        {currentLang === 'fr' ? ann.titleFr || ann.titleEn : currentLang === 'rw' ? ann.titleRw || ann.titleEn : ann.titleEn}
+                      </h4>
+                      <p className="text-xs text-slate-600 line-clamp-3">
+                        {currentLang === 'fr' ? ann.summaryFr || ann.summaryEn : currentLang === 'rw' ? ann.summaryRw || ann.summaryEn : ann.summaryEn}
+                      </p>
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-slate-100">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedAnnouncement(ann)}
+                        className="w-full px-3.5 py-2.5 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-800 text-slate-800 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        <span>{t.governance.learnMore}</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

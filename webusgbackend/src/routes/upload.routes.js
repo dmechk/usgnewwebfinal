@@ -6,6 +6,7 @@ const fs = require('fs');
 const multer = require('multer');
 const AppError = require('../utils/appError');
 const { StatusCodes } = require('http-status-codes');
+const { uploadLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
 
@@ -26,7 +27,6 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  // Allow images, PDFs, word documents, text
   const allowedMimes = [
     'image/jpeg',
     'image/png',
@@ -53,8 +53,14 @@ const upload = multer({
   },
 });
 
-// Upload a single file (publicly accessible for applicants and authenticated users)
-router.post('/', upload.single('file'), (req, res, next) => {
+/**
+ * POST /api/upload
+ * Upload a single file.
+ * Open to public (needed for job applicant CV submission) but rate-limited per IP.
+ * NOTE: For production, migrate to cloud storage (Cloudinary/S3) to avoid
+ * ephemeral disk loss on Render redeployments.
+ */
+router.post('/', uploadLimiter, upload.single('file'), (req, res, next) => {
   try {
     if (!req.file) {
       throw new AppError('No file provided', StatusCodes.BAD_REQUEST);
@@ -78,7 +84,7 @@ router.post('/', upload.single('file'), (req, res, next) => {
 });
 
 // Upload multiple files
-router.post('/multiple', upload.array('files', 5), (req, res, next) => {
+router.post('/multiple', uploadLimiter, upload.array('files', 5), (req, res, next) => {
   try {
     if (!req.files || req.files.length === 0) {
       throw new AppError('No files provided', StatusCodes.BAD_REQUEST);
@@ -96,6 +102,37 @@ router.post('/multiple', upload.array('files', 5), (req, res, next) => {
       success: true,
       message: `${files.length} files uploaded successfully`,
       data: { files },
+    });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+// Dedicated video upload endpoint with 1GB limit and any video format
+const videoUpload = multer({
+  storage,
+  limits: {
+    fileSize: 1024 * 1024 * 1024, // 1GB limit for videos
+  },
+});
+
+router.post('/video', uploadLimiter, videoUpload.single('file'), (req, res, next) => {
+  try {
+    if (!req.file) {
+      throw new AppError('No video file provided', StatusCodes.BAD_REQUEST);
+    }
+
+    const fileUrl = `/uploads/${req.file.filename}`;
+    return res.status(StatusCodes.CREATED).json({
+      success: true,
+      message: 'Video uploaded successfully',
+      data: {
+        fileUrl,
+        filename: req.file.filename,
+        originalName: req.file.originalname,
+        size: req.file.size,
+        mimetype: req.file.mimetype,
+      },
     });
   } catch (err) {
     return next(err);

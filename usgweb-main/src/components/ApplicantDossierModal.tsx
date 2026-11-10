@@ -17,8 +17,10 @@ import {
   Briefcase,
   Star,
   FileText,
+  FileSpreadsheet,
 } from 'lucide-react';
 import { ImigongoRibbon } from './ImigongoPattern';
+import { exportApplicantsToExcel } from '../utils/applicantExport';
 
 interface ApplicantDossierModalProps {
   isOpen: boolean;
@@ -77,6 +79,19 @@ export const ApplicantDossierModal: React.FC<ApplicantDossierModalProps> = ({
             </span>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() =>
+                exportApplicantsToExcel(
+                  [applicant],
+                  `Applicant_${applicant.fullName.replace(/\s+/g, '_')}_${applicant.nationalId}.xls`
+                )
+              }
+              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm cursor-pointer"
+            >
+              <FileSpreadsheet className="w-4 h-4" />
+              <span>Download Excel</span>
+            </button>
             <button
               type="button"
               onClick={handlePrint}

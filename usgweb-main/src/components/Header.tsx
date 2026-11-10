@@ -1,31 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Language, ThemeColor, SaccoContactInfo, NavItemConfig, SystemImagesConfig } from '../types';
-import { TRANSLATIONS } from '../i18n/translations';
 import { SACCO_INFO, THEME_OPTIONS, INITIAL_NAV_ITEMS } from '../data/saccoData';
 import {
-  Phone,
-  Smartphone,
-  Globe,
-  Menu,
-  X,
-  Landmark,
-  UserCheck,
-  Mail,
-  Lock,
-  Shield,
-  LogOut,
-  Settings,
-  Palette,
-  Check,
-  MessageSquare,
-  ImageIcon,
-  Compass,
-  Users,
-  Archive,
-  Layers,
-  Briefcase,
-  Bell,
-  Quote,
+  Phone, Smartphone, Menu, X, Mail, Shield, LogOut, Settings, Palette,
+  Check, ImageIcon, Compass, Users, Layers, Briefcase, Bell, Quote,
 } from 'lucide-react';
 import { ImigongoRibbon } from './ImigongoPattern';
 import { TailwindClasses } from '../constants/tailwindClasses';
@@ -53,7 +31,6 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   currentLang,
   onLanguageChange,
-  onOpenMembershipModal,
   onNavigateToSection,
   isManagerLoggedIn,
   managerName,
@@ -66,11 +43,19 @@ export const Header: React.FC<HeaderProps> = ({
   navItems = INITIAL_NAV_ITEMS,
   systemImages,
   activeSection = 'all',
-  onOpenManagerLogin,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
-  const t = TRANSLATIONS[currentLang];
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 25);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleNavClick = (sectionId: string) => {
     onNavigateToSection(sectionId);
@@ -87,15 +72,8 @@ export const Header: React.FC<HeaderProps> = ({
     currentLang === 'fr'
       ? 'Contactez-nous'
       : currentLang === 'rw'
-      ? 'Twandikire'
-      : 'Contact Us';
-
-  const staffLoginLabel =
-    currentLang === 'fr'
-      ? 'Connexion Staff'
-      : currentLang === 'rw'
-      ? 'Kwinjira kw\'Abakozi'
-      : 'Staff Login';
+        ? 'Twandikire'
+        : 'Contact Us';
 
   const visibleNavs = navItems.filter((i) => i.visible);
   // Loan calculator is embedded inside Our Services; Contact Us is a standalone CTA button — both excluded from the nav link list
@@ -103,12 +81,13 @@ export const Header: React.FC<HeaderProps> = ({
     (item) => item.targetSection !== 'calculator' && item.targetSection !== 'contact'
   );
   // Mobile nav shows everything (including contact) except the calculator
-  const mobileNavs = visibleNavs.filter((item) => item.targetSection !== 'calculator');
+  const mobileNavs = visibleNavs.filter((item) => item.targetSection !== 'calculator' && item.targetSection !== 'contact');
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md shadow-xs transition-colors duration-300">
-      {/* Top Imigongo Skeleton Ribbon */}
-      <ImigongoRibbon height={14} variant="light" bordered={false} />
+    <header className={`sticky top-0 z-40 bg-white/95 backdrop-blur-md transition-all duration-300 border-b border-transparent ${isScrolled ? 'shadow-md' : 'shadow-xs'
+      }`}>
+      {/* Crisp & Small Imigongo Cultural Ribbon */}
+      <ImigongoRibbon height={7} variant="light" bordered={true} />
 
       {/* Admin Status Ribbon (Strictly tailored to user's role and privileges) */}
       {isManagerLoggedIn && (() => {
@@ -127,10 +106,10 @@ export const Header: React.FC<HeaderProps> = ({
                 <strong className="text-emerald-300 font-mono">[{role}]</strong> {managerName || saccoInfo.email} ·{' '}
                 <span className="text-emerald-400 text-[11px] font-medium">
                   {isHR ? 'Human Resources & Recruitment Privileges' :
-                   isDAF ? 'Finance, Careers & KYC Loan Privileges' :
-                   isMD ? 'Executive Management & Governance Privileges' :
-                   isMediaAdmin ? 'Media, Gallery & News Privileges' :
-                   'Full System & Infrastructure Privileges'}
+                    isDAF ? 'Finance, Careers & KYC Loan Privileges' :
+                      isMD ? 'Executive Management & Governance Privileges' :
+                        isMediaAdmin ? 'Media, Gallery & News Privileges' :
+                          'Full System & Infrastructure Privileges'}
                 </span>
               </span>
             </div>
@@ -248,7 +227,7 @@ export const Header: React.FC<HeaderProps> = ({
       })()}
 
       {/* Top Utility Ribbon */}
-      <div className="bg-slate-900 text-slate-300 text-xs py-1.5 px-4 sm:px-8 border-b border-slate-800">
+      <div className="bg-slate-900 text-slate-300 text-xs py-1.5 px-3 sm:px-6 lg:px-8 border-b border-slate-800">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-4 text-[11px] sm:text-xs">
             <a
@@ -310,11 +289,10 @@ export const Header: React.FC<HeaderProps> = ({
                             onThemeChange(theme.id);
                             setThemeDropdownOpen(false);
                           }}
-                          className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors cursor-pointer ${
-                            isSelected
-                              ? 'bg-slate-800 text-white font-bold'
-                              : 'text-slate-300 hover:bg-slate-800/60 hover:text-white'
-                          }`}
+                          className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors cursor-pointer ${isSelected
+                            ? 'bg-slate-800 text-white font-bold'
+                            : 'text-slate-300 hover:bg-slate-800/60 hover:text-white'
+                            }`}
                         >
                           <div className="flex items-center gap-2">
                             <span
@@ -325,8 +303,8 @@ export const Header: React.FC<HeaderProps> = ({
                               {currentLang === 'fr'
                                 ? theme.nameFr || theme.nameEn
                                 : currentLang === 'rw'
-                                ? theme.nameRw
-                                : theme.nameEn}
+                                  ? theme.nameRw
+                                  : theme.nameEn}
                             </span>
                           </div>
                           {isSelected && <Check className="w-3.5 h-3.5 text-emerald-400" />}
@@ -343,33 +321,30 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 type="button"
                 onClick={() => onLanguageChange('en')}
-                className={`px-2 py-0.5 text-[11px] font-bold rounded cursor-pointer transition-colors ${
-                  currentLang === 'en'
-                    ? 'bg-emerald-600 text-white'
-                    : 'text-slate-400 hover:text-white'
-                }`}
+                className={`px-2 py-0.5 text-[11px] font-bold rounded cursor-pointer transition-colors ${currentLang === 'en'
+                  ? 'bg-emerald-600 text-white'
+                  : 'text-slate-400 hover:text-white'
+                  }`}
               >
                 EN
               </button>
               <button
                 type="button"
                 onClick={() => onLanguageChange('rw')}
-                className={`px-2 py-0.5 text-[11px] font-bold rounded cursor-pointer transition-colors ${
-                  currentLang === 'rw'
-                    ? 'bg-emerald-600 text-white'
-                    : 'text-slate-400 hover:text-white'
-                }`}
+                className={`px-2 py-0.5 text-[11px] font-bold rounded cursor-pointer transition-colors ${currentLang === 'rw'
+                  ? 'bg-emerald-600 text-white'
+                  : 'text-slate-400 hover:text-white'
+                  }`}
               >
                 RW
               </button>
               <button
                 type="button"
                 onClick={() => onLanguageChange('fr')}
-                className={`px-2 py-0.5 text-[11px] font-bold rounded cursor-pointer transition-colors ${
-                  currentLang === 'fr'
-                    ? 'bg-emerald-600 text-white'
-                    : 'text-slate-400 hover:text-white'
-                }`}
+                className={`px-2 py-0.5 text-[11px] font-bold rounded cursor-pointer transition-colors ${currentLang === 'fr'
+                  ? 'bg-emerald-600 text-white'
+                  : 'text-slate-400 hover:text-white'
+                  }`}
               >
                 FR
               </button>
@@ -379,18 +354,23 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Main Navigation Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-2.5 flex items-center justify-between gap-3 lg:gap-6">
-        {/* Zone 1: SACCO Identity & Big Prominent Logo */}
+      <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-2 lg:gap-3 xl:gap-5 transition-all duration-300 border-b border-transparent ${isScrolled ? 'py-1 sm:py-1.5' : 'py-2 sm:py-2.5'
+        }`}>
+        {/* Zone 1: SACCO Identity & Big, Prominent Circular Logo */}
         <button
           onClick={() => handleNavClick('hero')}
-          className="flex items-center gap-3 sm:gap-3.5 group cursor-pointer shrink-0 text-left py-1"
+          className="flex items-center gap-2.5 sm:gap-3.5 group cursor-pointer shrink-0 text-left py-0.5"
           title="UBUMWE SACCO GAKENKE - Home"
         >
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white border-2 border-emerald-600/40 text-emerald-900 flex items-center justify-center font-bold shadow-lg group-hover:border-emerald-500 group-hover:shadow-2xl group-hover:shadow-emerald-500/40 group-hover:-translate-y-0.5 group-hover:scale-110 transition-all duration-300 ease-out overflow-hidden p-1.5 bg-gradient-to-b from-white via-white to-slate-50 ring-2 ring-emerald-500/10 group-hover:ring-emerald-400/40">
+          {/* Circle logo badge — bold, sharp, and clearly visible */}
+          <div className={`relative shrink-0 rounded-full overflow-hidden border-2 sm:border-[2.5px] border-emerald-600/30 shadow-md bg-white transition-all duration-300 ease-out z-20 group-hover:scale-105 group-hover:shadow-lg p-0.5 ${isScrolled
+            ? 'w-11 h-11 sm:w-12 sm:h-12'
+            : 'w-14 h-14 sm:w-16 sm:h-16 lg:w-18 lg:h-18'
+            }`}>
             <img
               src={systemImages?.saccoLogo || defaultLogo}
               alt="UBUMWE SACCO GAKENKE Logo"
-              className="w-full h-full object-contain filter drop-shadow-sm transition-transform duration-300 ease-out group-hover:scale-125"
+              className="w-full h-full object-contain select-none transition-transform duration-300 group-hover:scale-105"
               onError={(e) => {
                 const target = e.currentTarget;
                 if (target.src !== defaultLogo) {
@@ -399,11 +379,21 @@ export const Header: React.FC<HeaderProps> = ({
               }}
             />
           </div>
-          <div className="flex flex-col justify-center">
-            <span className="text-base sm:text-lg font-black tracking-tight text-black leading-tight group-hover:text-emerald-800 transition-colors">
+          <div className="flex flex-col justify-center transition-all duration-300 select-none">
+            <span
+              className={
+                "font-black tracking-tight text-slate-900 leading-tight group-hover:text-emerald-700 transition-colors duration-300 " +
+                (isScrolled ? "text-sm sm:text-base" : "text-base sm:text-lg lg:text-lg xl:text-xl")
+              }
+            >
               UBUMWE SACCO
             </span>
-            <span className="text-xs sm:text-[13px] font-extrabold tracking-widest text-emerald-700 uppercase">
+            <span
+              className={
+                "font-extrabold tracking-widest text-emerald-700 uppercase transition-all duration-300 " +
+                (isScrolled ? "text-[9px] sm:text-[10px]" : "text-[10px] sm:text-xs")
+              }
+            >
               GAKENKE
             </span>
           </div>
@@ -421,11 +411,12 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.targetSection)}
-                className={`transition-all whitespace-nowrap shrink-0 px-3.5 py-2 rounded-xl cursor-pointer font-bold tracking-tight text-sm xl:text-base ${
-                  isActive
-                    ? 'active-nav bg-emerald-700 text-white font-extrabold shadow-sm hover:bg-emerald-800'
-                    : 'text-black hover:text-emerald-800 hover:bg-slate-100'
-                }`}
+                className={
+                  "transition-all whitespace-nowrap shrink-0 px-2 lg:px-2.5 xl:px-3 py-1.5 xl:py-2 rounded-xl cursor-pointer font-bold tracking-tight text-xs lg:text-[13px] xl:text-sm " +
+                  (isActive
+                    ? "active-nav bg-emerald-700 text-white font-black shadow-sm hover:bg-emerald-800"
+                    : "text-black hover:text-emerald-800 hover:bg-slate-100")
+                }
                 style={!isActive ? { color: '#000000' } : undefined}
               >
                 {getNavLabel(item)}
@@ -435,15 +426,16 @@ export const Header: React.FC<HeaderProps> = ({
         </nav>
 
         {/* Zone 3: Working Contact Us (styled identically to Branches & Outposts) */}
-        <div className="flex items-center gap-2.5 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <button
             type="button"
             onClick={() => handleNavClick('contact')}
-            className={`transition-all whitespace-nowrap shrink-0 px-3.5 py-2 rounded-xl cursor-pointer font-bold tracking-tight text-sm xl:text-base ${
-              activeSection === 'contact'
-                ? 'active-nav bg-emerald-700 text-white font-extrabold shadow-sm hover:bg-emerald-800'
-                : 'text-black hover:text-emerald-800 hover:bg-slate-100'
-            }`}
+            className={
+              "transition-all whitespace-nowrap shrink-0 px-3 xl:px-4 py-1.5 xl:py-2 rounded-xl cursor-pointer font-bold tracking-tight text-xs lg:text-[13px] xl:text-sm " +
+              (activeSection === "contact"
+                ? "active-nav bg-emerald-700 text-white font-black shadow-sm hover:bg-emerald-800"
+                : "text-black hover:text-emerald-800 hover:bg-slate-100")
+            }
             style={activeSection !== 'contact' ? { color: '#000000' } : undefined}
           >
             <span>{contactButtonLabel}</span>
@@ -461,9 +453,6 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Header Bottom Imigongo Skeleton Trim */}
-      <ImigongoRibbon height={16} variant="light" bordered={true} />
-
       {/* Mobile Navigation Dropdown */}
       {mobileMenuOpen && (
         <div className="lg:hidden border-t border-slate-200 bg-white px-4 py-4 space-y-3 shadow-lg max-h-[80vh] overflow-y-auto">
@@ -472,15 +461,17 @@ export const Header: React.FC<HeaderProps> = ({
               const isActive =
                 activeSection === item.targetSection ||
                 (activeSection === 'hero' && item.targetSection === 'hero');
+
               return (
                 <button
                   key={item.id}
                   onClick={() => handleNavClick(item.targetSection)}
-                  className={`text-left py-2.5 px-4 rounded-xl font-bold text-base transition-colors cursor-pointer ${
-                    isActive
-                      ? 'active-nav bg-emerald-700 text-white font-extrabold shadow-sm'
-                      : 'text-black hover:bg-slate-100'
-                  }`}
+                  className={
+                    "text-left py-2.5 px-4 rounded-xl font-bold text-base transition-colors cursor-pointer " +
+                    (isActive
+                      ? "active-nav bg-emerald-700 text-white font-extrabold shadow-sm"
+                      : "text-black hover:bg-slate-100")
+                  }
                   style={!isActive ? { color: '#000000' } : undefined}
                 >
                   {getNavLabel(item)}
@@ -509,9 +500,12 @@ export const Header: React.FC<HeaderProps> = ({
                       key={theme.id}
                       type="button"
                       onClick={() => onThemeChange(theme.id)}
-                      className={`h-8 rounded-lg flex items-center justify-center transition-all ${
-                        isSelected ? 'ring-2 ring-slate-900 ring-offset-1 scale-105' : 'opacity-80 hover:opacity-100'
-                      }`}
+                      className={
+                        "h-8 rounded-lg flex items-center justify-center transition-all " +
+                        (isSelected
+                          ? "ring-2 ring-slate-900 ring-offset-1 scale-105"
+                          : "opacity-80 hover:opacity-100")
+                      }
                       style={{ backgroundColor: theme.primaryHex }}
                       title={theme.nameEn}
                     >

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Language, JobPosting, JobApplication, EmploymentTypeItem } from '../types';
 import { SACCO_INFO, INITIAL_JOB_APPLICATIONS } from '../data/saccoData';
 import {
@@ -35,12 +35,14 @@ import {
   ChevronDown,
   ChevronUp,
   Save,
+  FileSpreadsheet,
 } from 'lucide-react';
 import { ImigongoRibbon } from './ImigongoPattern';
 import { JobApplicationModal } from './JobApplicationModal';
 import { ApplicantFeedbackModal } from './ApplicantFeedbackModal';
 import { ApplicantDossierModal } from './ApplicantDossierModal';
-import { exportApplicantsToExcel } from '../utils/applicantExport';
+import { exportApplicantsToExcel, exportApplicantsToPDF } from '../utils/applicantExport';
+import { applicantsApi } from '../services/api';
 
 interface CareersSectionProps {
   currentLang: Language;
@@ -48,6 +50,8 @@ interface CareersSectionProps {
   jobApplications?: JobApplication[];
   isAdmin: boolean;
   userRole?: string;
+  initialJobId?: string | null;
+  openApplyInitially?: boolean;
   onOpenAdminConsole?: (tab?: string) => void;
   onAddJobPosting?: (job: Omit<JobPosting, 'id' | 'postedDate'>) => void;
   onUpdateJobPosting?: (id: string, updated: Partial<JobPosting>) => void;
@@ -59,6 +63,7 @@ interface CareersSectionProps {
   onDeleteJobApplication?: (id: string) => void;
   onResetJobApplications?: () => void;
   employmentTypes?: EmploymentTypeItem[];
+  onNavigate?: (view: string) => void;
 }
 
 export const CareersSection: React.FC<CareersSectionProps> = ({
@@ -67,6 +72,8 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
   jobApplications = [],
   isAdmin,
   userRole,
+  initialJobId,
+  openApplyInitially = false,
   onOpenAdminConsole,
   onAddJobPosting,
   onUpdateJobPosting,
@@ -78,6 +85,7 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
   onDeleteJobApplication,
   onResetJobApplications,
   employmentTypes = [],
+  onNavigate,
 }) => {
   const role = (userRole || '').toUpperCase();
   const isHR = role === 'ADMIN_HR';
@@ -97,12 +105,36 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
   const [selectedDepartment, setSelectedDepartment] = useState<string>('all');
   const [selectedType, setSelectedType] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [expandedJobId, setExpandedJobId] = useState<string | null>(null);
+  const [expandedJobId, setExpandedJobId] = useState<string | null>(initialJobId || null);
 
   // In-page Application Form States (NO POPUP - IN-PAGE WORKFLOW)
-  const [isInPageApplyOpen, setIsInPageApplyOpen] = useState(false);
-  const [activeApplyingJob, setActiveApplyingJob] = useState<JobPosting | null>(null);
-  const [applySelectedJobId, setApplySelectedJobId] = useState<string>(jobPostings[0]?.id || '');
+  const [isInPageApplyOpen, setIsInPageApplyOpen] = useState(openApplyInitially || false);
+  const [activeApplyingJob, setActiveApplyingJob] = useState<JobPosting | null>(() => {
+    if (initialJobId) {
+      return jobPostings.find((j) => j.id === initialJobId) || null;
+    }
+    return null;
+  });
+  const [applySelectedJobId, setApplySelectedJobId] = useState<string>(() => {
+    if (initialJobId) return initialJobId;
+    return jobPostings[0]?.id || '';
+  });
+
+  // Synchronize when initialJobId or openApplyInitially change from props
+  useEffect(() => {
+    if (initialJobId) {
+      setExpandedJobId(initialJobId);
+      const found = jobPostings.find((j) => j.id === initialJobId);
+      if (found) {
+        setActiveApplyingJob(found);
+        setApplySelectedJobId(found.id);
+      }
+    }
+    if (openApplyInitially) {
+      setIsInPageApplyOpen(true);
+      window.scrollTo({ top: 300, behavior: 'smooth' });
+    }
+  }, [initialJobId, openApplyInitially, jobPostings]);
   const [applyFullName, setApplyFullName] = useState('');
   const [applyEmail, setApplyEmail] = useState('');
   const [applyPhone, setApplyPhone] = useState('');
@@ -150,6 +182,65 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
   const [dossierApp, setDossierApp] = useState<JobApplication | null>(null);
   const [isAddApplicantOpen, setIsAddApplicantOpen] = useState(false);
 
+  // Public Candidate Application Status Tracker
+  const [isTrackModalOpen, setIsTrackModalOpen] = useState(false);
+  const [trackRefInput, setTrackRefInput] = useState('');
+  const [trackEmailInput, setTrackEmailInput] = useState('');
+  const [isTrackingLoading, setIsTrackingLoading] = useState(false);
+  const [trackError, setTrackError] = useState<string | null>(null);
+  const [trackedResult, setTrackedResult] = useState<{
+    referenceNumber: string;
+    fullName: string;
+    jobTitle: string;
+    status: string;
+    submittedAt: string;
+    updatedAt: string;
+    messages?: Array<{ senderRole: string; message: string; sentAt: string }>;
+  } | null>(null);
+
+  const handleTrackSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanRef = trackRefInput.trim();
+    if (!cleanRef) {
+      setTrackError('Please enter your Application Reference Number (e.g. APP-2026-0001)');
+      return;
+    }
+    setIsTrackingLoading(true);
+    setTrackError(null);
+    setTrackedResult(null);
+
+    try {
+      const res = await applicantsApi.track(cleanRef, trackEmailInput.trim() || undefined);
+      if (res && res.data) {
+        setTrackedResult(res.data);
+      } else {
+        setTrackError('No application found with this reference number.');
+      }
+    } catch (err: any) {
+      // Local fallback lookup if offline or demo records
+      const localMatch = jobApplications.find(
+        (a) =>
+          (a.referenceNumber && a.referenceNumber.toUpperCase() === cleanRef.toUpperCase()) ||
+          (a.id && a.id.toLowerCase() === cleanRef.toLowerCase())
+      );
+      if (localMatch) {
+        setTrackedResult({
+          referenceNumber: localMatch.referenceNumber || localMatch.id,
+          fullName: localMatch.fullName,
+          jobTitle: localMatch.jobTitle || 'Applied Role',
+          status: localMatch.status,
+          submittedAt: localMatch.appliedDate || new Date().toISOString(),
+          updatedAt: localMatch.appliedDate || new Date().toISOString(),
+          messages: [],
+        });
+      } else {
+        setTrackError(err?.message || 'Unable to locate an application with this reference number. Please verify and try again.');
+      }
+    } finally {
+      setIsTrackingLoading(false);
+    }
+  };
+
   // In-Page Review Drawer States
   const [inPageReviewAppId, setInPageReviewAppId] = useState<string | null>(null);
   const [reviewCommentDraft, setReviewCommentDraft] = useState('');
@@ -190,7 +281,13 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
   };
 
   const handleOpenApplyModal = (job: JobPosting | null) => {
-    handleOpenInPageApply(job);
+    if (onNavigate) {
+      // Navigate to dedicated apply page
+      const jobId = job?.id || jobPostings[0]?.id || '';
+      onNavigate(jobId ? `careers/apply/${jobId}` : 'careers/apply');
+    } else {
+      handleOpenInPageApply(job);
+    }
   };
 
   const handleApplyCvUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -513,25 +610,115 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
     return true;
   });
 
+  // Complete list of distinct positions across both active job postings AND all applicant records
+  const allPositionOptions = React.useMemo(() => {
+    const list: { id: string; title: string; count: number }[] = [];
+    const seen = new Set<string>();
+
+    const countFor = (posId: any, posTitle: any) => {
+      const idLow = String(posId ?? '').toLowerCase().trim();
+      const titleLow = String(posTitle ?? '').toLowerCase().trim();
+      return jobApplications.filter((a) => {
+        const aIdLow = String(a.jobId ?? '').toLowerCase().trim();
+        const aTitleLow = String(a.jobTitle ?? '').toLowerCase().trim();
+        return (
+          (aIdLow && aIdLow === idLow) ||
+          (aTitleLow && aTitleLow === titleLow) ||
+          (idLow && aTitleLow.includes(idLow)) ||
+          (titleLow && aTitleLow.includes(titleLow))
+        );
+      }).length;
+    };
+
+    // 1. Add from current job postings
+    jobPostings.forEach((job) => {
+      const jId = String(job.id ?? '');
+      const title =
+        currentLang === 'fr'
+          ? job.titleFr || job.titleEn
+          : currentLang === 'rw'
+          ? job.titleRw
+          : job.titleEn;
+      const count = countFor(jId, job.titleEn);
+
+      seen.add(jId.toLowerCase());
+      seen.add(String(job.titleEn ?? '').toLowerCase());
+      list.push({ id: jId, title: String(title || jId), count });
+    });
+
+    // 2. Add from submitted applications (covers all positions candidates applied for)
+    jobApplications.forEach((app) => {
+      const titleNorm = String(app.jobTitle ?? '').trim();
+      if (!titleNorm) return;
+      const tLow = titleNorm.toLowerCase();
+      const idLow = String(app.jobId ?? '').toLowerCase().trim();
+
+      const alreadyCovered = seen.has(tLow) || (idLow && seen.has(idLow));
+
+      if (!alreadyCovered) {
+        seen.add(tLow);
+        if (idLow) seen.add(idLow);
+        const count = countFor(app.jobId || tLow, titleNorm);
+        list.push({ id: String(app.jobId || titleNorm), title: titleNorm, count });
+      }
+    });
+
+    return list;
+  }, [jobPostings, jobApplications, currentLang]);
+
   // Filtered Job Applications
   const filteredJobApplications = jobApplications.filter((app) => {
     if (applicantStatusFilter !== 'all' && app.status !== applicantStatusFilter) {
       return false;
     }
-    if (applicantJobFilter !== 'all' && app.jobId !== applicantJobFilter) {
-      return false;
+    if (applicantJobFilter !== 'all') {
+      const filterLow = String(applicantJobFilter ?? '').toLowerCase().trim();
+      const appIdLow = String(app.jobId ?? '').toLowerCase().trim();
+      const appTitleLow = String(app.jobTitle ?? '').toLowerCase().trim();
+
+      // Check 1: direct ID match
+      const matchId = appIdLow.length > 0 && appIdLow === filterLow;
+      // Check 2: direct title match
+      const matchTitle = appTitleLow.length > 0 && appTitleLow === filterLow;
+      // Check 3: job posting lookup
+      const matchedPosting = jobPostings.find(
+        (j) =>
+          String(j.id ?? '').toLowerCase() === filterLow ||
+          String(j.titleEn ?? '').toLowerCase() === filterLow
+      );
+      const postTitleLow = matchedPosting
+        ? String(matchedPosting.titleEn ?? '').toLowerCase()
+        : '';
+      const postDeptLow = matchedPosting
+        ? String(matchedPosting.departmentEn ?? '').toLowerCase()
+        : '';
+      const matchPosting =
+        matchedPosting &&
+        (appIdLow === String(matchedPosting.id ?? '').toLowerCase() ||
+          (postTitleLow && appTitleLow === postTitleLow) ||
+          (postTitleLow && appTitleLow.includes(postTitleLow)) ||
+          (postTitleLow && postTitleLow.includes(appTitleLow)) ||
+          (postDeptLow && appTitleLow.includes(postDeptLow)));
+      // Check 4: substring match
+      const matchSubstring =
+        filterLow.length > 3 &&
+        (appTitleLow.includes(filterLow) || filterLow.includes(appTitleLow));
+
+      if (!matchId && !matchTitle && !matchPosting && !matchSubstring) {
+        return false;
+      }
     }
     if (applicantSearch.trim()) {
       const q = applicantSearch.toLowerCase();
       const match =
-        app.fullName.toLowerCase().includes(q) ||
-        app.nationalId.toLowerCase().includes(q) ||
-        app.email.toLowerCase().includes(q) ||
-        app.phone.toLowerCase().includes(q) ||
-        app.jobTitle.toLowerCase().includes(q) ||
-        app.residenceSector.toLowerCase().includes(q) ||
-        (app.comment && app.comment.toLowerCase().includes(q)) ||
-        (app.notes && app.notes.toLowerCase().includes(q));
+        String(app.fullName ?? '').toLowerCase().includes(q) ||
+        String(app.nationalId ?? '').toLowerCase().includes(q) ||
+        String(app.email ?? '').toLowerCase().includes(q) ||
+        String(app.phone ?? '').toLowerCase().includes(q) ||
+        String(app.jobTitle ?? '').toLowerCase().includes(q) ||
+        String(app.residenceSector ?? '').toLowerCase().includes(q) ||
+        (app.comment && String(app.comment).toLowerCase().includes(q)) ||
+        (app.notes && String(app.notes).toLowerCase().includes(q));
       if (!match) return false;
     }
     return true;
@@ -673,14 +860,22 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
               </>
             )}
 
+            {/* Public Applicant Tracking Button */}
             <button
               type="button"
-              onClick={() => handleOpenApplyModal(jobPostings[0] || null)}
-              className="px-4 py-2.5 bg-emerald-800 hover:bg-emerald-900 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
+              onClick={() => {
+                setIsTrackModalOpen(true);
+                setTrackError(null);
+              }}
+              className="px-4 py-2.5 bg-white hover:bg-emerald-50 text-emerald-950 border border-emerald-300 rounded-xl text-xs font-bold flex items-center gap-2 shadow-xs transition-all cursor-pointer hover:border-emerald-500"
+              title="Track submitted application status"
             >
-              <FileText className="w-4 h-4" />
-              <span>General Job Application</span>
+              <Search className="w-4 h-4 text-emerald-700" />
+              <span>Track Application</span>
+              <span className="px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-mono font-semibold">Status</span>
             </button>
+
+
           </div>
         </div>
 
@@ -747,13 +942,28 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
                     onClick={() =>
                       exportApplicantsToExcel(
                         jobApplications,
-                        `UBUMWE_SACCO_Job_Applicants_${new Date().toISOString().split('T')[0]}.csv`
+                        `UBUMWE_SACCO_Job_Applicants_${new Date().toISOString().split('T')[0]}.xls`
                       )
                     }
-                    className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-100 rounded-lg font-bold flex items-center gap-1.5 border border-slate-600 shadow-xs cursor-pointer"
+                    className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-bold flex items-center gap-1.5 shadow-xs cursor-pointer transition-colors"
+                    title="Export complete applicant database into Microsoft Excel (.xls)"
                   >
-                    <Download className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Export CSV</span>
+                    <FileSpreadsheet className="w-3.5 h-3.5" />
+                    <span>Download Excel</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      exportApplicantsToPDF(
+                        jobApplications,
+                        'Candidate Recruitment Roster & Evaluation Report'
+                      )
+                    }
+                    className="px-3 py-1.5 bg-rose-700 hover:bg-rose-800 text-white rounded-lg font-bold flex items-center gap-1.5 shadow-xs cursor-pointer transition-colors"
+                    title="Print or Save official PDF Recruitment Report"
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>Download PDF</span>
                   </button>
                   {onResetJobApplications && (
                     <button
@@ -1398,7 +1608,10 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
                   const isExpanded = expandedJobId === job.id;
                   const isClosed = job.status === 'closed';
                   const jobAppCount = jobApplications.filter(
-                    (a) => a.jobId === job.id || a.jobTitle.toLowerCase() === job.titleEn.toLowerCase()
+                    (a) =>
+                      String(a.jobId ?? '') === String(job.id ?? '') ||
+                      String(a.jobTitle ?? '').toLowerCase() ===
+                        String(job.titleEn ?? '').toLowerCase()
                   ).length;
                   const jobTitle = currentLang === 'fr' ? (job.titleFr || job.titleEn) : currentLang === 'rw' ? (job.titleRw || job.titleEn) : job.titleEn;
                   const deptName = currentLang === 'fr' ? (job.departmentFr || job.departmentEn) : currentLang === 'rw' ? (job.departmentRw || job.departmentEn) : job.departmentEn;
@@ -1527,11 +1740,17 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
                         <div className="flex items-center gap-2">
                           <button
                             type="button"
-                            onClick={() => setExpandedJobId(isExpanded ? null : job.id)}
+                            onClick={() => {
+                              if (onNavigate) {
+                                onNavigate(`careers/${job.id}`);
+                              } else {
+                                setExpandedJobId(isExpanded ? null : job.id);
+                              }
+                            }}
                             className="flex-1 py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                           >
-                            <span>{isExpanded ? 'Hide' : 'Details'}</span>
-                            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                            <span>Details</span>
+                            <ArrowRight className="w-3.5 h-3.5" />
                           </button>
 
                           {!isClosed ? (
@@ -1983,23 +2202,67 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
 
                 <div className="flex items-center gap-1.5 text-xs">
                   <Filter className="w-3.5 h-3.5 text-slate-400" />
-                  <select
-                    value={applicantJobFilter}
-                    onChange={(e) => setApplicantJobFilter(e.target.value)}
-                    className="px-2.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 cursor-pointer focus:outline-hidden"
-                  >
-                    <option value="all">All Vacancy Positions</option>
-                    {jobPostings.map((job) => (
-                      <option key={job.id} value={job.id}>
-                        {currentLang === 'fr' ? (job.titleFr || job.titleEn) : currentLang === 'rw' ? job.titleRw : job.titleEn}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative flex items-center">
+                    <select
+                      value={applicantJobFilter}
+                      onChange={(e) => setApplicantJobFilter(e.target.value)}
+                      className="px-2.5 py-2 pr-7 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 cursor-pointer focus:outline-hidden"
+                    >
+                      <option value="all">All Vacancy Positions ({jobApplications.length})</option>
+                      {allPositionOptions.map((pos) => (
+                        <option key={pos.id} value={pos.id}>
+                          {pos.title} ({pos.count})
+                        </option>
+                      ))}
+                    </select>
+                    {applicantJobFilter !== 'all' && (
+                      <button
+                        type="button"
+                        onClick={() => setApplicantJobFilter('all')}
+                        className="absolute right-2 text-slate-400 hover:text-slate-700 cursor-pointer"
+                        title="Clear position filter"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              <div className="text-xs font-semibold text-slate-500">
-                Showing <strong className="text-slate-900">{filteredJobApplications.length}</strong> of {totalApplicants} candidates
+              <div className="flex flex-wrap items-center gap-2.5">
+                <div className="text-xs font-semibold text-slate-500 mr-1">
+                  Showing <strong className="text-slate-900">{filteredJobApplications.length}</strong> of {totalApplicants} candidates
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    exportApplicantsToExcel(
+                      filteredJobApplications,
+                      `UBUMWE_SACCO_Job_Applicants_${new Date().toISOString().split('T')[0]}.xls`
+                    )
+                  }
+                  className="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
+                  title="Download all filtered applicants with all details in Excel format"
+                >
+                  <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Download Excel</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    exportApplicantsToPDF(
+                      filteredJobApplications,
+                      'Candidate Deliberation & Recruitment Roster'
+                    )
+                  }
+                  className="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-300 rounded-lg text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
+                  title="Print or Save official PDF report with all candidate information"
+                >
+                  <FileText className="w-3.5 h-3.5 text-rose-600" />
+                  <span>Download PDF</span>
+                </button>
               </div>
             </div>
 
@@ -2264,9 +2527,22 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
                               </button>
                               <button
                                 type="button"
+                                onClick={() =>
+                                  exportApplicantsToExcel(
+                                    [app],
+                                    `Applicant_${app.fullName.replace(/\s+/g, '_')}_${app.nationalId}.xls`
+                                  )
+                                }
+                                className="p-1 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
+                                title="Download Candidate Record as Excel (.xls)"
+                              >
+                                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+                              </button>
+                              <button
+                                type="button"
                                 onClick={() => setDossierApp(app)}
-                                className="p-1 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
-                                title="View & Print Official PDF Dossier"
+                                className="p-1 text-slate-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                                title="View & Download Official PDF Dossier"
                               >
                                 <Printer className="w-3.5 h-3.5" />
                               </button>
@@ -2551,6 +2827,175 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
           currentLang={currentLang}
           applicant={dossierApp}
         />
+      )}
+
+      {/* PUBLIC CANDIDATE APPLICATION STATUS TRACKER MODAL */}
+      {isTrackModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+            {/* Header */}
+            <div className="bg-slate-900 px-6 py-5 text-white flex items-center justify-between border-b border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white">Application Status Tracker</h3>
+                  <p className="text-xs text-slate-400">UBUMWE SACCO GAKENKE Recruitment Portal</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsTrackModalOpen(false);
+                  setTrackError(null);
+                  setTrackedResult(null);
+                }}
+                className="w-8 h-8 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                aria-label="Close tracker"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-5">
+              {!trackedResult ? (
+                <form onSubmit={handleTrackSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                      Application Reference Number <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        required
+                        value={trackRefInput}
+                        onChange={(e) => setTrackRefInput(e.target.value.toUpperCase())}
+                        placeholder="e.g. APP-2026-0001"
+                        className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-mono tracking-wider uppercase focus:bg-white focus:border-emerald-600 focus:outline-hidden"
+                      />
+                    </div>
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      Enter the unique reference code provided upon successful submission.
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                      Email Address <span className="text-slate-400 font-normal">(Optional Verification)</span>
+                    </label>
+                    <input
+                      type="email"
+                      value={trackEmailInput}
+                      onChange={(e) => setTrackEmailInput(e.target.value)}
+                      placeholder="your.email@example.com"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:border-emerald-600 focus:outline-hidden"
+                    />
+                  </div>
+
+                  {trackError && (
+                    <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700">
+                      {trackError}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isTrackingLoading}
+                    className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-400 text-white font-bold rounded-xl text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    {isTrackingLoading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span>Verifying Institutional Records...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Search className="w-4 h-4" />
+                        <span>Check Application Status</span>
+                      </>
+                    )}
+                  </button>
+                </form>
+              ) : (
+                <div className="space-y-5 animate-in fade-in">
+                  {/* Status Banner */}
+                  <div className="p-4 rounded-2xl border bg-slate-50 border-slate-200 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-mono font-bold text-slate-500">
+                        REF: {trackedResult.referenceNumber}
+                      </span>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider ${
+                          ['shortlisted', 'SHORTLISTED'].includes(trackedResult.status)
+                            ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                            : ['interview', 'INTERVIEW'].includes(trackedResult.status)
+                            ? 'bg-purple-100 text-purple-800 border border-purple-300'
+                            : ['accepted', 'HIRED', 'hired', 'OFFER'].includes(trackedResult.status)
+                            ? 'bg-green-100 text-green-800 border border-green-300'
+                            : ['rejected', 'REJECTED', 'not_shortlisted'].includes(trackedResult.status)
+                            ? 'bg-slate-200 text-slate-700 border border-slate-300'
+                            : ['waitlisted'].includes(trackedResult.status)
+                            ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                            : 'bg-blue-100 text-blue-800 border border-blue-300'
+                        }`}
+                      >
+                        {trackedResult.status.replace(/_/g, ' ')}
+                      </span>
+                    </div>
+
+                    <div>
+                      <h4 className="text-base font-extrabold text-slate-900">{trackedResult.fullName}</h4>
+                      <p className="text-xs text-slate-600 mt-0.5">Applied Position: <strong className="text-slate-800">{trackedResult.jobTitle}</strong></p>
+                      <p className="text-[11px] text-slate-500 mt-0.5">
+                        Submission Date: {new Date(trackedResult.submittedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Public Committee Messages */}
+                  {trackedResult.messages && trackedResult.messages.length > 0 && (
+                    <div className="space-y-2">
+                      <h5 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Recruitment Committee Announcements:</h5>
+                      <div className="space-y-2 max-h-40 overflow-y-auto">
+                        {trackedResult.messages.map((m, idx) => (
+                          <div key={idx} className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-950">
+                            <div className="flex items-center justify-between font-bold text-[10px] text-emerald-700 mb-1">
+                              <span>[{m.senderRole}]</span>
+                              <span>{new Date(m.sentAt).toLocaleDateString()}</span>
+                            </div>
+                            <p className="leading-relaxed">{m.message}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Institution Help Notice */}
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-[11px] text-slate-600 space-y-1">
+                    <p className="font-semibold text-slate-800">Official Recruitment Inquiries:</p>
+                    <p>For questions or updates, contact our Human Resources desk at <strong className="text-emerald-800">ubumwesaccogakenke@gmail.com</strong> or call <strong className="text-emerald-800">0786422080</strong>.</p>
+                  </div>
+
+                  {/* Action Button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTrackedResult(null);
+                      setTrackRefInput('');
+                      setTrackEmailInput('');
+                    }}
+                    className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs transition-colors cursor-pointer"
+                  >
+                    Check Another Reference Number
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </section>
   );

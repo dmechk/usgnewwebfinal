@@ -97,7 +97,6 @@ async function createUser(req, res, next) {
         name,
         email: normalizedEmail,
         password: tempPassword,
-        rawPassword: tempPassword,
         role: role || 'ADMIN',
         phone: typeof phone === 'string' ? phone.trim() : '',
         department: typeof department === 'string' ? department.trim() : '',
@@ -209,7 +208,6 @@ async function updateUser(req, res, next) {
     }
     if (password && String(password).trim().length >= 8) {
       user.password = password.trim();
-      user.rawPassword = password.trim();
     }
 
     try {
@@ -387,7 +385,6 @@ async function resetPassword(req, res, next) {
       : `Ubumwe@${Math.floor(100000 + Math.random() * 900000)}!`;
 
     user.password = tempPassword;
-    user.rawPassword = tempPassword;
     user.passwordChangeRequired = true;
     await user.save();
 
@@ -440,7 +437,7 @@ async function getUserPassword(req, res, next) {
         id: user.id,
         name: user.name,
         email: user.email,
-        currentPassword: user.rawPassword || (user.passwordChangeRequired ? 'Initial Temporary Password Required' : 'Encrypted (Set by User)'),
+        currentPassword: user.passwordChangeRequired ? 'Temporary Password Pending Set' : 'Protected (Hashed with Bcrypt)',
       },
     });
   } catch (err) {

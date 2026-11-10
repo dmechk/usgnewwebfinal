@@ -111,6 +111,12 @@ const siteSettingsSchema = new mongoose.Schema(
       default: [],
     },
 
+    // AI Digital Assistant Configuration
+    aiConfig: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+    },
+
     // Active theme color
     themeColor: {
       type: String,
