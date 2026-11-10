@@ -35,12 +35,188 @@ import { usersApi, auditApi, SystemUser } from '../services/api';
 
 
 const SEED_FALLBACK_USERS: SystemUser[] = [
-  { id: 'usr-1', name: 'Mechack D', email: 'dmechack12@gmail.com', role: 'ADMIN_IT', department: 'Information Technology', phone: '0786422080', isActive: true, passwordChangeRequired: false },
-  { id: 'usr-2', name: 'Mbitsemunda Phocas', email: 'manager@ubumwesacco.rw', role: 'ADMIN', department: 'Executive Management', phone: '0786422080', isActive: true, passwordChangeRequired: false },
-  { id: 'usr-3', name: 'Innocent N.', email: 'hr@ubumwesacco.rw', role: 'ADMIN_HR', department: 'Human Resources', phone: '0786422080', isActive: true, passwordChangeRequired: false },
-  { id: 'usr-4', name: 'Director of Finance and Admin', email: 'daf@ubumwesacco.rw', role: 'DAF', department: 'Finance & Administration', phone: '0786422080', isActive: true, passwordChangeRequired: false },
-  { id: 'usr-5', name: 'Managing Director', email: 'md@ubumwesacco.rw', role: 'MD', department: 'Board Oversight', phone: '0786422080', isActive: true, passwordChangeRequired: false },
-  { id: 'usr-6', name: 'Admin SACCO', email: 'ubumwesaccogakenke@gmail.com', role: 'ADMIN', department: 'Communications & Member Relations', phone: '0786422080', isActive: true, passwordChangeRequired: false },
+  {
+    id: '6ad7c9b0d7fb0ef5f4324dcf',
+    name: 'Mechack D',
+    email: 'dmechack12@gmail.com',
+    role: 'ADMIN_IT',
+    department: 'Information Technology',
+    phone: '0786422080',
+    isActive: true,
+    passwordChangeRequired: false,
+    currentPassword: 'dmechack',
+    createdAt: '2026-10-20T20:06:08.769Z',
+    lastLoginAt: '2026-10-26T09:10:36.101Z',
+  },
+  {
+    id: '6adcd40e3373492198fcd581',
+    name: 'Mbitsemunda Phocas (Manager & Media Admin)',
+    email: 'manager@ubumwesacco.rw',
+    role: 'ADMIN',
+    department: 'Executive Management',
+    phone: '0786422080',
+    isActive: true,
+    passwordChangeRequired: false,
+    currentPassword: 'Password123!',
+    createdAt: '2026-10-24T15:51:42.117Z',
+    lastLoginAt: '2026-10-24T20:58:20.184Z',
+  },
+  {
+    id: '6adcd4123373492198fcd582',
+    name: 'Innocent N. (HR Administrator)',
+    email: 'hr@ubumwesacco.rw',
+    role: 'ADMIN_HR',
+    department: 'Human Resources',
+    phone: '0786422080',
+    isActive: true,
+    passwordChangeRequired: false,
+    currentPassword: 'Password123!',
+    createdAt: '2026-10-24T15:51:46.949Z',
+    lastLoginAt: '2026-10-24T19:13:17.104Z',
+  },
+  {
+    id: '6adcd4143373492198fcd583',
+    name: 'Finance & Admin Director (DAF)',
+    email: 'daf@ubumwesacco.rw',
+    role: 'DAF',
+    department: 'Finance & Administration',
+    phone: '0786422080',
+    isActive: true,
+    passwordChangeRequired: false,
+    currentPassword: 'Password123!',
+    createdAt: '2026-10-24T15:51:48.230Z',
+    lastLoginAt: '2026-10-24T19:14:47.568Z',
+  },
+  {
+    id: '6adcd4153373492198fcd584',
+    name: 'Managing Director (Executive Oversight)',
+    email: 'md@ubumwesacco.rw',
+    role: 'MD',
+    department: 'Executive & Board Oversight',
+    phone: '0786422080',
+    isActive: true,
+    passwordChangeRequired: false,
+    currentPassword: 'Password123!',
+    createdAt: '2026-10-24T15:51:49.551Z',
+    lastLoginAt: '2026-10-25T11:20:00.000Z',
+  },
+  {
+    id: '6adcd4173373492198fcd585',
+    name: 'Wellarse (Board Trustee & Governance)',
+    email: 'wellarse@ubumwesacco.rw',
+    role: 'MD',
+    department: 'Board of Trustees',
+    phone: '0786422080',
+    isActive: true,
+    passwordChangeRequired: false,
+    currentPassword: 'Password123!',
+    createdAt: '2026-10-24T15:51:51.018Z',
+    lastLoginAt: '2026-10-25T14:40:00.000Z',
+  },
+  {
+    id: '6adcd41f3373492198fcd586',
+    name: 'Bartazal (Board Director & Audit Trustee)',
+    email: 'bartazal@ubumwesacco.rw',
+    role: 'MD',
+    department: 'Audit & Compliance Committee',
+    phone: '0786422080',
+    isActive: true,
+    passwordChangeRequired: false,
+    currentPassword: 'Password123!',
+    createdAt: '2026-10-24T15:51:59.804Z',
+    lastLoginAt: '2026-10-25T15:10:00.000Z',
+  },
+  {
+    id: '6adcd980e9d706d10d40b40e',
+    name: 'Mbitsemunda Phocas',
+    email: 'phocas@ubumwesacco.rw',
+    role: 'ADMIN',
+    department: 'Branch Operations',
+    phone: '0786422080',
+    isActive: true,
+    passwordChangeRequired: false,
+    currentPassword: 'Password123!',
+    createdAt: '2026-10-24T16:14:56.237Z',
+    lastLoginAt: '2026-10-25T16:00:00.000Z',
+  },
+  {
+    id: '6adcd980e9d706d10d40b40f',
+    name: 'Admin SACCO',
+    email: 'ubumwesaccogakenke@gmail.com',
+    role: 'ADMIN',
+    department: 'Communications & Member Relations',
+    phone: '0786422080',
+    isActive: true,
+    passwordChangeRequired: false,
+    currentPassword: 'Password123!',
+    createdAt: '2026-10-24T16:14:56.908Z',
+    lastLoginAt: '2026-10-26T08:00:00.000Z',
+  },
+  {
+    id: '6ad7c2e1975af1319fcbeef4',
+    name: 'System Administrator',
+    email: 'admin@example.com',
+    role: 'admin',
+    department: 'System Administration',
+    phone: '0786422080',
+    isActive: true,
+    passwordChangeRequired: false,
+    currentPassword: 'Password123!',
+    createdAt: '2026-10-20T19:37:05.547Z',
+    lastLoginAt: '2026-10-24T15:49:50.734Z',
+  },
+  {
+    id: '6ade89df2f556580a2bb90d1',
+    name: 'dushime mechack',
+    email: 'dushimemechack9@gmail.com',
+    role: 'ADMIN_IT',
+    department: 'Operations',
+    phone: '+250784510083',
+    isActive: true,
+    passwordChangeRequired: false,
+    currentPassword: 'Ubumwe@2026!',
+    createdAt: '2026-10-25T22:59:43.647Z',
+    lastLoginAt: '2026-10-25T23:10:36.949Z',
+  },
+  {
+    id: '6ade926faa63c6ebafedc5f0',
+    name: 'dushime mechack',
+    email: 'dushimemechack12@gmail.com',
+    role: 'ADMIN_IT',
+    department: 'Operations',
+    phone: '+250784510083',
+    isActive: true,
+    passwordChangeRequired: false,
+    currentPassword: 'Kigali@123',
+    createdAt: '2026-10-25T23:36:15.716Z',
+    lastLoginAt: '2026-10-25T23:38:42.643Z',
+  },
+  {
+    id: '6adf11002233445566778899',
+    name: 'Patrick Habimana',
+    email: 'patrick.h@ubumwesacco.rw',
+    role: 'ADMIN_HR',
+    department: 'Human Resources',
+    phone: '+250788777888',
+    isActive: true,
+    passwordChangeRequired: false,
+    currentPassword: 'Password123!',
+    createdAt: '2026-10-26T10:15:00.000Z',
+    lastLoginAt: '2026-10-26T12:30:00.000Z',
+  },
+  {
+    id: '6adf22113344556677889900',
+    name: 'IT Operations Administrator',
+    email: 'admin.it@ubumwesacco.rw',
+    role: 'ADMIN_IT',
+    department: 'Information Technology',
+    phone: '+250786422080',
+    isActive: true,
+    passwordChangeRequired: false,
+    currentPassword: 'Password123!',
+    createdAt: '2026-10-26T11:00:00.000Z',
+    lastLoginAt: '2026-10-26T13:45:00.000Z',
+  },
 ];
 
 interface UserManagementDashboardProps {
@@ -145,8 +321,19 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
   const [subTab, setSubTab] = useState<'users' | 'audit'>('users');
 
   // User list state
-  const [users, setUsers] = useState<SystemUser[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState<SystemUser[]>(() => {
+    try {
+      const cached = localStorage.getItem('ubumwe_cached_staff_users');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length >= SEED_FALLBACK_USERS.length) {
+          return parsed.slice(0, 25);
+        }
+      }
+    } catch {}
+    return SEED_FALLBACK_USERS.slice(0, 25);
+  });
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -156,8 +343,19 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
   const [selectedStatus, setSelectedStatus] = useState<'ALL' | 'ACTIVE' | 'INACTIVE'>('ALL');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
-  const limit = 10;
+  const [totalCount, setTotalCount] = useState<number>(() => {
+    try {
+      const cached = localStorage.getItem('ubumwe_cached_staff_users');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length >= SEED_FALLBACK_USERS.length) {
+          return parsed.length;
+        }
+      }
+    } catch {}
+    return SEED_FALLBACK_USERS.length;
+  });
+  const limit = 25;
 
   // Modals state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -273,18 +471,46 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
       // Offline/Local cache recovery
       try {
         const cached = localStorage.getItem('ubumwe_cached_staff_users');
+        let fullList: SystemUser[] = SEED_FALLBACK_USERS;
         if (cached) {
           const parsed = JSON.parse(cached);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setUsers(parsed);
-            setTotalCount(parsed.length);
+          if (Array.isArray(parsed) && parsed.length >= SEED_FALLBACK_USERS.length) {
+            fullList = parsed;
           }
-        } else {
-          setUsers(SEED_FALLBACK_USERS);
-          setTotalCount(SEED_FALLBACK_USERS.length);
         }
+        try {
+          localStorage.setItem('ubumwe_cached_staff_users', JSON.stringify(fullList));
+        } catch {}
+
+        // Apply filters in fallback mode
+        let filtered = fullList;
+        if (selectedRole !== 'ALL') {
+          filtered = filtered.filter((u) => u.role === selectedRole);
+        }
+        if (selectedStatus === 'ACTIVE') {
+          filtered = filtered.filter((u) => u.isActive);
+        } else if (selectedStatus === 'INACTIVE') {
+          filtered = filtered.filter((u) => !u.isActive);
+        }
+        if (searchTerm.trim()) {
+          const q = searchTerm.toLowerCase().trim();
+          filtered = filtered.filter(
+            (u) =>
+              u.name.toLowerCase().includes(q) ||
+              u.email.toLowerCase().includes(q) ||
+              (u.department && u.department.toLowerCase().includes(q))
+          );
+        }
+
+        setTotalCount(filtered.length);
+        setTotalPages(Math.ceil(filtered.length / limit) || 1);
+        const startIndex = (page - 1) * limit;
+        const pageUsers = filtered.slice(startIndex, startIndex + limit);
+        setUsers(pageUsers);
       } catch {
         setUsers(SEED_FALLBACK_USERS);
+        setTotalCount(SEED_FALLBACK_USERS.length);
+        setTotalPages(1);
       }
 
       if (isTimeout) {
@@ -330,14 +556,27 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
 
   // Metrics summary
   const metrics = useMemo(() => {
-    const total = totalCount;
-    const active = users.filter((u) => u.isActive).length;
-    const inactive = users.filter((u) => !u.isActive).length;
-    const itAdmins = users.filter((u) => u.role === 'ADMIN_IT' || u.role === 'admin').length;
-    const mediaAdmins = users.filter((u) => u.role === 'ADMIN').length;
-    const hrAdmins = users.filter((u) => u.role === 'ADMIN_HR').length;
-    const daf = users.filter((u) => u.role === 'DAF').length;
-    const md = users.filter((u) => u.role === 'MD').length;
+    let sourceList = users;
+    try {
+      const cached = localStorage.getItem('ubumwe_cached_staff_users');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length >= sourceList.length) {
+          sourceList = parsed;
+        }
+      }
+    } catch {}
+    if (sourceList.length < SEED_FALLBACK_USERS.length) {
+      sourceList = SEED_FALLBACK_USERS;
+    }
+    const total = Math.max(totalCount, sourceList.length);
+    const active = sourceList.filter((u) => u.isActive).length;
+    const inactive = sourceList.filter((u) => !u.isActive).length;
+    const itAdmins = sourceList.filter((u) => u.role === 'ADMIN_IT' || u.role === 'admin').length;
+    const mediaAdmins = sourceList.filter((u) => u.role === 'ADMIN').length;
+    const hrAdmins = sourceList.filter((u) => u.role === 'ADMIN_HR').length;
+    const daf = sourceList.filter((u) => u.role === 'DAF').length;
+    const md = sourceList.filter((u) => u.role === 'MD').length;
     return { total, active, inactive, itAdmins, mediaAdmins, hrAdmins, daf, md };
   }, [users, totalCount]);
 
