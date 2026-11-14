@@ -34,8 +34,14 @@ import { VideoUploader } from './VideoUploader';
 import { InquiriesDashboard } from './InquiriesDashboard';
 import { UserManagementDashboard } from './UserManagementDashboard';
 import { AiManagementDashboard } from './AiManagementDashboard';
+import { DashboardOverview } from './DashboardOverview';
 import {
   Bot,
+  Menu,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  LayoutDashboard,
   X,
   Layers,
   Bell,
@@ -112,7 +118,7 @@ interface AdminConsoleModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentLang: Language;
-  initialTab?: 'users' | 'contact' | 'pictures' | 'navigation' | 'leaders' | 'moments' | 'products' | 'announcements' | 'applications' | 'careers' | 'job-applicants' | 'theme' | 'guide' | 'branches' | 'inquiries' | 'messages' | 'impact' | 'home-hero' | 'home-metrics' | 'about' | 'videos' | 'partners' | 'employment-types' | 'qualifications' | 'archive' | 'ai-assistant';
+  initialTab?: 'overview' | 'users' | 'contact' | 'pictures' | 'navigation' | 'leaders' | 'moments' | 'products' | 'announcements' | 'applications' | 'careers' | 'job-applicants' | 'theme' | 'guide' | 'branches' | 'inquiries' | 'messages' | 'impact' | 'home-hero' | 'home-metrics' | 'about' | 'videos' | 'partners' | 'employment-types' | 'qualifications' | 'archive' | 'ai-assistant';
   saccoInfo: SaccoContactInfo;
   onUpdateSaccoInfo: (updated: Partial<SaccoContactInfo>) => void;
   navItems: NavItemConfig[];
@@ -327,24 +333,30 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
 
   const ROLE_ALLOWED_TABS: Record<string, string[]> = {
     ADMIN_IT: [
+      'overview',
       'users', 'contact', 'pictures', 'navigation', 'home-hero', 'home-metrics', 'about',
       'leaders', 'moments', 'products', 'announcements', 'job-applicants',
       'careers', 'applications', 'branches', 'employment-types', 'qualifications',
       'impact', 'videos', 'partners', 'messages', 'inquiries', 'theme', 'guide', 'archive', 'ai-assistant'
     ],
     ADMIN: [
+      'overview',
       'moments', 'announcements', 'branches', 'impact', 'videos', 'partners', 'inquiries', 'ai-assistant'
     ],
     ADMIN_HR: [
+      'overview',
       'job-applicants', 'careers', 'employment-types', 'qualifications', 'inquiries'
     ],
     DAF: [
+      'overview',
       'careers', 'applications', 'products', 'home-metrics', 'inquiries'
     ],
     MD: [
+      'overview',
       'messages', 'leaders', 'moments', 'announcements', 'job-applicants', 'applications', 'impact', 'inquiries', 'ai-assistant'
     ],
     admin: [
+      'overview',
       'users', 'contact', 'pictures', 'navigation', 'home-hero', 'home-metrics', 'about',
       'leaders', 'moments', 'products', 'announcements', 'job-applicants',
       'careers', 'applications', 'branches', 'employment-types', 'qualifications',
@@ -358,10 +370,11 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
   const getInitialActiveTab = (): any => {
     const raw = (initialTab === 'job-applicants' || (initialTab as string) === 'applicants') ? 'job-applicants' : initialTab;
     if (raw && allowedTabs.includes(raw)) return raw;
-    return allowedTabs[0] || 'job-applicants';
+    return allowedTabs.includes('overview') ? 'overview' : (allowedTabs[0] || 'overview');
   };
 
   const [activeTab, setActiveTab] = useState<
+    | 'overview'
     | 'users'
     | 'contact'
     | 'pictures'
@@ -389,6 +402,10 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
     | 'archive'
     | 'ai-assistant'
   >(getInitialActiveTab);
+
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [sidebarSearch, setSidebarSearch] = useState('');
 
   useEffect(() => {
     const raw = (initialTab === 'job-applicants' || (initialTab as string) === 'applicants') ? 'job-applicants' : initialTab;
@@ -2037,112 +2054,323 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-white overflow-y-auto flex flex-col animate-in fade-in duration-200">
+    
+    <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex flex-col overflow-hidden animate-in fade-in duration-200">
       {/* Top Imigongo skeleton ribbon */}
-      <ImigongoRibbon height={8} variant="light" bordered={false} />
+      <ImigongoRibbon height={5} variant="light" bordered={false} />
 
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 py-5 flex-1 flex flex-col space-y-4">
-        {/* Top Sticky Header */}
-        <div className="pb-3 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 shrink-0">
-          <div>
-            <div className="flex flex-wrap items-center gap-2 text-xs text-emerald-800 font-bold">
-              <span>{saccoInfo.name} · EXECUTIVE MANAGEMENT SYSTEM</span>
-              {loggedInUser ? (
-                <span className="px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700 text-[10px] font-mono font-bold flex items-center gap-1.5 shadow-xs">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>[{loggedInUser.role}] {loggedInUser.name}</span>
-                </span>
-              ) : (
-                <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-mono">
-                  Full Admin Rights Active
-                </span>
-              )}
+      {/* Top Sticky Header */}
+      <header className="bg-slate-900 border-b border-slate-800 px-4 sm:px-6 py-2.5 flex items-center justify-between text-white shrink-0 z-30 shadow-md">
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Mobile Sidebar Toggle Button */}
+          <button
+            type="button"
+            onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+            className="lg:hidden p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors cursor-pointer"
+            aria-label="Toggle menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+
+          {/* Desktop Sidebar Toggle Button */}
+          <button
+            type="button"
+            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            className="hidden lg:flex p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors cursor-pointer"
+            title={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {isSidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          </button>
+
+          {/* SACCO Branding */}
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white flex items-center justify-center font-bold shadow-xs">
+              <Landmark className="w-4 h-4" />
             </div>
-            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 mt-0.5">
-              Operations &amp; Content Management Center
-            </h1>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer shadow-xs"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back to Public Website</span>
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
-              aria-label="Close admin console"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-extrabold text-sm text-white tracking-tight">
+                  UBUMWE SACCO
+                </span>
+                <span className="text-[10px] uppercase font-mono font-bold bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/30">
+                  GAKENKE
+                </span>
+              </div>
+              <div className="text-[11px] text-slate-400 flex items-center gap-1.5">
+                <span>Operations &amp; Management Center</span>
+                <span className="text-slate-600">•</span>
+                <span className="font-medium text-emerald-400 capitalize">
+                  {activeTab === 'overview' ? 'Executive Overview' : String(activeTab).replace('-', ' ')}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
-        {/* Console Navigation Tabs (Strictly Gated by User Role) */}
-        <div className="flex items-center gap-1 p-1.5 bg-slate-100 rounded-2xl border border-slate-200 overflow-x-auto max-w-full">
-          {[
-            { id: 'users', label: 'User Management', icon: <Users className="w-3.5 h-3.5 text-blue-400" />, activeClass: 'bg-blue-600 text-white shadow-xs ring-1 ring-blue-500' },
-            { id: 'contact', label: 'Contacts & Phone', icon: <Phone className="w-3.5 h-3.5" />, activeClass: 'bg-emerald-700 text-white shadow-xs' },
-            { id: 'pictures', label: 'System Pictures', icon: <ImageIcon className="w-3.5 h-3.5" />, activeClass: 'bg-emerald-700 text-white shadow-xs' },
-            { id: 'navigation', label: 'Navs Manager', icon: <Compass className="w-3.5 h-3.5" />, activeClass: 'bg-emerald-700 text-white shadow-xs' },
-            { id: 'home-hero', label: 'Home Hero', icon: <Home className="w-3.5 h-3.5" />, activeClass: 'bg-emerald-700 text-white shadow-xs' },
-            { id: 'home-metrics', label: `Home Metrics (${homeMetrics.length})`, icon: <TrendingUp className="w-3.5 h-3.5" />, activeClass: 'bg-emerald-700 text-white shadow-xs' },
-            { id: 'about', label: 'About Us', icon: <Landmark className="w-3.5 h-3.5" />, activeClass: 'bg-emerald-700 text-white shadow-xs' },
-            { id: 'leaders', label: `Leaders (${leaders.length})`, icon: <Users className="w-3.5 h-3.5 text-emerald-700" />, activeClass: 'bg-white text-slate-900 shadow-xs' },
-            { id: 'moments', label: `Moments (${moments.length})`, icon: <Camera className="w-3.5 h-3.5 text-emerald-700" />, activeClass: 'bg-white text-slate-900 shadow-xs' },
-            { id: 'products', label: `Products (${products.length})`, icon: <Layers className="w-3.5 h-3.5 text-emerald-700" />, activeClass: 'bg-white text-slate-900 shadow-xs' },
-            { id: 'announcements', label: `Bulletins (${announcements.length})`, icon: <Bell className="w-3.5 h-3.5 text-emerald-700" />, activeClass: 'bg-white text-slate-900 shadow-xs' },
-            { id: 'job-applicants', label: `Job Applicants (${jobApplications.length})`, icon: <Users className="w-3.5 h-3.5 text-emerald-400" />, activeClass: 'bg-emerald-700 text-white shadow-xs ring-1 ring-emerald-500' },
-            { id: 'careers', label: `Job Vacancies (${jobPostings.length})`, icon: <Briefcase className="w-3.5 h-3.5" />, activeClass: 'bg-emerald-700 text-white shadow-xs ring-1 ring-emerald-500' },
-            { id: 'applications', label: `KYC & Loans (${applications.length})`, icon: <UserCheck className="w-3.5 h-3.5" />, activeClass: 'bg-emerald-700 text-white shadow-xs ring-1 ring-emerald-500' },
-            { id: 'branches', label: `Branches (${branches.length})`, icon: <MapPin className="w-3.5 h-3.5 text-emerald-700" />, activeClass: 'bg-white text-slate-900 shadow-xs' },
-            { id: 'employment-types', label: `Employment Types (${employmentTypes.length})`, icon: <Briefcase className="w-3.5 h-3.5" />, activeClass: 'bg-emerald-700 text-white shadow-xs ring-1 ring-emerald-500' },
-            { id: 'qualifications', label: `Qualifications (${qualifications.length})`, icon: <Award className="w-3.5 h-3.5" />, activeClass: 'bg-emerald-700 text-white shadow-xs ring-1 ring-emerald-500' },
-            { id: 'impact', label: `Impact Stories (${communityStories.length})`, icon: <Sparkles className="w-3.5 h-3.5 text-emerald-400" />, activeClass: 'bg-emerald-700 text-white shadow-xs ring-1 ring-emerald-500' },
-            { id: 'videos', label: `Attraction Videos (${homeVideos.length})`, icon: <Video className="w-3.5 h-3.5 text-emerald-400" />, activeClass: 'bg-emerald-700 text-white shadow-xs ring-1 ring-emerald-500' },
-            { id: 'partners', label: `Partners & Socials (${partners.length + socialLinks.length})`, icon: <Share2 className="w-3.5 h-3.5 text-emerald-400" />, activeClass: 'bg-emerald-700 text-white shadow-xs ring-1 ring-emerald-500' },
-            { id: 'messages', label: `Manager Messages (${managerMessages.length})`, icon: <Quote className="w-3.5 h-3.5 text-emerald-700" />, activeClass: 'bg-white text-slate-900 shadow-xs' },
-            { id: 'inquiries', label: `Inquiries (${contactInquiries.length})`, icon: <MessageSquare className="w-3.5 h-3.5 text-emerald-700" />, activeClass: 'bg-white text-slate-900 shadow-xs' },
-            { id: 'ai-assistant', label: 'AI Digital Assistant', icon: <Bot className="w-3.5 h-3.5 text-emerald-400" />, activeClass: 'bg-emerald-700 text-white shadow-xs ring-1 ring-emerald-500' },
-            { id: 'theme', label: 'Theme', icon: <Palette className="w-3.5 h-3.5 text-amber-500" />, activeClass: 'bg-white text-slate-900 shadow-xs' },
-            { id: 'guide', label: 'Guide', icon: <BookOpen className="w-3.5 h-3.5" />, activeClass: 'bg-emerald-900 text-white shadow-xs' },
-            { id: 'archive', label: 'Archive & Backup', icon: <Archive className="w-3.5 h-3.5 text-indigo-400" />, activeClass: 'bg-indigo-700 text-white shadow-xs ring-1 ring-indigo-500' },
-          ]
-            .filter((t) => isTabAllowed(t.id))
-            .map((t) => (
-              <button
-                key={`console-tab-${t.id}`}
-                type="button"
-                onClick={() => setActiveTab(t.id as any)}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
-                  activeTab === t.id
-                    ? t.activeClass || 'bg-emerald-700 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                {t.icon}
-                <span>{t.label}</span>
-              </button>
-            ))}
-        </div>
 
-        {/* Modal Body / Scrollable Content */}
-        <div className="flex-1 overflow-y-auto py-4 space-y-6">
+        {/* Right Actions & Active User */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {loggedInUser ? (
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/90 border border-slate-700 text-xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="font-bold text-white">{loggedInUser.name}</span>
+              <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-800">
+                {loggedInUser.role}
+              </span>
+            </div>
+          ) : (
+            <span className="hidden sm:inline-block px-2.5 py-1 rounded-lg bg-emerald-900/60 text-emerald-300 text-xs font-mono font-semibold border border-emerald-700/50">
+              Full Admin Rights
+            </span>
+          )}
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-3 sm:px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Back to Public Website</span>
+            <span className="sm:hidden">Website</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+            aria-label="Close admin console"
+            title="Close console"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      </header>
+
+      {/* Main Workspace Layout: Sidebar + Main Content */}
+      <div className="flex-1 flex overflow-hidden relative">
+        {/* Mobile Backdrop */}
+        {isMobileSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/60 z-30 lg:hidden backdrop-blur-xs animate-in fade-in"
+            onClick={() => setIsMobileSidebarOpen(false)}
+          />
+        )}
+
+        {/* Collapsible Sidebar */}
+        <aside
+          className={`bg-slate-950 border-r border-slate-800 flex flex-col justify-between shrink-0 transition-all duration-300 z-40
+            fixed lg:static inset-y-0 left-0 top-[53px] lg:top-0
+            ${isMobileSidebarOpen ? 'translate-x-0 w-72 shadow-2xl' : '-translate-x-full lg:translate-x-0'}
+            ${isSidebarCollapsed ? 'lg:w-20' : 'lg:w-72'}
+          `}
+        >
+          {/* Sidebar Top: Search & Categories */}
+          <div className="flex-1 overflow-y-auto p-3 space-y-4">
+            {/* Quick search input (hidden when collapsed on desktop) */}
+            {(!isSidebarCollapsed || isMobileSidebarOpen) && (
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-2.5 pointer-events-none" />
+                <input
+                  type="text"
+                  value={sidebarSearch}
+                  onChange={(e) => setSidebarSearch(e.target.value)}
+                  placeholder="Search modules..."
+                  className="w-full pl-8 pr-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
+                />
+                {sidebarSearch && (
+                  <button
+                    type="button"
+                    onClick={() => setSidebarSearch('')}
+                    className="absolute right-2.5 top-2 text-slate-500 hover:text-white"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Sidebar Categories */}
+            <div className="space-y-4">
+              {[
+                {
+                  title: 'Executive & Overview',
+                  items: [
+                    { id: 'overview', label: 'Executive Overview', icon: <TrendingUp className="w-4 h-4 text-emerald-400" /> },
+                    { id: 'archive', label: 'System Archive & Backup', icon: <Archive className="w-4 h-4 text-indigo-400" /> },
+                  ],
+                },
+                {
+                  title: 'People & Access',
+                  items: [
+                    { id: 'users', label: 'Staff & User Accounts', icon: <Users className="w-4 h-4 text-purple-400" />, badge: 14, badgeColor: 'bg-purple-900/60 text-purple-300' },
+                    { id: 'leaders', label: `Board & Leadership (${leaders.length})`, icon: <Award className="w-4 h-4 text-amber-400" /> },
+                  ],
+                },
+                {
+                  title: 'Members & Loan Services',
+                  items: [
+                    { id: 'applications', label: `KYC & Loan Requests (${applications.length})`, icon: <UserCheck className="w-4 h-4 text-blue-400" />, badge: applications.length, badgeColor: 'bg-blue-900/60 text-blue-300' },
+                    { id: 'products', label: `Financial Products (${products.length})`, icon: <Layers className="w-4 h-4 text-emerald-400" /> },
+                    { id: 'branches', label: `19 Sector Branches (${branches.length})`, icon: <MapPin className="w-4 h-4 text-rose-400" /> },
+                  ],
+                },
+                {
+                  title: 'Recruitment & Talent',
+                  items: [
+                    { id: 'job-applicants', label: `Job Candidates (${jobApplications.length})`, icon: <Briefcase className="w-4 h-4 text-emerald-400" />, badge: jobApplications.length, badgeColor: 'bg-emerald-900/60 text-emerald-300' },
+                    { id: 'careers', label: `Job Vacancies (${jobPostings.length})`, icon: <Briefcase className="w-4 h-4 text-cyan-400" />, badge: jobPostings.length },
+                    { id: 'employment-types', label: `Employment Types (${employmentTypes.length})`, icon: <Clock className="w-4 h-4 text-slate-400" /> },
+                    { id: 'qualifications', label: `Qualifications (${qualifications.length})`, icon: <Award className="w-4 h-4 text-amber-400" /> },
+                  ],
+                },
+                {
+                  title: 'Customer Service & AI',
+                  items: [
+                    { id: 'inquiries', label: `Citizen Inquiries (${contactInquiries.length})`, icon: <MessageSquare className="w-4 h-4 text-amber-400" />, badge: contactInquiries.length, badgeColor: 'bg-amber-900/60 text-amber-300' },
+                    { id: 'ai-assistant', label: 'AI Digital Assistant', icon: <Bot className="w-4 h-4 text-emerald-400" /> },
+                    { id: 'messages', label: `Manager Messages (${managerMessages.length})`, icon: <Quote className="w-4 h-4 text-purple-400" /> },
+                    { id: 'contact', label: 'Contacts & Hours', icon: <Phone className="w-4 h-4 text-teal-400" /> },
+                  ],
+                },
+                {
+                  title: 'Website Content & Media',
+                  items: [
+                    { id: 'home-hero', label: 'Homepage Hero Carousel', icon: <Home className="w-4 h-4 text-blue-400" /> },
+                    { id: 'home-metrics', label: `Homepage Metrics (${homeMetrics.length})`, icon: <TrendingUp className="w-4 h-4 text-emerald-400" /> },
+                    { id: 'about', label: 'About Us & History', icon: <Landmark className="w-4 h-4 text-amber-400" /> },
+                    { id: 'moments', label: `Photo Moments (${moments.length})`, icon: <Camera className="w-4 h-4 text-rose-400" /> },
+                    { id: 'announcements', label: `Bulletins & News (${announcements.length})`, icon: <Bell className="w-4 h-4 text-emerald-400" /> },
+                    { id: 'impact', label: `Impact Stories (${communityStories.length})`, icon: <Sparkles className="w-4 h-4 text-amber-400" /> },
+                    { id: 'videos', label: `Attraction Videos (${homeVideos.length})`, icon: <Video className="w-4 h-4 text-red-400" /> },
+                    { id: 'partners', label: `Regulatory Partners (${partners.length + socialLinks.length})`, icon: <Share2 className="w-4 h-4 text-cyan-400" /> },
+                  ],
+                },
+                {
+                  title: 'System Customization',
+                  items: [
+                    { id: 'pictures', label: 'System Pictures & Logos', icon: <ImageIcon className="w-4 h-4 text-blue-400" /> },
+                    { id: 'navigation', label: 'Navigation Menus', icon: <Compass className="w-4 h-4 text-emerald-400" /> },
+                    { id: 'theme', label: 'Theme & Brand Palette', icon: <Palette className="w-4 h-4 text-amber-400" /> },
+                    { id: 'guide', label: 'Operational User Guide', icon: <BookOpen className="w-4 h-4 text-teal-400" /> },
+                  ],
+                },
+              ].map((cat, catIdx) => {
+                const filteredItems = cat.items.filter((item) => {
+                  if (!isTabAllowed(item.id)) return false;
+                  if (!sidebarSearch.trim()) return true;
+                  return item.label.toLowerCase().includes(sidebarSearch.toLowerCase().trim());
+                });
+
+                if (filteredItems.length === 0) return null;
+
+                return (
+                  <div key={`sidebar-cat-${catIdx}`} className="space-y-1">
+                    {(!isSidebarCollapsed || isMobileSidebarOpen) && (
+                      <div className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                        {cat.title}
+                      </div>
+                    )}
+                    <div className="space-y-0.5">
+                      {filteredItems.map((item) => {
+                        const isActive = activeTab === item.id;
+                        return (
+                          <button
+                            key={`sidebar-nav-${item.id}`}
+                            type="button"
+                            onClick={() => {
+                              setActiveTab(item.id as any);
+                              setIsMobileSidebarOpen(false);
+                            }}
+                            title={isSidebarCollapsed ? item.label : undefined}
+                            className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                              isActive
+                                ? 'bg-gradient-to-r from-emerald-700 to-teal-800 text-white shadow-sm ring-1 ring-emerald-500/50'
+                                : 'text-slate-400 hover:text-slate-100 hover:bg-slate-900'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <span className={`shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`}>
+                                {item.icon}
+                              </span>
+                              {(!isSidebarCollapsed || isMobileSidebarOpen) && (
+                                <span className="truncate">{item.label}</span>
+                              )}
+                            </div>
+                            {(!isSidebarCollapsed || isMobileSidebarOpen) && item.badge !== undefined && (
+                              <span
+                                className={`px-2 py-0.5 rounded-full text-[10px] font-bold font-mono shrink-0 ${
+                                  isActive
+                                    ? 'bg-white/20 text-white'
+                                    : item.badgeColor || 'bg-slate-800 text-slate-300'
+                                }`}
+                              >
+                                {item.badge}
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Sidebar Footer Info */}
+          {(!isSidebarCollapsed || isMobileSidebarOpen) && (
+            <div className="p-3 border-t border-slate-900 bg-slate-950/80 text-[11px] text-slate-500 space-y-1">
+              <div className="flex items-center gap-1.5 text-slate-400">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                <span className="truncate">Licensed by BNR &amp; RCA</span>
+              </div>
+              <div className="text-[10px] text-slate-600 font-mono">
+                USSD: *541# · Tel: 0786422080
+              </div>
+            </div>
+          )}
+        </aside>
+
+        {/* Scrollable Content Workspace Area */}
+        <main className="flex-1 overflow-y-auto bg-slate-100/70 p-4 sm:p-6 lg:p-8 space-y-6 min-w-0">
           {!isTabAllowed(activeTab) && (
             <div className="p-8 text-center bg-amber-50 border border-amber-200 rounded-2xl animate-in fade-in my-4">
               <AlertCircle className="w-10 h-10 text-amber-600 mx-auto mb-2" />
               <h3 className="text-base font-bold text-slate-900">Access Restricted by Role</h3>
               <p className="text-xs text-slate-600 mt-1 max-w-md mx-auto">
-                Your role <span className="font-mono font-bold text-amber-800">[{userRole}]</span> is authorized only for your designated departmental modules. Please select one of your permitted tabs above.
+                Your role <span className="font-mono font-bold text-amber-800">[{userRole}]</span> is authorized only for your designated departmental modules. Please select one of your permitted tabs from the sidebar.
               </p>
             </div>
           )}
 
-          {/* TAB: IT ADMIN USER MANAGEMENT & ACCESS CONTROL */}
+          {/* TAB: EXECUTIVE DASHBOARD OVERVIEW */}
+          {activeTab === 'overview' && (
+            <DashboardOverview
+              userRole={userRole}
+              userName={loggedInUser?.name || 'Administrator'}
+              stats={{
+                totalStaff: 14,
+                totalApplications: applications?.length || 0,
+                totalJobApplicants: jobApplications?.length || 0,
+                totalJobPostings: jobPostings?.length || 0,
+                totalInquiries: contactInquiries?.length || 0,
+                totalAnnouncements: announcements?.length || 0,
+                totalMoments: moments?.length || 0,
+                totalBranches: branches?.length || 19,
+                totalProducts: products?.length || 0,
+                jobApplicationsList: jobApplications || [],
+                applicationsList: applications || [],
+                inquiriesList: contactInquiries || [],
+              }}
+              saccoInfo={saccoInfo}
+              onNavigateTab={(tab) => {
+                if (isTabAllowed(tab)) {
+                  setActiveTab(tab as any);
+                  setIsMobileSidebarOpen(false);
+                }
+              }}
+            />
+          )}
+{/* TAB: IT ADMIN USER MANAGEMENT & ACCESS CONTROL */}
           {activeTab === 'users' && (
             <div className="animate-in fade-in">
               <UserManagementDashboard
@@ -6757,24 +6985,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
             />
           )}
 
-        </div>
-
-        {/* Modal Footer */}
-        <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-slate-500 shrink-0">
-          <div className="flex items-center gap-2">
-            <Shield className="w-3.5 h-3.5 text-emerald-700" />
-            <span>
-              Executive Session: <strong>{saccoInfo.email}</strong> · Tel: {saccoInfo.phone} · USSD: {saccoInfo.ussdCode}
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs transition-colors cursor-pointer"
-          >
-            Close Console
-          </button>
-        </div>
+        </main>
       </div>
 
       {/* Modal: Add Candidate Manually (Manual CRUD Registration) */}

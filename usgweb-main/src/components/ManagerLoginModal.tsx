@@ -204,8 +204,10 @@ export const ManagerLoginModal: React.FC<ManagerLoginModalProps> = ({
     const cleanNew = newPasswordInput.trim();
     const cleanConfirm = confirmPasswordInput.trim();
 
-    if (cleanNew.length < 8) {
-      setError('New password must be at least 8 characters in length.');
+    // Password must be at least 8 characters and include uppercase, lowercase, number, and special character
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-={}|\[\]:";'<>?,.\/]).{8,}$/;
+    if (!passwordPattern.test(cleanNew)) {
+      setError('Password must be at least 8 characters and include uppercase, lowercase, number, and special character.');
       return;
     }
     if (cleanNew !== cleanConfirm) {

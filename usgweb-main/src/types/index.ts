@@ -452,4 +452,22 @@ export interface ContactInquiry {
   assignedTo?: any;
 }
 
+export interface EmployeeOfTheYear {
+  id: string;
+  name: string;
+  roleEn: string;
+  roleRw?: string;
+  roleFr?: string;
+  departmentEn: string;
+  departmentRw?: string;
+  year: string;
+  citationEn: string;
+  citationRw?: string;
+  citationFr?: string;
+  achievementMetric?: string;
+  imageUrl: string;
+  active: boolean;
+}
+
+
 

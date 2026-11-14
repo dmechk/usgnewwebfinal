@@ -22,6 +22,7 @@ import {
   ContactInquiry,
   EmploymentTypeItem,
   QualificationItem,
+  EmployeeOfTheYear,
 } from '../types';
 import minecofinLogo from '../assets/images/Minecofin.png';
 import bnrLogo from '../assets/images/bnr logo.png';
@@ -1086,8 +1087,8 @@ export const INITIAL_MANAGER_MESSAGES: ManagerMessage[] = [
     authorName: "Wellarse (Board Chair)",
     authorRole: "Chairperson, Board of Directors — UBUMWE SACCO GAKENKE",
     date: "October 2026",
-    showOnHome: false,
-    showOnAbout: true,
+    showOnHome: true,
+    showOnAbout: false,
     active: true,
     imageUrl: "/src/assets/images/portrait_director_wellars_1791994899049.jpg",
   },
@@ -1781,6 +1782,24 @@ export const INITIAL_CONTACT_INQUIRIES: ContactInquiry[] = [
     notes: 'Association has registered with RCA. Requested copy of cooperative registration certificate.',
   },
 ];
+
+export const INITIAL_EMPLOYEE_OF_THE_YEAR: EmployeeOfTheYear = {
+  id: 'eoty-2026',
+  name: 'Mukandayisenga Chantal',
+  roleEn: 'Senior Credit & Customer Relations Officer',
+  roleRw: 'Umukozi Mukuru Ushinzwe Inguzanyo no Kwakira Abakiriya',
+  roleFr: 'Agente Principale de Crédit et Relations Membres',
+  departmentEn: 'Credit & Microfinance Operations — Gakenke Branch',
+  departmentRw: "Ishami ry'Inguzanyo — Ishami rya Gakenke",
+  year: '2026',
+  citationEn: 'Awarded for extraordinary dedication to smallholder coffee farmers and rural women cooperatives across Gakenke, achieving a 99.8% portfolio recovery rate and exemplary member satisfaction.',
+  citationRw: "Yahawe iki gihembo kubera ubwitange bidasanzwe mu gufasha abahinzi b'ikawa n'amatsinda y'abagore mu Karere ka Gakenke, akaba yarageze ku gipimo cya 99.8% mu kugarura inguzanyo no kwakira neza abanyamuryango.",
+  citationFr: 'Récompensée pour son dévouement exceptionnel auprès des petits producteurs de café et des coopératives de femmes de Gakenke, atteignant un taux de recouvrement de 99,8 % et une satisfaction membre exemplaire.',
+  achievementMetric: '99.8% Recovery · 420+ Farmers Supported',
+  imageUrl: '/src/assets/images/farmers_cooperative_1791989969904.jpg',
+  active: true,
+};
+
 
 
 

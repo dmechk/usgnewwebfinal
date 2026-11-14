@@ -5,6 +5,7 @@ import coopImg from '../assets/images/farmers_cooperative_1791989969904.jpg';
 import govImg from '../assets/images/community_governance_1791989970347.jpg';
 import bizImg from '../assets/images/entrepreneur_business_1791989970089.jpg';
 import wellarsImg from '../assets/images/portrait_director_wellars_1791994899049.jpg';
+import homeMessageImg from '../assets/images/media_1794419166953_0b02b60b.png';
 import { TRANSLATIONS } from '../i18n/translations';
 import { SACCO_INFO } from '../data/saccoData';
 import {
@@ -51,6 +52,10 @@ interface HeroProps {
   onUpdateSlideObjects?: (slides: HeroSlide[]) => void;
   /** Callback to update legacy slide array */
   onUpdateSlides?: (slides: string[]) => void;
+  /** Optional manager message data */
+  managerMessage?: any;
+  /** Optional callback to update manager message */
+  onUpdateManagerMessage?: (id: string, updates: any) => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({
@@ -90,6 +95,7 @@ export const Hero: React.FC<HeroProps> = ({
     { src: coopImg },
     { src: bizImg },
     { src: wellarsImg },
+    { src: homeMessageImg, caption: "Welcome to UBUMWE SACCO – your trusted cooperative partner." },
   ], []);
 
   const allFlowImages: HeroSlide[] = React.useMemo(() => {
@@ -216,38 +222,38 @@ export const Hero: React.FC<HeroProps> = ({
   // ---------------------------------------------------------------------------
   const districtBadge =
     currentLang === 'fr' ? `Coopérative du District de ${saccoInfo.district}`
-    : currentLang === 'rw' ? heroContent?.districtBadgeRw || `Koperative y'Akarere ka ${saccoInfo.district}`
-    : heroContent?.districtBadgeEn || `${saccoInfo.district} District Cooperative`;
+      : currentLang === 'rw' ? heroContent?.districtBadgeRw || `Koperative y'Akarere ka ${saccoInfo.district}`
+        : heroContent?.districtBadgeEn || `${saccoInfo.district} District Cooperative`;
 
   const headlinePrefix =
     currentLang === 'fr' ? t.hero.headlinePrefix
-    : currentLang === 'rw' ? heroContent?.headlinePrefixRw ?? t.hero.headlinePrefix
-    : heroContent?.headlinePrefixEn ?? t.hero.headlinePrefix;
+      : currentLang === 'rw' ? heroContent?.headlinePrefixRw ?? t.hero.headlinePrefix
+        : heroContent?.headlinePrefixEn ?? t.hero.headlinePrefix;
 
   const headlineFocus =
     currentLang === 'fr' ? t.hero.headlineFocus
-    : currentLang === 'rw' ? heroContent?.headlineFocusRw ?? t.hero.headlineFocus
-    : heroContent?.headlineFocusEn ?? t.hero.headlineFocus;
+      : currentLang === 'rw' ? heroContent?.headlineFocusRw ?? t.hero.headlineFocus
+        : heroContent?.headlineFocusEn ?? t.hero.headlineFocus;
 
   const headlineSuffix =
     currentLang === 'fr' ? t.hero.headlineSuffix
-    : currentLang === 'rw' ? heroContent?.headlineSuffixRw ?? t.hero.headlineSuffix
-    : heroContent?.headlineSuffixEn ?? t.hero.headlineSuffix;
+      : currentLang === 'rw' ? heroContent?.headlineSuffixRw ?? t.hero.headlineSuffix
+        : heroContent?.headlineSuffixEn ?? t.hero.headlineSuffix;
 
   const subheading =
     currentLang === 'fr' ? t.hero.subheading
-    : currentLang === 'rw' ? heroContent?.subheadingRw ?? t.hero.subheading
-    : heroContent?.subheadingEn ?? t.hero.subheading;
+      : currentLang === 'rw' ? heroContent?.subheadingRw ?? t.hero.subheading
+        : heroContent?.subheadingEn ?? t.hero.subheading;
 
   const ctaJoin =
     currentLang === 'fr' ? t.hero.ctaJoin
-    : currentLang === 'rw' ? heroContent?.ctaJoinRw ?? t.hero.ctaJoin
-    : heroContent?.ctaJoinEn ?? t.hero.ctaJoin;
+      : currentLang === 'rw' ? heroContent?.ctaJoinRw ?? t.hero.ctaJoin
+        : heroContent?.ctaJoinEn ?? t.hero.ctaJoin;
 
   const ctaCalculator =
     currentLang === 'fr' ? t.hero.ctaCalculator
-    : currentLang === 'rw' ? heroContent?.ctaCalculatorRw ?? t.hero.ctaCalculator
-    : heroContent?.ctaCalculatorEn ?? t.hero.ctaCalculator;
+      : currentLang === 'rw' ? heroContent?.ctaCalculatorRw ?? t.hero.ctaCalculator
+        : heroContent?.ctaCalculatorEn ?? t.hero.ctaCalculator;
 
   // ---------------------------------------------------------------------------
   // Render
@@ -394,9 +400,8 @@ export const Hero: React.FC<HeroProps> = ({
               type="button"
               onClick={() => setCurrentIndex(i)}
               aria-label={`Go to image ${i + 1}`}
-              className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                i === currentIndex ? 'w-7 bg-amber-400' : 'w-2 bg-white/45 hover:bg-white/75'
-              }`}
+              className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${i === currentIndex ? 'w-7 bg-amber-400' : 'w-2 bg-white/45 hover:bg-white/75'
+                }`}
             />
           ))}
         </div>
@@ -408,8 +413,8 @@ export const Hero: React.FC<HeroProps> = ({
             {currentLang === 'fr'
               ? 'UBUMWE SACCO · District de Gakenke'
               : currentLang === 'rw'
-              ? 'UBUMWE SACCO · Akarere ka Gakenke'
-              : 'UBUMWE SACCO · Gakenke District'}
+                ? 'UBUMWE SACCO · Akarere ka Gakenke'
+                : 'UBUMWE SACCO · Gakenke District'}
           </span>
         </div>
 

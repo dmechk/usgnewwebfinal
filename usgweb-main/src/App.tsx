@@ -36,6 +36,7 @@ import {
   ContactInquiry,
   EmploymentTypeItem,
   QualificationItem,
+  EmployeeOfTheYear,
 } from './types';
 import {
   SACCO_INFO,
@@ -59,6 +60,7 @@ import {
   INITIAL_CONTACT_INQUIRIES,
   INITIAL_EMPLOYMENT_TYPES,
   INITIAL_QUALIFICATIONS,
+  INITIAL_EMPLOYEE_OF_THE_YEAR,
 } from './data/saccoData';
 import { BRANCHES_DATA } from './data/saccoData';
 import { Header } from './components/Header';
@@ -68,6 +70,8 @@ import { AboutUs } from './components/AboutUs';
 import { ProductCatalog } from './components/ProductCatalog';
 import { ManagerMessageCard } from './components/ManagerMessageCard';
 import { HomeVideoSection } from './components/HomeVideoSection';
+import { ImpactStories } from './components/ImpactStories';
+import { BestEmployeeCard } from './components/BestEmployeeCard';
 
 import { BoardAndManagers } from './components/BoardAndManagers';
 import { Gallery } from './components/Gallery';
@@ -405,8 +409,8 @@ export default function App() {
   const routeJobId = isCareersApplyRoute
     ? activeView.replace('careers/apply/', '')
     : isCareersJobRoute
-    ? activeView.replace('careers/', '')
-    : null;
+      ? activeView.replace('careers/', '')
+      : null;
 
 
   const [applications, setApplications] = useState<ApplicationRecord[]>(() => INITIAL_APPLICATIONS);
@@ -442,7 +446,16 @@ export default function App() {
   const [managerMessages, setManagerMessages] = useState<ManagerMessage[]>(() => {
     try {
       const saved = localStorage.getItem('ubumwe_manager_messages');
-      return saved ? JSON.parse(saved) : INITIAL_MANAGER_MESSAGES;
+      if (saved) {
+        const parsed: ManagerMessage[] = JSON.parse(saved);
+        return parsed.map((m) => {
+          if (m.id === 'msg-about-001') {
+            return { ...m, showOnHome: true, showOnAbout: false };
+          }
+          return m;
+        });
+      }
+      return INITIAL_MANAGER_MESSAGES;
     } catch {
       return INITIAL_MANAGER_MESSAGES;
     }
@@ -467,6 +480,26 @@ export default function App() {
       return INITIAL_QUALIFICATIONS;
     }
   });
+
+  // Dynamic Best Employee of the Year (CRUD by Admin)
+  const [employeeOfTheYear, setEmployeeOfTheYear] = useState<EmployeeOfTheYear>(() => {
+    try {
+      const saved = localStorage.getItem('ubumwe_best_employee');
+      return saved ? JSON.parse(saved) : INITIAL_EMPLOYEE_OF_THE_YEAR;
+    } catch {
+      return INITIAL_EMPLOYEE_OF_THE_YEAR;
+    }
+  });
+
+  const handleUpdateEmployeeOfTheYear = (updates: Partial<EmployeeOfTheYear>) => {
+    setEmployeeOfTheYear((prev) => {
+      const next = { ...prev, ...updates };
+      try {
+        localStorage.setItem('ubumwe_best_employee', JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  };
 
   // Dynamic Job Postings (Careers)
   const [jobPostings, setJobPostings] = useState<JobPosting[]>(() => {
@@ -1806,7 +1839,8 @@ export default function App() {
     setSocialLinks(INITIAL_SOCIAL_LINKS);
   };
 
-  const homeManagerMessage = managerMessages.find((m) => m.active && m.showOnHome);
+  const homeManagerMessages = managerMessages.filter((m) => m.active && (m.showOnHome || m.id === 'msg-about-001'));
+  const homeManagerMessage = homeManagerMessages[0];
   const aboutManagerMessage = managerMessages.find((m) => m.active && m.showOnAbout);
 
   // Careers & Job Vacancies Handlers (Persisted to MongoDB)
@@ -2227,14 +2261,14 @@ export default function App() {
                   onUpdateSaccoInfo={handleUpdateSaccoInfo}
                 />
 
-                {/* Featured Manager Message on Home Page */}
-                {homeManagerMessage && (
+                {/* Featured Leader & Manager Messages on Home Page */}
+                {homeManagerMessages.length > 0 && (
                   <ManagerMessageCard
-                    message={homeManagerMessage}
+                    messages={homeManagerMessages}
                     currentLang={currentLang}
                     isAdmin={canAccessLeadership || canAccessIT}
                     onEdit={() => handleOpenAdminConsole('messages')}
-                    onUpdateImage={(newUrl) => handleUpdateManagerMessage(homeManagerMessage.id, { imageUrl: newUrl })}
+                    onUpdateImage={(id, newUrl) => handleUpdateManagerMessage(id, { imageUrl: newUrl })}
                     variant="home"
                   />
                 )}
@@ -2248,7 +2282,31 @@ export default function App() {
                   onAddVideo={handleAddHomeVideo}
                   onDeleteVideo={handleDeleteHomeVideo}
                 />
+
+                {/* Community Impact Stories Section on Home Page */}
+                <ImpactStories
+                  currentLang={currentLang}
+                  communityStories={communityStories}
+                  isAdmin={canAccessMedia || canAccessIT}
+                  onOpenAdminConsole={handleOpenAdminConsole}
+                  onAddCommunityStory={handleAddCommunityStory}
+                  onUpdateCommunityStory={handleUpdateCommunityStory}
+                  onDeleteCommunityStory={handleDeleteCommunityStory}
+                />
               </>
+            )}
+
+            {/* Standalone View for Impact Stories if navigated directly */}
+            {activeView === 'impact' && (
+              <ImpactStories
+                currentLang={currentLang}
+                communityStories={communityStories}
+                isAdmin={canAccessMedia || canAccessIT}
+                onOpenAdminConsole={handleOpenAdminConsole}
+                onAddCommunityStory={handleAddCommunityStory}
+                onUpdateCommunityStory={handleUpdateCommunityStory}
+                onDeleteCommunityStory={handleDeleteCommunityStory}
+              />
             )}
 
             {/* 2. About Us Section (Cooperative History, Licensing, Mission & Leadership Message) */}
@@ -2262,6 +2320,8 @@ export default function App() {
                 onOpenAdminConsole={handleOpenAdminConsole}
                 onUpdateManagerMessage={handleUpdateManagerMessage}
                 onDeleteValue={handleDeleteAboutValue}
+                employeeOfTheYear={employeeOfTheYear}
+                onUpdateEmployeeOfTheYear={handleUpdateEmployeeOfTheYear}
               />
             )}
 
@@ -2287,6 +2347,8 @@ export default function App() {
                 onAddLeader={handleAddLeader}
                 onUpdateLeader={handleUpdateLeader}
                 onDeleteLeader={handleDeleteLeader}
+                employeeOfTheYear={employeeOfTheYear}
+                onUpdateEmployeeOfTheYear={handleUpdateEmployeeOfTheYear}
               />
             )}
 
@@ -2342,6 +2404,19 @@ export default function App() {
                 onDeleteJobApplication={handleDeleteJobApplication}
                 onResetJobApplications={handleResetJobApplications}
                 onNavigate={(view) => setActiveView(view)}
+                employeeOfTheYear={employeeOfTheYear}
+                onUpdateEmployeeOfTheYear={handleUpdateEmployeeOfTheYear}
+              />
+            )}
+
+            {/* Standalone Best Employee of the Year Recognition */}
+            {(activeView === 'employee-of-the-year' || activeView === 'best-employee') && (
+              <BestEmployeeCard
+                employee={employeeOfTheYear}
+                currentLang={currentLang}
+                isAdmin={canAccessLeadership || canAccessIT}
+                onUpdateEmployee={handleUpdateEmployeeOfTheYear}
+                variant="section"
               />
             )}
 

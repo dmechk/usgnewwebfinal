@@ -520,7 +520,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ currentLang, onLanguageC
               setIsMinimized(false);
             }}
             aria-label="Open UBUMWE SACCO Digital Assistant"
-            title="UBUMWE SACCO AI Assistant"
+
             className="group relative flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-700 via-emerald-600 to-teal-400 text-white shadow-2xl hover:shadow-emerald-500/40 hover:scale-105 active:scale-95 transition-all duration-300 border-2 border-emerald-200/50 cursor-pointer"
           >
             <Sparkles className="w-7 h-7 text-white transition-all duration-300 group-hover:rotate-12 group-hover:scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.7)]" />

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Language, LeaderMember } from '../types';
-import { Users, Plus, Edit2, Trash2, ShieldCheck, Phone, Check, X, Image as ImageIcon } from 'lucide-react';
+import { Language, LeaderMember, EmployeeOfTheYear } from '../types';
+import { Users, Plus, Edit2, Trash2, ShieldCheck, Phone, Check, X, Image as ImageIcon, Trophy } from 'lucide-react';
 import { ImigongoRibbon } from './ImigongoPattern';
 import { ImageUploader } from './ImageUploader';
+import { BestEmployeeCard } from './BestEmployeeCard';
 
 interface BoardAndManagersProps {
   currentLang: Language;
@@ -11,6 +12,8 @@ interface BoardAndManagersProps {
   onAddLeader: (leader: Omit<LeaderMember, 'id'>) => void;
   onUpdateLeader: (id: string, updated: Partial<LeaderMember>) => void;
   onDeleteLeader: (id: string) => void;
+  employeeOfTheYear?: EmployeeOfTheYear;
+  onUpdateEmployeeOfTheYear?: (updates: Partial<EmployeeOfTheYear>) => void;
 }
 
 export const BoardAndManagers: React.FC<BoardAndManagersProps> = ({
@@ -20,6 +23,8 @@ export const BoardAndManagers: React.FC<BoardAndManagersProps> = ({
   onAddLeader,
   onUpdateLeader,
   onDeleteLeader,
+  employeeOfTheYear,
+  onUpdateEmployeeOfTheYear,
 }) => {
   const [filterCategory, setFilterCategory] = useState<'all' | 'board' | 'manager'>('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -108,23 +113,23 @@ export const BoardAndManagers: React.FC<BoardAndManagersProps> = ({
                 {currentLang === 'fr'
                   ? 'Leadership & Administration Coopérative'
                   : currentLang === 'rw'
-                  ? "Ubuyobozi n'Imicungire ya Koperative"
-                  : 'Cooperative Leadership & Administration'}
+                    ? "Ubuyobozi n'Imicungire ya Koperative"
+                    : 'Cooperative Leadership & Administration'}
               </span>
             </div>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight" style={{ textWrap: 'balance' }}>
               {currentLang === 'fr'
                 ? 'Conseil & Direction · UBUMWE SACCO GAKENKE'
                 : currentLang === 'rw'
-                ? "Abayobozi n'Abakozi · UBUMWE SACCO GAKENKE"
-                : 'Board & Staff · UBUMWE SACCO GAKENKE'}
+                  ? "Abayobozi n'Abakozi · UBUMWE SACCO GAKENKE"
+                  : 'Board & Staff · UBUMWE SACCO GAKENKE'}
             </h2>
             <p className="text-slate-600 mt-2 text-sm sm:text-base max-w-3xl">
               {currentLang === 'fr'
                 ? 'Rencontrez les dirigeants financiers expérimentés et administrateurs guidant UBUMWE SACCO GAKENKE conformément aux normes de la RCA.'
                 : currentLang === 'rw'
-                ? "Menya abagize Inama y'Ubutegetsi n'abayobozi b'imirimo ya buri munsi bayobora Ubumwe SACCO Gakenke mu mucyo n'ubunyangamugayo."
-                : 'Meet the seasoned financial leaders and administrators guiding UBUMWE SACCO GAKENKE in full compliance with cooperative laws and RCA standards.'}
+                  ? "Menya abagize Inama y'Ubutegetsi n'abayobozi b'imirimo ya buri munsi bayobora Ubumwe SACCO Gakenke mu mucyo n'ubunyangamugayo."
+                  : 'Meet the seasoned financial leaders and administrators guiding UBUMWE SACCO GAKENKE in full compliance with cooperative laws and RCA standards.'}
             </p>
           </div>
 
@@ -134,41 +139,38 @@ export const BoardAndManagers: React.FC<BoardAndManagersProps> = ({
               <button
                 type="button"
                 onClick={() => setFilterCategory('all')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors ${
-                  filterCategory === 'all' ? 'bg-emerald-800 text-white' : 'text-slate-600 hover:text-slate-900'
-                }`}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors ${filterCategory === 'all' ? 'bg-emerald-800 text-white' : 'text-slate-600 hover:text-slate-900'
+                  }`}
               >
                 {currentLang === 'fr'
                   ? `Tous (${leaders.length})`
                   : currentLang === 'rw'
-                  ? `Bose (${leaders.length})`
-                  : `All (${leaders.length})`}
+                    ? `Bose (${leaders.length})`
+                    : `All (${leaders.length})`}
               </button>
               <button
                 type="button"
                 onClick={() => setFilterCategory('board')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors ${
-                  filterCategory === 'board' ? 'bg-emerald-800 text-white' : 'text-slate-600 hover:text-slate-900'
-                }`}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors ${filterCategory === 'board' ? 'bg-emerald-800 text-white' : 'text-slate-600 hover:text-slate-900'
+                  }`}
               >
                 {currentLang === 'fr'
                   ? "Conseil d'Administration"
                   : currentLang === 'rw'
-                  ? "Inama y'Ubutegetsi"
-                  : 'Board of Directors'}
+                    ? "Inama y'Ubutegetsi"
+                    : 'Board of Directors'}
               </button>
               <button
                 type="button"
                 onClick={() => setFilterCategory('manager')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors ${
-                  filterCategory === 'manager' ? 'bg-emerald-800 text-white' : 'text-slate-600 hover:text-slate-900'
-                }`}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors ${filterCategory === 'manager' ? 'bg-emerald-800 text-white' : 'text-slate-600 hover:text-slate-900'
+                  }`}
               >
                 {currentLang === 'fr'
                   ? 'Équipe de Direction'
                   : currentLang === 'rw'
-                  ? "Abayobozi b'Imirimo"
-                  : 'Management Team'}
+                    ? "Abayobozi b'Imirimo"
+                    : 'Management Team'}
               </button>
             </div>
 
@@ -183,13 +185,26 @@ export const BoardAndManagers: React.FC<BoardAndManagersProps> = ({
                   {currentLang === 'fr'
                     ? 'Ajouter un Dirigeant'
                     : currentLang === 'rw'
-                    ? 'Ongeraho Umuyobozi'
-                    : 'Add Leader / Manager'}
+                      ? 'Ongeraho Umuyobozi'
+                      : 'Add Leader / Manager'}
                 </span>
               </button>
             )}
           </div>
         </div>
+
+        {/* Spotlight: Best Employee of the Year */}
+        {employeeOfTheYear && (
+          <div className="pt-2">
+            <BestEmployeeCard
+              employee={employeeOfTheYear}
+              currentLang={currentLang}
+              isAdmin={isAdmin}
+              onUpdateEmployee={onUpdateEmployeeOfTheYear}
+              variant="card"
+            />
+          </div>
+        )}
 
         {/* Leaders Grid with Photos */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
@@ -198,26 +213,26 @@ export const BoardAndManagers: React.FC<BoardAndManagersProps> = ({
               currentLang === 'fr'
                 ? leader.roleFr || leader.roleEn
                 : currentLang === 'rw'
-                ? leader.roleRw || leader.roleEn
-                : leader.roleEn;
+                  ? leader.roleRw || leader.roleEn
+                  : leader.roleEn;
             const qualText =
               currentLang === 'fr'
                 ? leader.qualificationFr || leader.qualificationEn
                 : currentLang === 'rw'
-                ? leader.qualificationRw || leader.qualificationEn
-                : leader.qualificationEn;
+                  ? leader.qualificationRw || leader.qualificationEn
+                  : leader.qualificationEn;
             const categoryBadge =
               leader.category === 'board'
                 ? currentLang === 'fr'
                   ? "Conseil d'Administration"
                   : currentLang === 'rw'
-                  ? "Inama y'Ubutegetsi"
-                  : 'Board of Directors'
+                    ? "Inama y'Ubutegetsi"
+                    : 'Board of Directors'
                 : currentLang === 'fr'
-                ? 'Direction Exécutive'
-                : currentLang === 'rw'
-                ? "Ubuyobozi b'Imirimo"
-                : 'Executive Management';
+                  ? 'Direction Exécutive'
+                  : currentLang === 'rw'
+                    ? "Ubuyobozi b'Imirimo"
+                    : 'Executive Management';
 
             return (
               <div

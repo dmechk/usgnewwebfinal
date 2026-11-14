@@ -1,5 +1,5 @@
 import React from 'react';
-import { Language, SaccoContactInfo, ManagerMessage, AboutContentConfig, AboutValueItem } from '../types';
+import { Language, SaccoContactInfo, ManagerMessage, AboutContentConfig, AboutValueItem, EmployeeOfTheYear } from '../types';
 import { SACCO_INFO, INITIAL_ABOUT_CONTENT } from '../data/saccoData';
 import {
   ShieldCheck,
@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { ImigongoRibbon } from './ImigongoPattern';
 import { ManagerMessageCard } from './ManagerMessageCard';
+import { BestEmployeeCard } from './BestEmployeeCard';
 
 interface AboutUsProps {
   currentLang: Language;
@@ -29,6 +30,8 @@ interface AboutUsProps {
   onOpenAdminConsole?: (tab?: string) => void;
   onUpdateManagerMessage?: (id: string, updated: Partial<ManagerMessage>) => void;
   onDeleteValue?: (id: string) => void;
+  employeeOfTheYear?: EmployeeOfTheYear;
+  onUpdateEmployeeOfTheYear?: (updates: Partial<EmployeeOfTheYear>) => void;
 }
 
 export const AboutUs: React.FC<AboutUsProps> = ({
@@ -40,6 +43,8 @@ export const AboutUs: React.FC<AboutUsProps> = ({
   onOpenAdminConsole,
   onUpdateManagerMessage,
   onDeleteValue,
+  employeeOfTheYear,
+  onUpdateEmployeeOfTheYear,
 }) => {
   const getValueIcon = (iconName: string) => {
     switch (iconName.toLowerCase()) {
@@ -65,50 +70,50 @@ export const AboutUs: React.FC<AboutUsProps> = ({
     currentLang === 'fr'
       ? "Identité Coopérative & Patrimoine"
       : currentLang === 'rw'
-      ? aboutContent.badgeTitleRw
-      : aboutContent.badgeTitleEn;
+        ? aboutContent.badgeTitleRw
+        : aboutContent.badgeTitleEn;
 
   const mainTitle =
     currentLang === 'fr'
       ? "À Propos · UBUMWE SACCO GAKENKE"
       : currentLang === 'rw'
-      ? "Abo Turibo · UBUMWE SACCO GAKENKE"
-      : "About Us · UBUMWE SACCO GAKENKE";
+        ? "Abo Turibo · UBUMWE SACCO GAKENKE"
+        : "About Us · UBUMWE SACCO GAKENKE";
 
   const subtitle =
     currentLang === 'fr'
       ? "Une coopérative d'épargne et de crédit agréée au Rwanda, au service de plus de 18 600 membres dans les 19 secteurs du district de Gakenke."
       : currentLang === 'rw'
-      ? aboutContent.subtitleRw
-      : aboutContent.subtitleEn;
+        ? aboutContent.subtitleRw
+        : aboutContent.subtitleEn;
 
   const regulationNotice =
     currentLang === 'fr'
       ? "Agréé et supervisé par l'Agence Rwandaise des Coopératives (RCA)"
       : currentLang === 'rw'
-      ? aboutContent.regulationNoticeRw
-      : aboutContent.regulationNoticeEn;
+        ? aboutContent.regulationNoticeRw
+        : aboutContent.regulationNoticeEn;
 
   const storyP1 =
     currentLang === 'fr'
       ? "Fondée en 2011 par des citoyens visionnaires de Gakenke, UBUMWE SACCO a été créée pour bâtir une institution financière coopérative détenue et gérée par sa propre communauté."
       : currentLang === 'rw'
-      ? aboutContent.storyP1Rw
-      : aboutContent.storyP1En;
+        ? aboutContent.storyP1Rw
+        : aboutContent.storyP1En;
 
   const storyP2 =
     currentLang === 'fr'
       ? "Aujourd'hui, nous exploitons un réseau de 6 agences et postes avancés, offrant des services bancaires numériques 24h/24 via USSD *541# et soutenant l'autonomie économique locale."
       : currentLang === 'rw'
-      ? aboutContent.storyP2Rw
-      : aboutContent.storyP2En;
+        ? aboutContent.storyP2Rw
+        : aboutContent.storyP2En;
 
   const imageCaption =
     currentLang === 'fr'
       ? "Assemblée Générale Annuelle des Membres et Délibérations du Conseil à Gakenke"
       : currentLang === 'rw'
-      ? aboutContent.imageCaptionRw
-      : aboutContent.imageCaptionEn;
+        ? aboutContent.imageCaptionRw
+        : aboutContent.imageCaptionEn;
 
   const assemblyImage =
     aboutContent.imageUrl || '/src/assets/images/community_governance_1791989970347.jpg';
@@ -142,8 +147,8 @@ export const AboutUs: React.FC<AboutUsProps> = ({
                 {currentLang === 'fr'
                   ? 'Gérer Contenu & Valeurs'
                   : currentLang === 'rw'
-                  ? 'Guhindura Ibirimo (CRUD)'
-                  : 'Edit About & Values'}
+                    ? 'Guhindura Ibirimo (CRUD)'
+                    : 'Edit About & Values'}
               </span>
             </button>
           )}
@@ -273,8 +278,8 @@ export const AboutUs: React.FC<AboutUsProps> = ({
                 {currentLang === 'fr'
                   ? 'Être une institution financière coopérative modèle, moderne et pérenne, moteur du développement socio-économique inclusif à Gakenke et au Rwanda.'
                   : currentLang === 'rw'
-                  ? "Kuba koperative y'imari y'intangarugero, igezweho kandi irambye, ifasha abanyamuryango kwiteza imbere muri Gakenke no mu Rwanda hose."
-                  : 'To be a premier, resilient, and member-centric financial cooperative driving sustainable socio-economic prosperity across Gakenke District.'}
+                    ? "Kuba koperative y'imari y'intangarugero, igezweho kandi irambye, ifasha abanyamuryango kwiteza imbere muri Gakenke no mu Rwanda hose."
+                    : 'To be a premier, resilient, and member-centric financial cooperative driving sustainable socio-economic prosperity across Gakenke District.'}
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-200/60 text-[11px] font-semibold text-emerald-700">
@@ -295,8 +300,8 @@ export const AboutUs: React.FC<AboutUsProps> = ({
                 {currentLang === 'fr'
                   ? 'Offrir des services d\'épargne, de crédit et de paiement accessibles, sécurisés et abordables pour autonomiser les ménages ruraux, coopératives et entrepreneurs.'
                   : currentLang === 'rw'
-                  ? "Guteza imbere abanyamuryango binyuze mu kubitsa, kugurizwa no kubona serivisi z'imari zizewe, zidahenze kandi zibegereye."
-                  : 'To mobilize savings, provide affordable credit facilities, and deliver digital financial solutions tailored to farmers, entrepreneurs, and families.'}
+                    ? "Guteza imbere abanyamuryango binyuze mu kubitsa, kugurizwa no kubona serivisi z'imari zizewe, zidahenze kandi zibegereye."
+                    : 'To mobilize savings, provide affordable credit facilities, and deliver digital financial solutions tailored to farmers, entrepreneurs, and families.'}
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-200/60 text-[11px] font-semibold text-emerald-700">
@@ -317,8 +322,8 @@ export const AboutUs: React.FC<AboutUsProps> = ({
                 {currentLang === 'fr'
                   ? 'Inclusion financière totale, financement de l\'agriculture et de l\'élevage, numérisation des paiements et renforcement des fonds propres institutionnels.'
                   : currentLang === 'rw'
-                  ? "Kwagura serivisi z'imari mu mirenge yose ya Gakenke, gutera inkunga ubuhinzi n'ubworozi, no gukoresha ikoranabuhanga (*541#)."
-                  : 'Universal financial inclusion across all Gakenke sectors, agricultural value-chain financing, digital banking adoption, and institutional sustainability.'}
+                    ? "Kwagura serivisi z'imari mu mirenge yose ya Gakenke, gutera inkunga ubuhinzi n'ubworozi, no gukoresha ikoranabuhanga (*541#)."
+                    : 'Universal financial inclusion across all Gakenke sectors, agricultural value-chain financing, digital banking adoption, and institutional sustainability.'}
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-200/60 text-[11px] font-semibold text-emerald-700">
@@ -339,8 +344,8 @@ export const AboutUs: React.FC<AboutUsProps> = ({
                 {currentLang === 'fr'
                   ? 'Agréé par la Banque Nationale du Rwanda (BNR) et RICA. Plus de 9 800 membres actifs servis à travers nos guichets avec audit régulier.'
                   : currentLang === 'rw'
-                  ? "Koperative yemewe na BNR na RICA. Abanyamuryango basaga 9,800 bakorerwa ubuvugizi n'ubufatanye mu gihugu hose."
-                  : 'Full regulatory compliance with BNR & RICA licensing, servicing over 9,800 active cooperative members across multiple sector branches.'}
+                    ? "Koperative yemewe na BNR na RICA. Abanyamuryango basaga 9,800 bakorerwa ubuvugizi n'ubufatanye mu gihugu hose."
+                    : 'Full regulatory compliance with BNR & RICA licensing, servicing over 9,800 active cooperative members across multiple sector branches.'}
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-200/60 text-[11px] font-semibold text-emerald-700">
@@ -349,19 +354,19 @@ export const AboutUs: React.FC<AboutUsProps> = ({
           </div>
         </div>
 
-        {/* Manager / Institutional Leadership Message in About Page */}
-        {managerMessage && managerMessage.active && (
-          <div className="pt-6">
-            <ManagerMessageCard
-              message={managerMessage}
+        {/* Spotlight: Best Employee of the Year */}
+        {employeeOfTheYear && (
+          <div className="pt-8">
+            <BestEmployeeCard
+              employee={employeeOfTheYear}
               currentLang={currentLang}
               isAdmin={isAdmin}
-              onEdit={() => onOpenAdminConsole && onOpenAdminConsole('messages')}
-              onUpdateImage={(newUrl) => onUpdateManagerMessage && onUpdateManagerMessage(managerMessage.id, { imageUrl: newUrl })}
-              variant="about"
+              onUpdateEmployee={onUpdateEmployeeOfTheYear}
+              variant="card"
             />
           </div>
         )}
+
       </div>
 
       {/* Crisp & Small Imigongo Cultural Divider */}

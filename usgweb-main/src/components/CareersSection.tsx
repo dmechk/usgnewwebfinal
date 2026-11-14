@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Language, JobPosting, JobApplication, EmploymentTypeItem } from '../types';
+import { Language, JobPosting, JobApplication, EmploymentTypeItem, EmployeeOfTheYear } from '../types';
 import { SACCO_INFO, INITIAL_JOB_APPLICATIONS } from '../data/saccoData';
+import { BestEmployeeCard } from './BestEmployeeCard';
 import {
   Briefcase,
   MapPin,
@@ -64,6 +65,8 @@ interface CareersSectionProps {
   onResetJobApplications?: () => void;
   employmentTypes?: EmploymentTypeItem[];
   onNavigate?: (view: string) => void;
+  employeeOfTheYear?: EmployeeOfTheYear;
+  onUpdateEmployeeOfTheYear?: (updates: Partial<EmployeeOfTheYear>) => void;
 }
 
 export const CareersSection: React.FC<CareersSectionProps> = ({
@@ -86,6 +89,8 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
   onResetJobApplications,
   employmentTypes = [],
   onNavigate,
+  employeeOfTheYear,
+  onUpdateEmployeeOfTheYear,
 }) => {
   const role = (userRole || '').toUpperCase();
   const isHR = role === 'ADMIN_HR';
@@ -338,13 +343,13 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
       ? currentLang === 'fr'
         ? matchedJob.titleFr || matchedJob.titleEn
         : currentLang === 'rw'
-        ? matchedJob.titleRw
-        : matchedJob.titleEn
+          ? matchedJob.titleRw
+          : matchedJob.titleEn
       : currentLang === 'fr'
-      ? 'Candidature Générale'
-      : currentLang === 'rw'
-      ? 'Ubusabe Busanzwe bw\'Akazi'
-      : 'General Employment Application';
+        ? 'Candidature Générale'
+        : currentLang === 'rw'
+          ? 'Ubusabe Busanzwe bw\'Akazi'
+          : 'General Employment Application';
 
     const refCode = `UBUMWE-${Date.now().toString().slice(-6)}`;
 
@@ -637,8 +642,8 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
         currentLang === 'fr'
           ? job.titleFr || job.titleEn
           : currentLang === 'rw'
-          ? job.titleRw
-          : job.titleEn;
+            ? job.titleRw
+            : job.titleEn;
       const count = countFor(jId, job.titleEn);
 
       seen.add(jId.toLowerCase());
@@ -763,8 +768,8 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
             currentLang === 'fr'
               ? 'Poste à Temps Plein'
               : currentLang === 'rw'
-              ? 'Umukozi Uhoraho'
-              : 'Full-Time Position',
+                ? 'Umukozi Uhoraho'
+                : 'Full-Time Position',
           bg: 'bg-emerald-50 text-emerald-800 border-emerald-200',
         };
       case 'contract':
@@ -773,8 +778,8 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
             currentLang === 'fr'
               ? 'Contrat à Durée Déterminée'
               : currentLang === 'rw'
-              ? "Amasezerano y'Igihe"
-              : 'Fixed-Term Contract',
+                ? "Amasezerano y'Igihe"
+                : 'Fixed-Term Contract',
           bg: 'bg-blue-50 text-blue-800 border-blue-200',
         };
       case 'internship':
@@ -783,8 +788,8 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
             currentLang === 'fr'
               ? 'Stage Rémunéré'
               : currentLang === 'rw'
-              ? 'Kumenyereza (Internship)'
-              : 'Paid Internship',
+                ? 'Kumenyereza (Internship)'
+                : 'Paid Internship',
           bg: 'bg-purple-50 text-purple-800 border-purple-200',
         };
       default:
@@ -807,23 +812,23 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
                 {currentLang === 'fr'
                   ? 'Opportunités de Carrière · UBUMWE SACCO GAKENKE'
                   : currentLang === 'rw'
-                  ? "Amahirwe y'Akazi · UBUMWE SACCO GAKENKE"
-                  : 'Career Opportunities · UBUMWE SACCO GAKENKE'}
+                    ? "Amahirwe y'Akazi · UBUMWE SACCO GAKENKE"
+                    : 'Career Opportunities · UBUMWE SACCO GAKENKE'}
               </span>
             </div>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight" style={{ textWrap: 'balance' }}>
               {currentLang === 'fr'
                 ? 'Travaillez avec Nous & Bâtissez Gakenke'
                 : currentLang === 'rw'
-                ? "Kazi n'Amahirwe muri Koperative Yacu"
-                : 'Work With Us & Build Gakenke'}
+                  ? "Kazi n'Amahirwe muri Koperative Yacu"
+                  : 'Work With Us & Build Gakenke'}
             </h2>
             <p className="text-slate-600 mt-2 text-sm sm:text-base max-w-3xl">
               {currentLang === 'fr'
                 ? 'Rejoignez notre équipe dévouée au service de plus de 18 600 membres coopérateurs dans le district de Gakenke. Nous offrons un travail valorisant et une rémunération équitable.'
                 : currentLang === 'rw'
-                ? "Fatanya natwe mu guteza imbere abanyamuryango basaga 18,600 bo mu Mirenge 19 ya Gakenke. Dutanga umushahara uboneye, amahugurwa n'agaciro k'umukozi."
-                : 'Join our dedicated team of professionals serving over 18,600 cooperative members across Gakenke District. We offer meaningful work, fair compensation, and community impact.'}
+                  ? "Fatanya natwe mu guteza imbere abanyamuryango basaga 18,600 bo mu Mirenge 19 ya Gakenke. Dutanga umushahara uboneye, amahugurwa n'agaciro k'umukozi."
+                  : 'Join our dedicated team of professionals serving over 18,600 cooperative members across Gakenke District. We offer meaningful work, fair compensation, and community impact.'}
             </p>
           </div>
 
@@ -886,19 +891,18 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
               <button
                 type="button"
                 onClick={() => setCareersTab('vacancies')}
-                className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                  careersTab === 'vacancies'
+                className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${careersTab === 'vacancies'
                     ? 'bg-emerald-700 text-white shadow-md'
                     : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                }`}
+                  }`}
               >
                 <Briefcase className="w-4 h-4" />
                 <span>
                   {currentLang === 'fr'
                     ? "Offres d'Emploi"
                     : currentLang === 'rw'
-                    ? 'Imirimo Ifunguye'
-                    : 'Job Vacancies'}{' '}
+                      ? 'Imirimo Ifunguye'
+                      : 'Job Vacancies'}{' '}
                   ({jobPostings.length})
                 </span>
               </button>
@@ -906,19 +910,18 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
               <button
                 type="button"
                 onClick={() => setCareersTab('applicants')}
-                className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                  careersTab === 'applicants'
+                className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${careersTab === 'applicants'
                     ? 'bg-slate-900 text-white shadow-md ring-2 ring-emerald-500/50'
                     : 'bg-emerald-50 text-emerald-900 hover:bg-emerald-100 border border-emerald-200 font-extrabold'
-                }`}
+                  }`}
               >
                 <Users className="w-4 h-4 text-emerald-500" />
                 <span>
                   {currentLang === 'fr'
                     ? 'Candidatures Reçues (CRUD)'
                     : currentLang === 'rw'
-                    ? 'Abasabye Akazi'
-                    : 'Candidate Applications (CRUD)'}
+                      ? 'Abasabye Akazi'
+                      : 'Candidate Applications (CRUD)'}
                 </span>
                 <span className="px-2 py-0.5 rounded-full text-[11px] font-black bg-emerald-600 text-white shadow-xs">
                   {jobApplications.length}
@@ -1006,10 +1009,10 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
                   {activeApplyingJob
                     ? `${currentLang === 'fr' ? 'Postuler pour' : currentLang === 'rw' ? 'Gusaba Umwanya wa' : 'Apply for'} ${currentLang === 'fr' ? (activeApplyingJob.titleFr || activeApplyingJob.titleEn) : currentLang === 'rw' ? activeApplyingJob.titleRw : activeApplyingJob.titleEn}`
                     : currentLang === 'fr'
-                    ? 'Candidature Spontanée'
-                    : currentLang === 'rw'
-                    ? 'Gusaba Akazi Muri UBUMWE SACCO'
-                    : 'General Job Application'}
+                      ? 'Candidature Spontanée'
+                      : currentLang === 'rw'
+                        ? 'Gusaba Akazi Muri UBUMWE SACCO'
+                        : 'General Job Application'}
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
                   Complete your candidate application profile directly on this page. No popup modal required.
@@ -1529,6 +1532,19 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
               </div>
             </div>
 
+            {/* Spotlight: Best Employee of the Year */}
+            {employeeOfTheYear && (
+              <div className="mb-8">
+                <BestEmployeeCard
+                  employee={employeeOfTheYear}
+                  currentLang={currentLang}
+                  isAdmin={isAdmin}
+                  onUpdateEmployee={onUpdateEmployeeOfTheYear}
+                  variant="card"
+                />
+              </div>
+            )}
+
             {/* Filter and Search Bar */}
             <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
               <div className="relative flex-1">
@@ -1611,7 +1627,7 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
                     (a) =>
                       String(a.jobId ?? '') === String(job.id ?? '') ||
                       String(a.jobTitle ?? '').toLowerCase() ===
-                        String(job.titleEn ?? '').toLowerCase()
+                      String(job.titleEn ?? '').toLowerCase()
                   ).length;
                   const jobTitle = currentLang === 'fr' ? (job.titleFr || job.titleEn) : currentLang === 'rw' ? (job.titleRw || job.titleEn) : job.titleEn;
                   const deptName = currentLang === 'fr' ? (job.departmentFr || job.departmentEn) : currentLang === 'rw' ? (job.departmentRw || job.departmentEn) : job.departmentEn;
@@ -1622,9 +1638,8 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
                   return (
                     <div
                       key={job.id}
-                      className={`bg-white rounded-2xl border ${
-                        isClosed ? 'border-slate-200/80 opacity-80' : 'border-slate-200/80 hover:border-emerald-300'
-                      } shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden group p-6 sm:p-7 relative`}
+                      className={`bg-white rounded-2xl border ${isClosed ? 'border-slate-200/80 opacity-80' : 'border-slate-200/80 hover:border-emerald-300'
+                        } shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden group p-6 sm:p-7 relative`}
                     >
                       <div>
                         {/* Top Category / Employment Badge & Status */}
@@ -2090,88 +2105,80 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
               <button
                 type="button"
                 onClick={() => setApplicantStatusFilter('all')}
-                className={`px-3 py-1 rounded-xl font-bold transition-all cursor-pointer ${
-                  applicantStatusFilter === 'all'
+                className={`px-3 py-1 rounded-xl font-bold transition-all cursor-pointer ${applicantStatusFilter === 'all'
                     ? 'bg-slate-900 text-white shadow-xs'
                     : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                }`}
+                  }`}
               >
                 All ({totalApplicants})
               </button>
               <button
                 type="button"
                 onClick={() => setApplicantStatusFilter('pending')}
-                className={`px-3 py-1 rounded-xl font-bold transition-all cursor-pointer ${
-                  applicantStatusFilter === 'pending'
+                className={`px-3 py-1 rounded-xl font-bold transition-all cursor-pointer ${applicantStatusFilter === 'pending'
                     ? 'bg-amber-500 text-white shadow-xs'
                     : 'bg-amber-50 text-amber-900 hover:bg-amber-100 border border-amber-200'
-                }`}
+                  }`}
               >
                 Pending ({pendingCount})
               </button>
               <button
                 type="button"
                 onClick={() => setApplicantStatusFilter('shortlisted')}
-                className={`px-3 py-1 rounded-xl font-bold transition-all cursor-pointer ${
-                  applicantStatusFilter === 'shortlisted'
+                className={`px-3 py-1 rounded-xl font-bold transition-all cursor-pointer ${applicantStatusFilter === 'shortlisted'
                     ? 'bg-blue-600 text-white shadow-xs'
                     : 'bg-blue-50 text-blue-900 hover:bg-blue-100 border border-blue-200'
-                }`}
+                  }`}
               >
                 Shortlisted ({shortlistedCount})
               </button>
               <button
                 type="button"
                 onClick={() => setApplicantStatusFilter('not_shortlisted')}
-                className={`px-3 py-1 rounded-xl font-bold transition-all cursor-pointer ${
-                  applicantStatusFilter === 'not_shortlisted'
+                className={`px-3 py-1 rounded-xl font-bold transition-all cursor-pointer ${applicantStatusFilter === 'not_shortlisted'
                     ? 'bg-rose-600 text-white shadow-xs'
                     : 'bg-rose-50 text-rose-900 hover:bg-rose-100 border border-rose-200'
-                }`}
+                  }`}
               >
                 Not Shortlisted ({notShortlistedCount})
               </button>
               <button
                 type="button"
                 onClick={() => setApplicantStatusFilter('interview')}
-                className={`px-3 py-1 rounded-xl font-bold transition-all cursor-pointer ${
-                  applicantStatusFilter === 'interview'
+                className={`px-3 py-1 rounded-xl font-bold transition-all cursor-pointer ${applicantStatusFilter === 'interview'
                     ? 'bg-purple-600 text-white shadow-xs'
                     : 'bg-purple-50 text-purple-900 hover:bg-purple-100 border border-purple-200'
-                }`}
+                  }`}
               >
                 Interview ({interviewCount})
               </button>
               <button
                 type="button"
                 onClick={() => setApplicantStatusFilter('accepted')}
-                className={`px-3 py-1 rounded-xl font-bold transition-all cursor-pointer ${
-                  applicantStatusFilter === 'accepted'
+                className={`px-3 py-1 rounded-xl font-bold transition-all cursor-pointer ${applicantStatusFilter === 'accepted'
                     ? 'bg-emerald-600 text-white shadow-xs'
                     : 'bg-emerald-50 text-emerald-900 hover:bg-emerald-100 border border-emerald-200'
-                }`}
+                  }`}
               >
                 Hired / Accepted ({acceptedCount})
               </button>
               <button
                 type="button"
                 onClick={() => setApplicantStatusFilter('waitlisted')}
-                className={`px-3 py-1 rounded-xl font-bold transition-all cursor-pointer ${
-                  applicantStatusFilter === 'waitlisted'
+                className={`px-3 py-1 rounded-xl font-bold transition-all cursor-pointer ${applicantStatusFilter === 'waitlisted'
                     ? 'bg-teal-600 text-white shadow-xs'
                     : 'bg-teal-50 text-teal-900 hover:bg-teal-100 border border-teal-200'
-                }`}
+                  }`}
               >
                 Waitlisted ({waitlistedCount})
               </button>
               <button
                 type="button"
                 onClick={() => setApplicantStatusFilter('rejected')}
-                className={`px-3 py-1 rounded-xl font-bold transition-all cursor-pointer ${
-                  applicantStatusFilter === 'rejected'
+                className={`px-3 py-1 rounded-xl font-bold transition-all cursor-pointer ${applicantStatusFilter === 'rejected'
                     ? 'bg-red-600 text-white shadow-xs'
                     : 'bg-red-50 text-red-900 hover:bg-red-100 border border-red-200'
-                }`}
+                  }`}
               >
                 Rejected ({rejectedCount})
               </button>
@@ -2331,483 +2338,475 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
                       return (
                         <React.Fragment key={app.id}>
                           <tr className="hover:bg-slate-50/80 transition-colors">
-                          {/* 1. Candidate Details */}
-                          <td className="py-3 px-3">
-                            <div className="font-bold text-slate-900 flex items-center gap-1.5">
-                              {app.verified && (
-                                <span title="NID Verified in Rwanda" className="shrink-0">
-                                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                                </span>
+                            {/* 1. Candidate Details */}
+                            <td className="py-3 px-3">
+                              <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                                {app.verified && (
+                                  <span title="NID Verified in Rwanda" className="shrink-0">
+                                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                                  </span>
+                                )}
+                                <span className="text-sm font-extrabold text-slate-900">{app.fullName}</span>
+                              </div>
+                              <div className="text-[11px] font-mono text-slate-500 mt-0.5">
+                                NID: {app.nationalId}
+                              </div>
+                              {app.rating ? (
+                                <div className="flex items-center gap-0.5 mt-1" title={`HR Rating: ${app.rating}/5`}>
+                                  {[1, 2, 3, 4, 5].map((s) => (
+                                    <Star
+                                      key={s}
+                                      className={`w-3 h-3 ${s <= (app.rating ?? 0)
+                                          ? 'text-amber-400 fill-amber-400'
+                                          : 'text-slate-200'
+                                        }`}
+                                    />
+                                  ))}
+                                  <span className="text-[10px] text-slate-500 font-bold ml-1">{app.rating}/5</span>
+                                </div>
+                              ) : null}
+                              {app.emailFeedbackSent && (
+                                <div className="text-[10px] text-emerald-700 flex items-center gap-1 font-semibold mt-1">
+                                  <Mail className="w-3 h-3" />
+                                  <span>Feedback sent ({app.lastFeedbackDate})</span>
+                                </div>
                               )}
-                              <span className="text-sm font-extrabold text-slate-900">{app.fullName}</span>
-                            </div>
-                            <div className="text-[11px] font-mono text-slate-500 mt-0.5">
-                              NID: {app.nationalId}
-                            </div>
-                            {app.rating ? (
-                              <div className="flex items-center gap-0.5 mt-1" title={`HR Rating: ${app.rating}/5`}>
-                                {[1, 2, 3, 4, 5].map((s) => (
-                                  <Star
-                                    key={s}
-                                    className={`w-3 h-3 ${
-                                      s <= (app.rating ?? 0)
-                                        ? 'text-amber-400 fill-amber-400'
-                                        : 'text-slate-200'
-                                    }`}
+                            </td>
+
+                            {/* 2. Position Applied */}
+                            <td className="py-3 px-3">
+                              <span className="font-bold text-slate-800 block text-xs">
+                                {app.jobTitle}
+                              </span>
+                              <div className="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
+                                <Calendar className="w-3 h-3" />
+                                <span>Applied: {app.appliedDate}</span>
+                              </div>
+                            </td>
+
+                            {/* 3. Contact & Sector */}
+                            <td className="py-3 px-3">
+                              <div className="font-semibold text-slate-900">{app.phone}</div>
+                              <div className="text-[11px] text-slate-600 truncate max-w-[150px]">{app.email}</div>
+                              <div className="text-[11px] text-emerald-700 font-semibold mt-0.5 flex items-center gap-1">
+                                <MapPin className="w-3 h-3" />
+                                <span>Sector: {app.residenceSector}</span>
+                              </div>
+                            </td>
+
+                            {/* 4. Qualifications */}
+                            <td className="py-3 px-3">
+                              <div className="text-slate-800 font-medium">{app.educationLevel}</div>
+                              <div className="text-[11px] text-slate-500 font-semibold">{app.yearsExperience} yrs exp</div>
+                              {app.cvFileName && (
+                                <div className="text-[11px] text-emerald-800 font-bold mt-1 flex items-center gap-1">
+                                  <FileText className="w-3 h-3" />
+                                  <span className="truncate max-w-[120px]" title={app.cvFileName}>{app.cvFileName}</span>
+                                </div>
+                              )}
+                              {app.motivationLetterFileName && (
+                                <div className="text-[11px] text-blue-700 font-bold mt-0.5 flex items-center gap-1" title={app.motivationLetterFileName}>
+                                  <FileText className="w-3 h-3 text-blue-500" />
+                                  <span className="truncate max-w-[120px]">{app.motivationLetterFileName}</span>
+                                </div>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => handleQuickEditQualifications(app)}
+                                className="mt-1 text-[10px] text-slate-400 hover:text-emerald-700 flex items-center gap-1 cursor-pointer font-semibold"
+                                title="Edit qualifications directly"
+                              >
+                                <Edit2 className="w-2.5 h-2.5" /> Edit Qualifications
+                              </button>
+                            </td>
+
+                            {/* 5. Status (CRUD) */}
+                            <td className="py-3 px-3">
+                              <select
+                                value={app.status}
+                                onChange={(e) => handleStatusChange(app.id, e.target.value as JobApplication['status'])}
+                                className={`w-full px-2.5 py-1.5 rounded-xl text-xs font-bold border cursor-pointer transition-colors shadow-2xs ${app.status === 'shortlisted'
+                                    ? 'bg-blue-50 text-blue-900 border-blue-300 font-extrabold'
+                                    : app.status === 'not_shortlisted'
+                                      ? 'bg-rose-50 text-rose-900 border-rose-300 font-extrabold'
+                                      : app.status === 'interview'
+                                        ? 'bg-purple-50 text-purple-900 border-purple-300 font-extrabold'
+                                        : app.status === 'accepted'
+                                          ? 'bg-emerald-50 text-emerald-900 border-emerald-300 font-extrabold'
+                                          : app.status === 'waitlisted'
+                                            ? 'bg-teal-50 text-teal-900 border-teal-300 font-extrabold'
+                                            : app.status === 'rejected'
+                                              ? 'bg-red-50 text-red-900 border-red-300 font-extrabold'
+                                              : 'bg-amber-50 text-amber-900 border-amber-300 font-extrabold'
+                                  }`}
+                              >
+                                <option value="pending">⏳ Pending Review</option>
+                                <option value="shortlisted">⭐ Shortlisted</option>
+                                <option value="not_shortlisted">❌ Not Shortlisted</option>
+                                <option value="interview">📅 Interview Scheduled</option>
+                                <option value="accepted">🎉 Hired / Accepted</option>
+                                <option value="waitlisted">📋 Waitlisted / Reserve</option>
+                                <option value="rejected">🚫 Regret / Rejected</option>
+                              </select>
+                            </td>
+
+                            {/* 6. Committee Comments & Remarks (RESERVED PLACE FOR COMMENT) */}
+                            <td className="py-3 px-3 bg-emerald-50/20">
+                              {isEditingComment ? (
+                                <div className="space-y-1.5">
+                                  <textarea
+                                    rows={2}
+                                    value={commentDraft}
+                                    onChange={(e) => setCommentDraft(e.target.value)}
+                                    placeholder="Enter deliberation notes or committee remarks..."
+                                    className="w-full p-1.5 bg-white border border-emerald-300 rounded-lg text-xs text-slate-800 focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
                                   />
-                                ))}
-                                <span className="text-[10px] text-slate-500 font-bold ml-1">{app.rating}/5</span>
-                              </div>
-                            ) : null}
-                            {app.emailFeedbackSent && (
-                              <div className="text-[10px] text-emerald-700 flex items-center gap-1 font-semibold mt-1">
-                                <Mail className="w-3 h-3" />
-                                <span>Feedback sent ({app.lastFeedbackDate})</span>
-                              </div>
-                            )}
-                          </td>
-
-                          {/* 2. Position Applied */}
-                          <td className="py-3 px-3">
-                            <span className="font-bold text-slate-800 block text-xs">
-                              {app.jobTitle}
-                            </span>
-                            <div className="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
-                              <Calendar className="w-3 h-3" />
-                              <span>Applied: {app.appliedDate}</span>
-                            </div>
-                          </td>
-
-                          {/* 3. Contact & Sector */}
-                          <td className="py-3 px-3">
-                            <div className="font-semibold text-slate-900">{app.phone}</div>
-                            <div className="text-[11px] text-slate-600 truncate max-w-[150px]">{app.email}</div>
-                            <div className="text-[11px] text-emerald-700 font-semibold mt-0.5 flex items-center gap-1">
-                              <MapPin className="w-3 h-3" />
-                              <span>Sector: {app.residenceSector}</span>
-                            </div>
-                          </td>
-
-                          {/* 4. Qualifications */}
-                          <td className="py-3 px-3">
-                            <div className="text-slate-800 font-medium">{app.educationLevel}</div>
-                            <div className="text-[11px] text-slate-500 font-semibold">{app.yearsExperience} yrs exp</div>
-                            {app.cvFileName && (
-                              <div className="text-[11px] text-emerald-800 font-bold mt-1 flex items-center gap-1">
-                                <FileText className="w-3 h-3" />
-                                <span className="truncate max-w-[120px]" title={app.cvFileName}>{app.cvFileName}</span>
-                              </div>
-                            )}
-                            {app.motivationLetterFileName && (
-                              <div className="text-[11px] text-blue-700 font-bold mt-0.5 flex items-center gap-1" title={app.motivationLetterFileName}>
-                                <FileText className="w-3 h-3 text-blue-500" />
-                                <span className="truncate max-w-[120px]">{app.motivationLetterFileName}</span>
-                              </div>
-                            )}
-                            <button
-                              type="button"
-                              onClick={() => handleQuickEditQualifications(app)}
-                              className="mt-1 text-[10px] text-slate-400 hover:text-emerald-700 flex items-center gap-1 cursor-pointer font-semibold"
-                              title="Edit qualifications directly"
-                            >
-                              <Edit2 className="w-2.5 h-2.5" /> Edit Qualifications
-                            </button>
-                          </td>
-
-                          {/* 5. Status (CRUD) */}
-                          <td className="py-3 px-3">
-                            <select
-                              value={app.status}
-                              onChange={(e) => handleStatusChange(app.id, e.target.value as JobApplication['status'])}
-                              className={`w-full px-2.5 py-1.5 rounded-xl text-xs font-bold border cursor-pointer transition-colors shadow-2xs ${
-                                app.status === 'shortlisted'
-                                  ? 'bg-blue-50 text-blue-900 border-blue-300 font-extrabold'
-                                  : app.status === 'not_shortlisted'
-                                  ? 'bg-rose-50 text-rose-900 border-rose-300 font-extrabold'
-                                  : app.status === 'interview'
-                                  ? 'bg-purple-50 text-purple-900 border-purple-300 font-extrabold'
-                                  : app.status === 'accepted'
-                                  ? 'bg-emerald-50 text-emerald-900 border-emerald-300 font-extrabold'
-                                  : app.status === 'waitlisted'
-                                  ? 'bg-teal-50 text-teal-900 border-teal-300 font-extrabold'
-                                  : app.status === 'rejected'
-                                  ? 'bg-red-50 text-red-900 border-red-300 font-extrabold'
-                                  : 'bg-amber-50 text-amber-900 border-amber-300 font-extrabold'
-                              }`}
-                            >
-                              <option value="pending">⏳ Pending Review</option>
-                              <option value="shortlisted">⭐ Shortlisted</option>
-                              <option value="not_shortlisted">❌ Not Shortlisted</option>
-                              <option value="interview">📅 Interview Scheduled</option>
-                              <option value="accepted">🎉 Hired / Accepted</option>
-                              <option value="waitlisted">📋 Waitlisted / Reserve</option>
-                              <option value="rejected">🚫 Regret / Rejected</option>
-                            </select>
-                          </td>
-
-                          {/* 6. Committee Comments & Remarks (RESERVED PLACE FOR COMMENT) */}
-                          <td className="py-3 px-3 bg-emerald-50/20">
-                            {isEditingComment ? (
-                              <div className="space-y-1.5">
-                                <textarea
-                                  rows={2}
-                                  value={commentDraft}
-                                  onChange={(e) => setCommentDraft(e.target.value)}
-                                  placeholder="Enter deliberation notes or committee remarks..."
-                                  className="w-full p-1.5 bg-white border border-emerald-300 rounded-lg text-xs text-slate-800 focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
-                                />
-                                <div className="flex items-center gap-1.5 justify-end">
+                                  <div className="flex items-center gap-1.5 justify-end">
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditingCommentAppId(null)}
+                                      className="px-2 py-0.5 text-[10px] text-slate-600 hover:text-slate-800 cursor-pointer"
+                                    >
+                                      Cancel
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleSaveInlineComment(app.id)}
+                                      className="px-2.5 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold cursor-pointer"
+                                    >
+                                      Save
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="group/cmt flex items-start justify-between gap-1">
+                                  <div className="text-xs text-slate-700 italic flex-1">
+                                    {currentComment ? (
+                                      <span>&ldquo;{currentComment}&rdquo;</span>
+                                    ) : (
+                                      <span className="text-slate-400 not-italic">No remarks recorded yet</span>
+                                    )}
+                                  </div>
                                   <button
                                     type="button"
-                                    onClick={() => setEditingCommentAppId(null)}
-                                    className="px-2 py-0.5 text-[10px] text-slate-600 hover:text-slate-800 cursor-pointer"
+                                    onClick={() => {
+                                      setEditingCommentAppId(app.id);
+                                      setCommentDraft(currentComment);
+                                    }}
+                                    className="p-1 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded transition-colors cursor-pointer shrink-0"
+                                    title="Edit Committee Comment"
                                   >
-                                    Cancel
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleSaveInlineComment(app.id)}
-                                    className="px-2.5 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold cursor-pointer"
-                                  >
-                                    Save
+                                    <Edit2 className="w-3 h-3" />
                                   </button>
                                 </div>
-                              </div>
-                            ) : (
-                              <div className="group/cmt flex items-start justify-between gap-1">
-                                <div className="text-xs text-slate-700 italic flex-1">
-                                  {currentComment ? (
-                                    <span>&ldquo;{currentComment}&rdquo;</span>
-                                  ) : (
-                                    <span className="text-slate-400 not-italic">No remarks recorded yet</span>
-                                  )}
-                                </div>
+                              )}
+                            </td>
+
+                            {/* 7. Action Buttons */}
+                            <td className="py-3 px-3 text-right">
+                              <div className="flex items-center justify-end gap-1.5">
                                 <button
                                   type="button"
                                   onClick={() => {
-                                    setEditingCommentAppId(app.id);
-                                    setCommentDraft(currentComment);
-                                  }}
-                                  className="p-1 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded transition-colors cursor-pointer shrink-0"
-                                  title="Edit Committee Comment"
-                                >
-                                  <Edit2 className="w-3 h-3" />
-                                </button>
-                              </div>
-                            )}
-                          </td>
-
-                          {/* 7. Action Buttons */}
-                          <td className="py-3 px-3 text-right">
-                            <div className="flex items-center justify-end gap-1.5">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  if (inPageReviewAppId === app.id) {
-                                    setInPageReviewAppId(null);
-                                  } else {
-                                    setInPageReviewAppId(app.id);
-                                    setReviewCommentDraft(app.comment || app.notes || '');
-                                    setFeedbackSubject(`Application Update: ${app.jobTitle} - UBUMWE SACCO`);
-                                    setFeedbackMessage(
-                                      `Dear ${app.fullName},\n\nWe would like to update you on your application for ${app.jobTitle} at UBUMWE SACCO GAKENKE.\n\nYour application status is: ${app.status.toUpperCase()}.\n\nBest regards,\nRecruitment Committee\nUBUMWE SACCO GAKENKE`
-                                    );
-                                  }
-                                }}
-                                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1 shadow-2xs transition-colors cursor-pointer ${
-                                  inPageReviewAppId === app.id
-                                    ? 'bg-slate-900 text-white'
-                                    : 'bg-emerald-700 hover:bg-emerald-600 text-white'
-                                }`}
-                                title="Review Application Dossier Directly In Page"
-                              >
-                                <Mail className="w-3 h-3" />
-                                <span>{inPageReviewAppId === app.id ? 'Close' : 'Review'}</span>
-                                {inPageReviewAppId === app.id ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  exportApplicantsToExcel(
-                                    [app],
-                                    `Applicant_${app.fullName.replace(/\s+/g, '_')}_${app.nationalId}.xls`
-                                  )
-                                }
-                                className="p-1 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
-                                title="Download Candidate Record as Excel (.xls)"
-                              >
-                                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => setDossierApp(app)}
-                                className="p-1 text-slate-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
-                                title="View & Download Official PDF Dossier"
-                              >
-                                <Printer className="w-3.5 h-3.5" />
-                              </button>
-                              {onDeleteJobApplication && (
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    if (window.confirm(`Delete candidate application for ${app.fullName}?`)) {
-                                      onDeleteJobApplication(app.id);
+                                    if (inPageReviewAppId === app.id) {
+                                      setInPageReviewAppId(null);
+                                    } else {
+                                      setInPageReviewAppId(app.id);
+                                      setReviewCommentDraft(app.comment || app.notes || '');
+                                      setFeedbackSubject(`Application Update: ${app.jobTitle} - UBUMWE SACCO`);
+                                      setFeedbackMessage(
+                                        `Dear ${app.fullName},\n\nWe would like to update you on your application for ${app.jobTitle} at UBUMWE SACCO GAKENKE.\n\nYour application status is: ${app.status.toUpperCase()}.\n\nBest regards,\nRecruitment Committee\nUBUMWE SACCO GAKENKE`
+                                      );
                                     }
                                   }}
-                                  className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
-                                  title="Delete Application"
+                                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1 shadow-2xs transition-colors cursor-pointer ${inPageReviewAppId === app.id
+                                      ? 'bg-slate-900 text-white'
+                                      : 'bg-emerald-700 hover:bg-emerald-600 text-white'
+                                    }`}
+                                  title="Review Application Dossier Directly In Page"
                                 >
-                                  <Trash2 className="w-3.5 h-3.5" />
+                                  <Mail className="w-3 h-3" />
+                                  <span>{inPageReviewAppId === app.id ? 'Close' : 'Review'}</span>
+                                  {inPageReviewAppId === app.id ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                                 </button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-
-                        {/* IN-PAGE CANDIDATE REVIEW & EVALUATION DRAWER (NO POPUP - EMBEDDED IN ROW) */}
-                        {inPageReviewAppId === app.id && (
-                          <tr className="bg-slate-50 border-y-2 border-emerald-500/40 animate-in fade-in">
-                            <td colSpan={7} className="p-4 sm:p-6 space-y-4">
-                              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
-                                  <div>
-                                    <div className="flex items-center gap-2">
-                                      <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-800">
-                                        Candidate Deliberation File (In-Page Review)
-                                      </span>
-                                      <span className="text-xs text-slate-400 font-mono">ID: {app.nationalId}</span>
-                                    </div>
-                                    <h4 className="text-base font-extrabold text-slate-900 mt-0.5">{app.fullName}</h4>
-                                    <p className="text-xs text-slate-500">
-                                      Applied for <strong>{app.jobTitle}</strong> on {app.appliedDate} · Phone: {app.phone} · Sector: {app.residenceSector}
-                                    </p>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <button
-                                      type="button"
-                                      onClick={() => setDossierApp(app)}
-                                      className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer"
-                                      title="Open Official Printable Dossier"
-                                    >
-                                      <Printer className="w-3.5 h-3.5" />
-                                      <span>Print Dossier</span>
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => setInPageReviewAppId(null)}
-                                      className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
-                                    >
-                                      <X className="w-4 h-4" />
-                                    </button>
-                                  </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                                  {/* Col 1: Qualifications & Files */}
-                                  <div className="space-y-3 p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-                                    <span className="font-bold text-slate-800 uppercase tracking-wider text-[11px] block">
-                                      Candidate Profile &amp; Documents
-                                    </span>
-                                    <div>
-                                      <span className="text-slate-500 block text-[10px]">Education Level &amp; Degree:</span>
-                                      <span className="font-bold text-slate-800">{app.educationLevel}</span>
-                                    </div>
-                                    <div>
-                                      <span className="text-slate-500 block text-[10px]">Experience:</span>
-                                      <span className="font-bold text-slate-800">{app.yearsExperience} Years</span>
-                                    </div>
-                                    <div>
-                                      <span className="text-slate-500 block text-[10px]">HR Committee Rating:</span>
-                                      <div className="flex items-center gap-1 mt-1">
-                                        {[1, 2, 3, 4, 5].map((star) => (
-                                          <button
-                                            key={star}
-                                            type="button"
-                                            onClick={() => handleRatingChange(app.id, star)}
-                                            className="cursor-pointer"
-                                            title={`Rate ${star} star`}
-                                          >
-                                            <Star
-                                              className={`w-4 h-4 ${
-                                                star <= (app.rating ?? 0)
-                                                  ? 'text-amber-400 fill-amber-400'
-                                                  : 'text-slate-200'
-                                              }`}
-                                            />
-                                          </button>
-                                        ))}
-                                        <span className="text-xs font-bold text-slate-600 ml-1">
-                                          {app.rating ?? 0}/5
-                                        </span>
-                                      </div>
-                                    </div>
-
-                                    {/* Files */}
-                                    <div className="pt-2 border-t border-slate-200 space-y-1.5">
-                                      <span className="text-slate-500 block text-[10px] font-bold">Attached Files:</span>
-                                      {app.cvFileName ? (
-                                        <div className="flex items-center justify-between text-xs bg-white p-2 rounded-lg border border-slate-200">
-                                          <div className="flex items-center gap-1.5 truncate max-w-[150px]">
-                                            <FileText className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                                            <span className="truncate text-slate-700 font-medium">{app.cvFileName}</span>
-                                          </div>
-                                          {app.cvFileData && (
-                                            <a
-                                              href={app.cvFileData}
-                                              download={app.cvFileName}
-                                              className="text-[10px] text-emerald-700 hover:underline font-bold shrink-0 ml-1"
-                                            >
-                                              Download
-                                            </a>
-                                          )}
-                                        </div>
-                                      ) : (
-                                        <span className="text-slate-400 italic text-[11px]">No CV uploaded</span>
-                                      )}
-
-                                      {app.motivationLetterFileName ? (
-                                        <div className="flex items-center justify-between text-xs bg-blue-50 p-2 rounded-lg border border-blue-200">
-                                          <div className="flex items-center gap-1.5 truncate max-w-[150px]">
-                                            <FileText className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                                            <span className="truncate text-blue-900 font-medium">{app.motivationLetterFileName}</span>
-                                          </div>
-                                          {app.motivationLetterFileData && (
-                                            <a
-                                              href={app.motivationLetterFileData}
-                                              download={app.motivationLetterFileName}
-                                              className="text-[10px] text-blue-700 hover:underline font-bold shrink-0 ml-1"
-                                            >
-                                              Download
-                                            </a>
-                                          )}
-                                        </div>
-                                      ) : (
-                                        <span className="text-slate-400 italic text-[11px] block">No Motivation Letter attached</span>
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  {/* Col 2: Committee Comments & Deliberations */}
-                                  <div className="space-y-3 p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-                                    <span className="font-bold text-slate-800 uppercase tracking-wider text-[11px] block">
-                                      Committee Deliberations &amp; Remarks
-                                    </span>
-                                    <textarea
-                                      rows={4}
-                                      value={reviewCommentDraft}
-                                      onChange={(e) => setReviewCommentDraft(e.target.value)}
-                                      placeholder="Enter recruitment committee observations, evaluation score, interview notes..."
-                                      className="w-full p-2 bg-white border border-slate-300 rounded-xl text-xs focus:bg-white focus:outline-hidden"
-                                    />
-                                    <div className="flex items-center justify-between">
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          if (onUpdateJobApplication) {
-                                            onUpdateJobApplication(app.id, {
-                                              comment: reviewCommentDraft,
-                                              notes: reviewCommentDraft,
-                                            });
-                                          }
-                                        }}
-                                        className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-bold flex items-center gap-1 cursor-pointer"
-                                      >
-                                        <Save className="w-3 h-3" />
-                                        <span>Save Remarks</span>
-                                      </button>
-                                      <span className="text-[10px] text-slate-400">Auto-saved to record</span>
-                                    </div>
-
-                                    <div className="pt-2 border-t border-slate-200">
-                                      <span className="text-slate-500 block text-[10px] font-bold mb-1">Quick Status Update:</span>
-                                      <div className="grid grid-cols-2 gap-1.5">
-                                        <button
-                                          type="button"
-                                          onClick={() => handleStatusChange(app.id, 'shortlisted')}
-                                          className={`px-2 py-1 rounded text-[10px] font-bold cursor-pointer ${
-                                            app.status === 'shortlisted' ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'
-                                          }`}
-                                        >
-                                          ⭐ Shortlist
-                                        </button>
-                                        <button
-                                          type="button"
-                                          onClick={() => handleStatusChange(app.id, 'interview')}
-                                          className={`px-2 py-1 rounded text-[10px] font-bold cursor-pointer ${
-                                            app.status === 'interview' ? 'bg-purple-600 text-white' : 'bg-purple-100 text-purple-800'
-                                          }`}
-                                        >
-                                          📅 Interview
-                                        </button>
-                                        <button
-                                          type="button"
-                                          onClick={() => handleStatusChange(app.id, 'accepted')}
-                                          className={`px-2 py-1 rounded text-[10px] font-bold cursor-pointer ${
-                                            app.status === 'accepted' ? 'bg-emerald-600 text-white' : 'bg-emerald-100 text-emerald-800'
-                                          }`}
-                                        >
-                                          🎉 Hire Candidate
-                                        </button>
-                                        <button
-                                          type="button"
-                                          onClick={() => handleStatusChange(app.id, 'not_shortlisted')}
-                                          className={`px-2 py-1 rounded text-[10px] font-bold cursor-pointer ${
-                                            app.status === 'not_shortlisted' ? 'bg-rose-600 text-white' : 'bg-rose-100 text-rose-800'
-                                          }`}
-                                        >
-                                          ❌ Not Shortlisted
-                                        </button>
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  {/* Col 3: Direct Email Feedback Composer */}
-                                  <div className="space-y-3 p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-                                    <span className="font-bold text-slate-800 uppercase tracking-wider text-[11px] block flex items-center justify-between">
-                                      <span>Dispatch Email Feedback</span>
-                                      <Mail className="w-3.5 h-3.5 text-emerald-600" />
-                                    </span>
-
-                                    {feedbackSuccessMsg && (
-                                      <div className="p-2 bg-emerald-100 border border-emerald-300 text-emerald-900 rounded-lg text-[11px] font-bold">
-                                        ✓ {feedbackSuccessMsg}
-                                      </div>
-                                    )}
-
-                                    <div>
-                                      <label className="text-[10px] font-bold text-slate-600 block mb-0.5">Subject</label>
-                                      <input
-                                        type="text"
-                                        value={feedbackSubject}
-                                        onChange={(e) => setFeedbackSubject(e.target.value)}
-                                        className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs"
-                                      />
-                                    </div>
-
-                                    <div>
-                                      <label className="text-[10px] font-bold text-slate-600 block mb-0.5">Message</label>
-                                      <textarea
-                                        rows={3}
-                                        value={feedbackMessage}
-                                        onChange={(e) => setFeedbackMessage(e.target.value)}
-                                        className="w-full p-2 bg-white border border-slate-300 rounded-lg text-xs"
-                                      />
-                                    </div>
-
-                                    <button
-                                      type="button"
-                                      onClick={() => handleSendInPageFeedback(app)}
-                                      className="w-full py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-bold flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
-                                    >
-                                      <Send className="w-3 h-3" />
-                                      <span>Send Feedback Email to Candidate</span>
-                                    </button>
-                                  </div>
-                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    exportApplicantsToExcel(
+                                      [app],
+                                      `Applicant_${app.fullName.replace(/\s+/g, '_')}_${app.nationalId}.xls`
+                                    )
+                                  }
+                                  className="p-1 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
+                                  title="Download Candidate Record as Excel (.xls)"
+                                >
+                                  <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setDossierApp(app)}
+                                  className="p-1 text-slate-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                                  title="View & Download Official PDF Dossier"
+                                >
+                                  <Printer className="w-3.5 h-3.5" />
+                                </button>
+                                {onDeleteJobApplication && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      if (window.confirm(`Delete candidate application for ${app.fullName}?`)) {
+                                        onDeleteJobApplication(app.id);
+                                      }
+                                    }}
+                                    className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                                    title="Delete Application"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                )}
                               </div>
                             </td>
                           </tr>
-                        )}
+
+                          {/* IN-PAGE CANDIDATE REVIEW & EVALUATION DRAWER (NO POPUP - EMBEDDED IN ROW) */}
+                          {inPageReviewAppId === app.id && (
+                            <tr className="bg-slate-50 border-y-2 border-emerald-500/40 animate-in fade-in">
+                              <td colSpan={7} className="p-4 sm:p-6 space-y-4">
+                                <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+                                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                                    <div>
+                                      <div className="flex items-center gap-2">
+                                        <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-800">
+                                          Candidate Deliberation File (In-Page Review)
+                                        </span>
+                                        <span className="text-xs text-slate-400 font-mono">ID: {app.nationalId}</span>
+                                      </div>
+                                      <h4 className="text-base font-extrabold text-slate-900 mt-0.5">{app.fullName}</h4>
+                                      <p className="text-xs text-slate-500">
+                                        Applied for <strong>{app.jobTitle}</strong> on {app.appliedDate} · Phone: {app.phone} · Sector: {app.residenceSector}
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <button
+                                        type="button"
+                                        onClick={() => setDossierApp(app)}
+                                        className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                                        title="Open Official Printable Dossier"
+                                      >
+                                        <Printer className="w-3.5 h-3.5" />
+                                        <span>Print Dossier</span>
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => setInPageReviewAppId(null)}
+                                        className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
+                                      >
+                                        <X className="w-4 h-4" />
+                                      </button>
+                                    </div>
+                                  </div>
+
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                                    {/* Col 1: Qualifications & Files */}
+                                    <div className="space-y-3 p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                                      <span className="font-bold text-slate-800 uppercase tracking-wider text-[11px] block">
+                                        Candidate Profile &amp; Documents
+                                      </span>
+                                      <div>
+                                        <span className="text-slate-500 block text-[10px]">Education Level &amp; Degree:</span>
+                                        <span className="font-bold text-slate-800">{app.educationLevel}</span>
+                                      </div>
+                                      <div>
+                                        <span className="text-slate-500 block text-[10px]">Experience:</span>
+                                        <span className="font-bold text-slate-800">{app.yearsExperience} Years</span>
+                                      </div>
+                                      <div>
+                                        <span className="text-slate-500 block text-[10px]">HR Committee Rating:</span>
+                                        <div className="flex items-center gap-1 mt-1">
+                                          {[1, 2, 3, 4, 5].map((star) => (
+                                            <button
+                                              key={star}
+                                              type="button"
+                                              onClick={() => handleRatingChange(app.id, star)}
+                                              className="cursor-pointer"
+                                              title={`Rate ${star} star`}
+                                            >
+                                              <Star
+                                                className={`w-4 h-4 ${star <= (app.rating ?? 0)
+                                                    ? 'text-amber-400 fill-amber-400'
+                                                    : 'text-slate-200'
+                                                  }`}
+                                              />
+                                            </button>
+                                          ))}
+                                          <span className="text-xs font-bold text-slate-600 ml-1">
+                                            {app.rating ?? 0}/5
+                                          </span>
+                                        </div>
+                                      </div>
+
+                                      {/* Files */}
+                                      <div className="pt-2 border-t border-slate-200 space-y-1.5">
+                                        <span className="text-slate-500 block text-[10px] font-bold">Attached Files:</span>
+                                        {app.cvFileName ? (
+                                          <div className="flex items-center justify-between text-xs bg-white p-2 rounded-lg border border-slate-200">
+                                            <div className="flex items-center gap-1.5 truncate max-w-[150px]">
+                                              <FileText className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                                              <span className="truncate text-slate-700 font-medium">{app.cvFileName}</span>
+                                            </div>
+                                            {app.cvFileData && (
+                                              <a
+                                                href={app.cvFileData}
+                                                download={app.cvFileName}
+                                                className="text-[10px] text-emerald-700 hover:underline font-bold shrink-0 ml-1"
+                                              >
+                                                Download
+                                              </a>
+                                            )}
+                                          </div>
+                                        ) : (
+                                          <span className="text-slate-400 italic text-[11px]">No CV uploaded</span>
+                                        )}
+
+                                        {app.motivationLetterFileName ? (
+                                          <div className="flex items-center justify-between text-xs bg-blue-50 p-2 rounded-lg border border-blue-200">
+                                            <div className="flex items-center gap-1.5 truncate max-w-[150px]">
+                                              <FileText className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                                              <span className="truncate text-blue-900 font-medium">{app.motivationLetterFileName}</span>
+                                            </div>
+                                            {app.motivationLetterFileData && (
+                                              <a
+                                                href={app.motivationLetterFileData}
+                                                download={app.motivationLetterFileName}
+                                                className="text-[10px] text-blue-700 hover:underline font-bold shrink-0 ml-1"
+                                              >
+                                                Download
+                                              </a>
+                                            )}
+                                          </div>
+                                        ) : (
+                                          <span className="text-slate-400 italic text-[11px] block">No Motivation Letter attached</span>
+                                        )}
+                                      </div>
+                                    </div>
+
+                                    {/* Col 2: Committee Comments & Deliberations */}
+                                    <div className="space-y-3 p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                                      <span className="font-bold text-slate-800 uppercase tracking-wider text-[11px] block">
+                                        Committee Deliberations &amp; Remarks
+                                      </span>
+                                      <textarea
+                                        rows={4}
+                                        value={reviewCommentDraft}
+                                        onChange={(e) => setReviewCommentDraft(e.target.value)}
+                                        placeholder="Enter recruitment committee observations, evaluation score, interview notes..."
+                                        className="w-full p-2 bg-white border border-slate-300 rounded-xl text-xs focus:bg-white focus:outline-hidden"
+                                      />
+                                      <div className="flex items-center justify-between">
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            if (onUpdateJobApplication) {
+                                              onUpdateJobApplication(app.id, {
+                                                comment: reviewCommentDraft,
+                                                notes: reviewCommentDraft,
+                                              });
+                                            }
+                                          }}
+                                          className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-bold flex items-center gap-1 cursor-pointer"
+                                        >
+                                          <Save className="w-3 h-3" />
+                                          <span>Save Remarks</span>
+                                        </button>
+                                        <span className="text-[10px] text-slate-400">Auto-saved to record</span>
+                                      </div>
+
+                                      <div className="pt-2 border-t border-slate-200">
+                                        <span className="text-slate-500 block text-[10px] font-bold mb-1">Quick Status Update:</span>
+                                        <div className="grid grid-cols-2 gap-1.5">
+                                          <button
+                                            type="button"
+                                            onClick={() => handleStatusChange(app.id, 'shortlisted')}
+                                            className={`px-2 py-1 rounded text-[10px] font-bold cursor-pointer ${app.status === 'shortlisted' ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'
+                                              }`}
+                                          >
+                                            ⭐ Shortlist
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={() => handleStatusChange(app.id, 'interview')}
+                                            className={`px-2 py-1 rounded text-[10px] font-bold cursor-pointer ${app.status === 'interview' ? 'bg-purple-600 text-white' : 'bg-purple-100 text-purple-800'
+                                              }`}
+                                          >
+                                            📅 Interview
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={() => handleStatusChange(app.id, 'accepted')}
+                                            className={`px-2 py-1 rounded text-[10px] font-bold cursor-pointer ${app.status === 'accepted' ? 'bg-emerald-600 text-white' : 'bg-emerald-100 text-emerald-800'
+                                              }`}
+                                          >
+                                            🎉 Hire Candidate
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={() => handleStatusChange(app.id, 'not_shortlisted')}
+                                            className={`px-2 py-1 rounded text-[10px] font-bold cursor-pointer ${app.status === 'not_shortlisted' ? 'bg-rose-600 text-white' : 'bg-rose-100 text-rose-800'
+                                              }`}
+                                          >
+                                            ❌ Not Shortlisted
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Col 3: Direct Email Feedback Composer */}
+                                    <div className="space-y-3 p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                                      <span className="font-bold text-slate-800 uppercase tracking-wider text-[11px] block flex items-center justify-between">
+                                        <span>Dispatch Email Feedback</span>
+                                        <Mail className="w-3.5 h-3.5 text-emerald-600" />
+                                      </span>
+
+                                      {feedbackSuccessMsg && (
+                                        <div className="p-2 bg-emerald-100 border border-emerald-300 text-emerald-900 rounded-lg text-[11px] font-bold">
+                                          ✓ {feedbackSuccessMsg}
+                                        </div>
+                                      )}
+
+                                      <div>
+                                        <label className="text-[10px] font-bold text-slate-600 block mb-0.5">Subject</label>
+                                        <input
+                                          type="text"
+                                          value={feedbackSubject}
+                                          onChange={(e) => setFeedbackSubject(e.target.value)}
+                                          className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs"
+                                        />
+                                      </div>
+
+                                      <div>
+                                        <label className="text-[10px] font-bold text-slate-600 block mb-0.5">Message</label>
+                                        <textarea
+                                          rows={3}
+                                          value={feedbackMessage}
+                                          onChange={(e) => setFeedbackMessage(e.target.value)}
+                                          className="w-full p-2 bg-white border border-slate-300 rounded-lg text-xs"
+                                        />
+                                      </div>
+
+                                      <button
+                                        type="button"
+                                        onClick={() => handleSendInPageFeedback(app)}
+                                        className="w-full py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-bold flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                                      >
+                                        <Send className="w-3 h-3" />
+                                        <span>Send Feedback Email to Candidate</span>
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
                         </React.Fragment>
                       );
                     })}
@@ -2928,19 +2927,18 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
                         REF: {trackedResult.referenceNumber}
                       </span>
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider ${
-                          ['shortlisted', 'SHORTLISTED'].includes(trackedResult.status)
+                        className={`px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider ${['shortlisted', 'SHORTLISTED'].includes(trackedResult.status)
                             ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
                             : ['interview', 'INTERVIEW'].includes(trackedResult.status)
-                            ? 'bg-purple-100 text-purple-800 border border-purple-300'
-                            : ['accepted', 'HIRED', 'hired', 'OFFER'].includes(trackedResult.status)
-                            ? 'bg-green-100 text-green-800 border border-green-300'
-                            : ['rejected', 'REJECTED', 'not_shortlisted'].includes(trackedResult.status)
-                            ? 'bg-slate-200 text-slate-700 border border-slate-300'
-                            : ['waitlisted'].includes(trackedResult.status)
-                            ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                            : 'bg-blue-100 text-blue-800 border border-blue-300'
-                        }`}
+                              ? 'bg-purple-100 text-purple-800 border border-purple-300'
+                              : ['accepted', 'HIRED', 'hired', 'OFFER'].includes(trackedResult.status)
+                                ? 'bg-green-100 text-green-800 border border-green-300'
+                                : ['rejected', 'REJECTED', 'not_shortlisted'].includes(trackedResult.status)
+                                  ? 'bg-slate-200 text-slate-700 border border-slate-300'
+                                  : ['waitlisted'].includes(trackedResult.status)
+                                    ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                                    : 'bg-blue-100 text-blue-800 border border-blue-300'
+                          }`}
                       >
                         {trackedResult.status.replace(/_/g, ' ')}
                       </span>
