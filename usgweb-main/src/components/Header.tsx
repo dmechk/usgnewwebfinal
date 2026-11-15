@@ -254,7 +254,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           <div className="flex items-center gap-3">
             <span className="text-slate-400 text-[11px] hidden lg:inline">
-              UBUMWE SACCO · {saccoInfo.district}
+              UBUMWE SACCO · Founded 2026 · {saccoInfo.district}
             </span>
 
             {/* Theme Color Selector */}
@@ -388,14 +388,19 @@ export const Header: React.FC<HeaderProps> = ({
             >
               UBUMWE SACCO
             </span>
-            <span
-              className={
-                "font-extrabold tracking-widest text-emerald-700 uppercase transition-all duration-300 " +
-                (isScrolled ? "text-[9px] sm:text-[10px]" : "text-[10px] sm:text-xs")
-              }
-            >
-              GAKENKE
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span
+                className={
+                  "font-extrabold tracking-widest text-emerald-700 uppercase transition-all duration-300 " +
+                  (isScrolled ? "text-[9px] sm:text-[10px]" : "text-[10px] sm:text-xs")
+                }
+              >
+                GAKENKE
+              </span>
+              <span className="text-[10px] font-bold text-slate-500 hidden sm:inline tracking-normal font-sans">
+                · Founded 2026
+              </span>
+            </div>
           </div>
         </button>
 

@@ -51,7 +51,7 @@ function getLocalKnowledgeAnswer(query: string, lang: Language): { reply: string
     }
     if (q.includes('abo turibo') || q.includes('ni iki') || q.includes('koperative') || q.includes('rca') || q.includes('bnr') || (q.includes('ubumwe') && q.includes('sacco'))) {
       return {
-        reply: `UBUMWE SACCO GAKENKE ni koperative yo kubitsa no kugurizanya yemewe kandi igenzurwa na Banki Nkuru y'u Rwanda (BNR) hamwe n'Ikigo cy'Igihugu Gishinzwe Amakoperative (RCA). Yashinzwe mu 2011, ifite abanyamuryango barenze 18,640 n'amashami 19 mu mirenge yose igize Akarere ka Gakenke.`,
+        reply: `UBUMWE SACCO GAKENKE ni koperative yo kubitsa no kugurizanya yemewe kandi igenzurwa na Banki Nkuru y'u Rwanda (BNR) hamwe n'Ikigo cy'Igihugu Gishinzwe Amakoperative (RCA). Yashinzwe mu 2026, ifite abanyamuryango barenze 18,640 n'amashami 19 mu mirenge yose igize Akarere ka Gakenke.`,
         isEscalated: false,
       };
     }
@@ -127,7 +127,7 @@ function getLocalKnowledgeAnswer(query: string, lang: Language): { reply: string
     }
     if (q.includes('a propos') || q.includes('à propos') || q.includes('qui sommes') || q.includes('histoire') || q.includes('cooperative') || q.includes('coopérative') || q.includes('bnr') || q.includes('rca')) {
       return {
-        reply: `UBUMWE SACCO GAKENKE est une coopérative d'épargne et de crédit agréée et régulée par la Banque Nationale du Rwanda (BNR) et la RCA. Fondée en 2011, elle compte plus de 18 640 membres et 19 agences réparties dans l'ensemble des 19 secteurs du district de Gakenke.`,
+        reply: `UBUMWE SACCO GAKENKE est une coopérative d'épargne et de crédit agréée et régulée par la Banque Nationale du Rwanda (BNR) et la RCA. Fondée en 2026, elle compte plus de 18 640 membres et 19 agences réparties dans l'ensemble des 19 secteurs du district de Gakenke.`,
         isEscalated: false,
       };
     }
@@ -201,7 +201,7 @@ function getLocalKnowledgeAnswer(query: string, lang: Language): { reply: string
   }
   if (q.includes('about') || q.includes('what is ubumwe') || q.includes('history') || q.includes('cooperative') || q.includes('rca') || q.includes('bnr') || q.includes('mission')) {
     return {
-      reply: `UBUMWE SACCO GAKENKE is a premier savings and credit cooperative licensed, regulated, and supervised by the National Bank of Rwanda (BNR) and the Rwanda Cooperative Agency (RCA). Founded in 2011, it serves over 18,640 members across Gakenke District through 19 branch outposts, providing secure community savings and affordable credit.`,
+      reply: `UBUMWE SACCO GAKENKE is a premier savings and credit cooperative licensed, regulated, and supervised by the National Bank of Rwanda (BNR) and the Rwanda Cooperative Agency (RCA). Founded in 2026, it serves over 18,640 members across Gakenke District through 19 branch outposts, providing secure community savings and affordable credit.`,
       isEscalated: false,
     };
   }
@@ -439,8 +439,8 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ currentLang, onLanguageC
         activeLang === 'rw'
           ? 'Nyamuneka mwuzuze amazina, telefone n\'ubutumwa.'
           : activeLang === 'fr'
-          ? 'Veuillez renseigner le nom, le numéro de téléphone et le message.'
-          : 'Please complete your name, telephone number, and inquiry message.'
+            ? 'Veuillez renseigner le nom, le numéro de téléphone et le message.'
+            : 'Please complete your name, telephone number, and inquiry message.'
       );
       return;
     }
@@ -473,8 +473,8 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ currentLang, onLanguageC
               activeLang === 'rw'
                 ? `Ubusabe bwawe bwo gufashwa bwakiriwe neza muri sisitemu! Nimero yawe yo gukurikirana ni: **${res.data.referenceNumber}**. Umukozi wacu ushinzwe serivisi arabavugisha vuba.`
                 : activeLang === 'fr'
-                ? `Votre demande d'assistance a été enregistrée avec succès ! Votre numéro de suivi est : **${res.data.referenceNumber}**. Un responsable vous contactera dans les plus brefs délais.`
-                : `Your official support inquiry has been logged! Your tracking reference number is: **${res.data.referenceNumber}**. An authorized officer will follow up with you promptly.`,
+                  ? `Votre demande d'assistance a été enregistrée avec succès ! Votre numéro de suivi est : **${res.data.referenceNumber}**. Un responsable vous contactera dans les plus brefs délais.`
+                  : `Your official support inquiry has been logged! Your tracking reference number is: **${res.data.referenceNumber}**. An authorized officer will follow up with you promptly.`,
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           },
         ]);
@@ -535,9 +535,8 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ currentLang, onLanguageC
       {/* ── Floating Chat Flyout Window ── */}
       {isOpen && (
         <div
-          className={`fixed bottom-6 right-4 sm:right-6 z-50 w-[95vw] sm:w-[420px] rounded-2xl shadow-2xl border border-emerald-600/30 bg-slate-950 text-slate-100 flex flex-col overflow-hidden transition-all duration-300 backdrop-blur-xl ${
-            isMinimized ? 'h-16' : 'h-[620px] max-h-[85vh]'
-          }`}
+          className={`fixed bottom-6 right-4 sm:right-6 z-50 w-[95vw] sm:w-[420px] rounded-2xl shadow-2xl border border-emerald-600/30 bg-slate-950 text-slate-100 flex flex-col overflow-hidden transition-all duration-300 backdrop-blur-xl ${isMinimized ? 'h-16' : 'h-[620px] max-h-[85vh]'
+            }`}
         >
           {/* ── Top Header ── */}
           <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-slate-950 via-slate-900 to-emerald-950 border-b border-emerald-700/30">
@@ -558,8 +557,8 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ currentLang, onLanguageC
                     {activeLang === 'rw'
                       ? 'Amakuru Yemejwe • BNR & RCA'
                       : activeLang === 'fr'
-                      ? 'Vérifié • BNR & RCA'
-                      : 'Verified Assistant • BNR & RCA'}
+                        ? 'Vérifié • BNR & RCA'
+                        : 'Verified Assistant • BNR & RCA'}
                   </span>
                 </p>
               </div>
@@ -572,11 +571,10 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ currentLang, onLanguageC
                   <button
                     key={lang}
                     onClick={() => handleLanguageSwitch(lang)}
-                    className={`px-1.5 py-0.5 rounded text-[11px] font-bold uppercase transition-colors ${
-                      activeLang === lang
+                    className={`px-1.5 py-0.5 rounded text-[11px] font-bold uppercase transition-colors ${activeLang === lang
                         ? 'bg-emerald-600 text-white shadow-sm'
                         : 'text-slate-400 hover:text-white'
-                    }`}
+                      }`}
                   >
                     {lang}
                   </button>
@@ -599,9 +597,8 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ currentLang, onLanguageC
                 className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
               >
                 <ChevronDown
-                  className={`w-4 h-4 transition-transform duration-200 ${
-                    isMinimized ? 'rotate-180' : ''
-                  }`}
+                  className={`w-4 h-4 transition-transform duration-200 ${isMinimized ? 'rotate-180' : ''
+                    }`}
                 />
               </button>
 
@@ -627,8 +624,8 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ currentLang, onLanguageC
                     {activeLang === 'rw'
                       ? 'Ubu bufasha butanga amakuru yemejwe na UBUMWE SACCO Gakenke gusa. Ntabwo buhawe uburenganzira bwo gukora ihererekanyabubasha ry\'amafaranga ryonyine.'
                       : activeLang === 'fr'
-                      ? 'Cet assistant ne fournit que des informations vérifiées issues des registres officiels d\'UBUMWE SACCO. Il n\'exécute aucune transaction financière directe.'
-                      : 'This assistant answers strictly from approved Ubumwe SACCO knowledge. It will never invent fees or execute transactions without authorization.'}
+                        ? 'Cet assistant ne fournit que des informations vérifiées issues des registres officiels d\'UBUMWE SACCO. Il n\'exécute aucune transaction financière directe.'
+                        : 'This assistant answers strictly from approved Ubumwe SACCO knowledge. It will never invent fees or execute transactions without authorization.'}
                   </p>
                 </div>
 
@@ -645,11 +642,10 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ currentLang, onLanguageC
                     )}
 
                     <div
-                      className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-xs sm:text-[13px] leading-relaxed shadow-sm ${
-                        msg.role === 'user'
+                      className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-xs sm:text-[13px] leading-relaxed shadow-sm ${msg.role === 'user'
                           ? 'bg-emerald-600 text-white rounded-br-xs'
                           : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-bl-xs'
-                      }`}
+                        }`}
                     >
                       <div className="whitespace-pre-wrap">{msg.content}</div>
 
@@ -680,8 +676,8 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ currentLang, onLanguageC
                               {activeLang === 'rw'
                                 ? 'Itumanaho Ryemewe rya SACCO'
                                 : activeLang === 'fr'
-                                ? 'Coordonnées Officielles SACCO'
-                                : 'Official SACCO Contacts'}
+                                  ? 'Coordonnées Officielles SACCO'
+                                  : 'Official SACCO Contacts'}
                             </span>
                           </div>
 
@@ -723,8 +719,8 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ currentLang, onLanguageC
                               {activeLang === 'rw'
                                 ? 'Kora Ubusabe Bwanditse (Official Ticket)'
                                 : activeLang === 'fr'
-                                ? 'Créer un Ticket de Réclamation Officiel'
-                                : 'Submit an Official Support Inquiry'}
+                                  ? 'Créer un Ticket de Réclamation Officiel'
+                                  : 'Submit an Official Support Inquiry'}
                             </span>
                           </button>
                         </div>
@@ -764,8 +760,8 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ currentLang, onLanguageC
                       {activeLang === 'rw'
                         ? 'Ibibazo Bikunze Kubazwa:'
                         : activeLang === 'fr'
-                        ? 'Questions fréquentes :'
-                        : 'Frequently Asked Questions:'}
+                          ? 'Questions fréquentes :'
+                          : 'Frequently Asked Questions:'}
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       {(suggestionChips[activeLang] || suggestionChips.en).map((chip, idx) => (
@@ -791,8 +787,8 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ currentLang, onLanguageC
                           {activeLang === 'rw'
                             ? 'Ubusabe Bwanditse bwo Gufashwa'
                             : activeLang === 'fr'
-                            ? 'Ticket Officiel de Réclamation'
-                            : 'Official Support Inquiry Ticket'}
+                              ? 'Ticket Officiel de Réclamation'
+                              : 'Official Support Inquiry Ticket'}
                         </span>
                       </h4>
                       <button
@@ -914,8 +910,8 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ currentLang, onLanguageC
                       activeLang === 'rw'
                         ? 'Baza ibyerekeye konti, inguzanyo, *541#...'
                         : activeLang === 'fr'
-                        ? 'Posez votre question sur nos services...'
-                        : 'Ask about accounts, loans, branches, *541#...'
+                          ? 'Posez votre question sur nos services...'
+                          : 'Ask about accounts, loans, branches, *541#...'
                     }
                     className="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
                   />

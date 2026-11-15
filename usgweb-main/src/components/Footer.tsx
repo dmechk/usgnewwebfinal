@@ -75,8 +75,8 @@ export const Footer: React.FC<FooterProps> = ({
     (currentLang === 'fr'
       ? 'Bonjour UBUMWE SACCO GAKENKE, je souhaite me renseigner sur vos services coopératifs.'
       : currentLang === 'rw'
-      ? 'Muraho UBUMWE SACCO GAKENKE, nifuzaga kubaza amakuru kuri serivisi zanyu.'
-      : 'Hello UBUMWE SACCO GAKENKE, I would like to inquire about cooperative services.')
+        ? 'Muraho UBUMWE SACCO GAKENKE, nifuzaga kubaza amakuru kuri serivisi zanyu.'
+        : 'Hello UBUMWE SACCO GAKENKE, I would like to inquire about cooperative services.')
   )}`;
 
   const visibleNavs = navItems.filter((i) => i.visible);
@@ -109,8 +109,8 @@ export const Footer: React.FC<FooterProps> = ({
               {currentLang === 'fr'
                 ? 'Coopérative financière dédiée à la prospérité socio-économique des agriculteurs, commerçants et familles des 19 secteurs du district de Gakenke.'
                 : currentLang === 'rw'
-                ? "Koperative y'imari igamije iterambere ry'ubukungu n'imibereho myiza y'abahinzi, aborozi n'abaturage bo mu mirenge 19 ya Gakenke."
-                : 'Financial cooperative dedicated to the socio-economic prosperity of farmers, merchants, and families across the 19 sectors of Gakenke District.'}
+                  ? "Koperative y'imari igamije iterambere ry'ubukungu n'imibereho myiza y'abahinzi, aborozi n'abaturage bo mu mirenge 19 ya Gakenke."
+                  : 'Financial cooperative dedicated to the socio-economic prosperity of farmers, merchants, and families across the 19 sectors of Gakenke District.'}
             </p>
 
             <div className="pt-2 space-y-1.5 text-[11px] text-slate-400">
@@ -120,19 +120,19 @@ export const Footer: React.FC<FooterProps> = ({
                   {currentLang === 'fr'
                     ? `Enregistrement Microfinance RCA : ${saccoInfo.rcaRegistration}`
                     : currentLang === 'rw'
-                    ? `Icyangombwa cya RCA : ${saccoInfo.rcaRegistration}`
-                    : `RCA Microfinance Registration: ${saccoInfo.rcaRegistration}`}
+                      ? `Icyangombwa cya RCA : ${saccoInfo.rcaRegistration}`
+                      : `RCA Microfinance Registration: ${saccoInfo.rcaRegistration}`}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span>
-                  {currentLang === 'fr'
-                    ? 'Institution Financière Coopérative Agréée'
-                    : currentLang === 'rw'
-                    ? "Ikigo cy'Imari cya Koperative Cyemewe"
-                    : 'Certified Financial Cooperative Institution'}
-                </span>
+                  <span className="text-emerald-300 font-semibold">
+                    {currentLang === 'fr'
+                        ? 'Fondée en 2026 · Institution Financière Coopérative Agréée'
+                        : currentLang === 'rw'
+                    ? "Yashinzwe 2026 · Ikigo cy'Imari cya Koperative Cyemewe"
+                    : 'Founded 2026 · Certified Financial Cooperative Institution'}
+                  </span>
               </div>
             </div>
           </div>
@@ -143,8 +143,8 @@ export const Footer: React.FC<FooterProps> = ({
               {currentLang === 'fr'
                 ? 'Contact Direct & Assistance'
                 : currentLang === 'rw'
-                ? 'Itumanaho & Ubufasha'
-                : 'Direct Contact & Helpline'}
+                  ? 'Itumanaho & Ubufasha'
+                  : 'Direct Contact & Helpline'}
             </h4>
             <div className="space-y-2.5 text-slate-300">
               <a
@@ -196,19 +196,18 @@ export const Footer: React.FC<FooterProps> = ({
                   key={item.id}
                   type="button"
                   onClick={() => onNavigateToSection(item.targetSection)}
-                  className={`text-left text-xs transition-all flex items-center gap-1.5 py-1 px-1.5 rounded-lg cursor-pointer group ${
-                    item.isPrimary
+                  className={`text-left text-xs transition-all flex items-center gap-1.5 py-1 px-1.5 rounded-lg cursor-pointer group ${item.isPrimary
                       ? 'text-emerald-400 font-bold hover:text-emerald-300'
                       : 'text-slate-300 font-medium hover:text-emerald-400 hover:bg-slate-800 hover:translate-x-1'
-                  }`}
+                    }`}
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 group-hover:bg-emerald-400 transition-colors shrink-0" />
                   <span className="truncate">
                     {currentLang === 'fr'
                       ? item.labelFr || item.labelEn
                       : currentLang === 'rw'
-                      ? item.labelRw
-                      : item.labelEn}
+                        ? item.labelRw
+                        : item.labelEn}
                   </span>
                 </button>
               ))}
@@ -217,151 +216,151 @@ export const Footer: React.FC<FooterProps> = ({
               {currentLang === 'fr'
                 ? 'Lun - Ven : 8h00 - 17h00 | Sam : 8h00 - 13h00'
                 : currentLang === 'rw'
-                ? (saccoInfo.operatingHoursRw || 'Kuwa Mbere - Kuwa Gatanu: Saa 8:00 - 17:00 | Kuwa Gatandatu: Saa 8:00 - 13:00')
-                : (saccoInfo.operatingHoursEn || 'Mon - Fri: 8:00 AM - 5:00 PM | Sat: 8:00 AM - 1:00 PM')}
+                  ? (saccoInfo.operatingHoursRw || 'Kuwa Mbere - Kuwa Gatanu: Saa 8:00 - 17:00 | Kuwa Gatandatu: Saa 8:00 - 13:00')
+                  : (saccoInfo.operatingHoursEn || 'Mon - Fri: 8:00 AM - 5:00 PM | Sat: 8:00 AM - 1:00 PM')}
             </p>
           </div>
         </div>
         {/* Partners & Social Media */}
         {((partners && partners.filter((p) => p.visible !== false).length > 0) ||
           (socialLinks && socialLinks.filter((s) => s.visible !== false).length > 0)) && (
-          <div className="mt-8 pt-6 border-t border-slate-800 grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* OUR PARTNERS */}
-            {partners && partners.filter((p) => p.visible !== false).length > 0 && (
-              <div>
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">
-                  {currentLang === 'rw' ? 'Abafatanyabikorwa' : currentLang === 'fr' ? 'Nos Partenaires' : 'Our Partners'}
-                </h4>
-                <div className="flex flex-wrap items-center gap-3">
-                  {partners
-                    .filter((p) => p.visible !== false)
-                    .map((partner) => (
-                      <a
-                        key={partner.id}
-                        href={partner.websiteUrl || '#'}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={partner.name}
-                        title={partner.fullName ? `${partner.name} - ${partner.fullName}` : partner.name}
-                        className="group/card"
-                      >
-                        <div className="bg-slate-800/90 border border-slate-700/80 rounded-xl p-2.5 transition-all duration-200 hover:border-emerald-500/80 hover:bg-slate-800 flex flex-col items-center justify-center gap-1.5 w-[110px] h-[82px] cursor-pointer shadow-xs hover:shadow-md">
-                          {partner.logoUrl ? (
-                            <div className="w-full h-9 bg-white rounded-md p-1 flex items-center justify-center overflow-hidden">
-                              <img
-                                src={partner.logoUrl}
-                                alt={`${partner.name} logo`}
-                                className="h-7 w-auto object-contain max-w-[85px] transition-transform duration-200 group-hover/card:scale-105"
-                                onError={(e) => {
-                                  // Replace broken img with letter fallback
-                                  const parent = e.currentTarget.parentElement;
-                                  if (parent) {
-                                    parent.classList.remove('bg-white', 'p-1');
-                                    parent.classList.add('bg-emerald-950/60', 'border', 'border-emerald-800/40');
-                                    e.currentTarget.style.display = 'none';
-                                    const fallback = document.createElement('span');
-                                    fallback.className = 'text-base font-extrabold text-emerald-400';
-                                    fallback.textContent = partner.name.charAt(0);
-                                    parent.appendChild(fallback);
-                                  }
-                                }}
-                              />
-                            </div>
-                          ) : (
-                            <div className="w-9 h-9 rounded-md bg-emerald-950/60 border border-emerald-800/40 flex items-center justify-center">
-                              <span className="text-base font-extrabold text-emerald-400">
-                                {partner.name.charAt(0)}
-                              </span>
-                            </div>
-                          )}
-                          <div className="text-center w-full px-1">
-                            <div className="text-[10px] font-bold text-slate-200 group-hover/card:text-emerald-400 tracking-wide truncate">
-                              {partner.name}
-                            </div>
-                          </div>
-                        </div>
-                      </a>
-                    ))}
-                </div>
-              </div>
-            )}
-            {/* OUR SOCIAL MEDIA */}
-            {socialLinks && socialLinks.filter((s) => s.visible !== false).length > 0 && (
-              <div>
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">
-                  {currentLang === 'rw' ? 'Dukurikire' : currentLang === 'fr' ? 'Suivez-nous' : 'Follow Us'}
-                </h4>
-                <div className="flex flex-wrap items-center gap-3">
-                  {socialLinks
-                    .filter((s) => s.visible !== false)
-                    .map((social) => {
-                      // Official brand colors for each platform
-                      const getBrandStyle = (): { bg: string; hover: string; icon: React.ReactNode } => {
-                        switch (social.platform) {
-                          case 'linkedin':
-                            return {
-                              bg: 'bg-[#0077B5]',
-                              hover: 'hover:bg-[#005885]',
-                              icon: <Linkedin size={20} className="text-white" />,
-                            };
-                          case 'facebook':
-                            return {
-                              bg: 'bg-[#1877F2]',
-                              hover: 'hover:bg-[#0d65d8]',
-                              icon: <Facebook size={20} className="text-white" />,
-                            };
-                          case 'twitter':
-                            return {
-                              bg: 'bg-[#000000]',
-                              hover: 'hover:bg-[#2d2d2d]',
-                              icon: <X size={20} className="text-white" />,
-                            };
-                          case 'instagram':
-                            return {
-                              bg: 'bg-gradient-to-br from-[#f09433] via-[#e6683c] via-[#dc2743] via-[#cc2366] to-[#bc1888]',
-                              hover: 'hover:opacity-90',
-                              icon: <Instagram size={20} className="text-white" />,
-                            };
-                          case 'youtube':
-                            return {
-                              bg: 'bg-[#FF0000]',
-                              hover: 'hover:bg-[#cc0000]',
-                              icon: <Youtube size={20} className="text-white" />,
-                            };
-                          case 'whatsapp':
-                            return {
-                              bg: 'bg-[#25D366]',
-                              hover: 'hover:bg-[#1da851]',
-                              icon: <MessageCircle size={20} className="text-white" />,
-                            };
-                          default:
-                            return {
-                              bg: 'bg-slate-700',
-                              hover: 'hover:bg-slate-600',
-                              icon: <Globe size={20} className="text-white" />,
-                            };
-                        }
-                      };
-                      const { bg, hover, icon } = getBrandStyle();
-                      return (
+            <div className="mt-8 pt-6 border-t border-slate-800 grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* OUR PARTNERS */}
+              {partners && partners.filter((p) => p.visible !== false).length > 0 && (
+                <div>
+                  <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">
+                    {currentLang === 'rw' ? 'Abafatanyabikorwa' : currentLang === 'fr' ? 'Nos Partenaires' : 'Our Partners'}
+                  </h4>
+                  <div className="flex flex-wrap items-center gap-3">
+                    {partners
+                      .filter((p) => p.visible !== false)
+                      .map((partner) => (
                         <a
-                          key={social.id}
-                          href={social.url}
+                          key={partner.id}
+                          href={partner.websiteUrl || '#'}
                           target="_blank"
                           rel="noopener noreferrer"
-                          aria-label={social.label}
-                          title={social.label}
-                          className={`p-2.5 rounded-xl ${bg} ${hover} text-white transition-all duration-200 focus-visible:ring-2 focus-visible:ring-white/50 inline-flex items-center justify-center shadow-sm hover:scale-110 hover:shadow-md`}
+                          aria-label={partner.name}
+                          title={partner.fullName ? `${partner.name} - ${partner.fullName}` : partner.name}
+                          className="group/card"
                         >
-                          {icon}
+                          <div className="bg-slate-800/90 border border-slate-700/80 rounded-xl p-2.5 transition-all duration-200 hover:border-emerald-500/80 hover:bg-slate-800 flex flex-col items-center justify-center gap-1.5 w-[110px] h-[82px] cursor-pointer shadow-xs hover:shadow-md">
+                            {partner.logoUrl ? (
+                              <div className="w-full h-9 bg-white rounded-md p-1 flex items-center justify-center overflow-hidden">
+                                <img
+                                  src={partner.logoUrl}
+                                  alt={`${partner.name} logo`}
+                                  className="h-7 w-auto object-contain max-w-[85px] transition-transform duration-200 group-hover/card:scale-105"
+                                  onError={(e) => {
+                                    // Replace broken img with letter fallback
+                                    const parent = e.currentTarget.parentElement;
+                                    if (parent) {
+                                      parent.classList.remove('bg-white', 'p-1');
+                                      parent.classList.add('bg-emerald-950/60', 'border', 'border-emerald-800/40');
+                                      e.currentTarget.style.display = 'none';
+                                      const fallback = document.createElement('span');
+                                      fallback.className = 'text-base font-extrabold text-emerald-400';
+                                      fallback.textContent = partner.name.charAt(0);
+                                      parent.appendChild(fallback);
+                                    }
+                                  }}
+                                />
+                              </div>
+                            ) : (
+                              <div className="w-9 h-9 rounded-md bg-emerald-950/60 border border-emerald-800/40 flex items-center justify-center">
+                                <span className="text-base font-extrabold text-emerald-400">
+                                  {partner.name.charAt(0)}
+                                </span>
+                              </div>
+                            )}
+                            <div className="text-center w-full px-1">
+                              <div className="text-[10px] font-bold text-slate-200 group-hover/card:text-emerald-400 tracking-wide truncate">
+                                {partner.name}
+                              </div>
+                            </div>
+                          </div>
                         </a>
-                      );
-                    })}
+                      ))}
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-        )}
+              )}
+              {/* OUR SOCIAL MEDIA */}
+              {socialLinks && socialLinks.filter((s) => s.visible !== false).length > 0 && (
+                <div>
+                  <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">
+                    {currentLang === 'rw' ? 'Dukurikire' : currentLang === 'fr' ? 'Suivez-nous' : 'Follow Us'}
+                  </h4>
+                  <div className="flex flex-wrap items-center gap-3">
+                    {socialLinks
+                      .filter((s) => s.visible !== false)
+                      .map((social) => {
+                        // Official brand colors for each platform
+                        const getBrandStyle = (): { bg: string; hover: string; icon: React.ReactNode } => {
+                          switch (social.platform) {
+                            case 'linkedin':
+                              return {
+                                bg: 'bg-[#0077B5]',
+                                hover: 'hover:bg-[#005885]',
+                                icon: <Linkedin size={20} className="text-white" />,
+                              };
+                            case 'facebook':
+                              return {
+                                bg: 'bg-[#1877F2]',
+                                hover: 'hover:bg-[#0d65d8]',
+                                icon: <Facebook size={20} className="text-white" />,
+                              };
+                            case 'twitter':
+                              return {
+                                bg: 'bg-[#000000]',
+                                hover: 'hover:bg-[#2d2d2d]',
+                                icon: <X size={20} className="text-white" />,
+                              };
+                            case 'instagram':
+                              return {
+                                bg: 'bg-gradient-to-br from-[#f09433] via-[#e6683c] via-[#dc2743] via-[#cc2366] to-[#bc1888]',
+                                hover: 'hover:opacity-90',
+                                icon: <Instagram size={20} className="text-white" />,
+                              };
+                            case 'youtube':
+                              return {
+                                bg: 'bg-[#FF0000]',
+                                hover: 'hover:bg-[#cc0000]',
+                                icon: <Youtube size={20} className="text-white" />,
+                              };
+                            case 'whatsapp':
+                              return {
+                                bg: 'bg-[#25D366]',
+                                hover: 'hover:bg-[#1da851]',
+                                icon: <MessageCircle size={20} className="text-white" />,
+                              };
+                            default:
+                              return {
+                                bg: 'bg-slate-700',
+                                hover: 'hover:bg-slate-600',
+                                icon: <Globe size={20} className="text-white" />,
+                              };
+                          }
+                        };
+                        const { bg, hover, icon } = getBrandStyle();
+                        return (
+                          <a
+                            key={social.id}
+                            href={social.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={social.label}
+                            title={social.label}
+                            className={`p-2.5 rounded-xl ${bg} ${hover} text-white transition-all duration-200 focus-visible:ring-2 focus-visible:ring-white/50 inline-flex items-center justify-center shadow-sm hover:scale-110 hover:shadow-md`}
+                          >
+                            {icon}
+                          </a>
+                        );
+                      })}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
         {/* Staff Login Button */}
         <div className="mt-6 flex items-center justify-end">
@@ -395,8 +394,8 @@ export const Footer: React.FC<FooterProps> = ({
                 {currentLang === 'fr'
                   ? 'Connexion Staff'
                   : currentLang === 'rw'
-                  ? "Kwinjira kw'Abakozi"
-                  : 'Staff Login'}
+                    ? "Kwinjira kw'Abakozi"
+                    : 'Staff Login'}
               </span>
             </button>
           )}

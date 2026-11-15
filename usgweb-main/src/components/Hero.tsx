@@ -411,10 +411,10 @@ export const Hero: React.FC<HeroProps> = ({
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           <span className="text-[11px] text-slate-300 font-semibold tracking-wide">
             {currentLang === 'fr'
-              ? 'UBUMWE SACCO · District de Gakenke'
-              : currentLang === 'rw'
-                ? 'UBUMWE SACCO · Akarere ka Gakenke'
-                : 'UBUMWE SACCO · Gakenke District'}
+                ? 'UBUMWE SACCO · Fondée en 2026 · District de Gakenke'
+                : currentLang === 'rw'
+            ? 'UBUMWE SACCO · Yashinzwe 2026 · Akarere ka Gakenke'
+                : 'UBUMWE SACCO · Founded 2026 · Gakenke District'}
           </span>
         </div>
 

@@ -87,7 +87,7 @@ import { AdminConsoleModal } from './components/AdminConsoleModal';
 import { ContactSection } from './components/ContactSection';
 import { ChatWidget } from './components/ChatWidget';
 import { Footer } from './components/Footer';
-import { Shield, Phone, ImageIcon, Compass, Settings, LogOut, Quote, Briefcase, Eye, ArrowRight, LayoutGrid, Users, Video, Archive, Layers, UserCheck, Bell } from 'lucide-react';
+import { Shield, Phone, ImageIcon, Compass, Settings, LogOut, Quote, Briefcase, Eye, ArrowRight, LayoutGrid, Users, Video, Archive, Layers, UserCheck, Bell, LayoutDashboard } from 'lucide-react';
 import { galleryApi, newsApi, careersApi, applicantsApi, inquiryService, getUploadUrl, clearAuthToken, getAuthToken, settingsApi } from './services/api';
 
 export default function App() {
@@ -184,8 +184,9 @@ export default function App() {
   const [isManagerLoginModalOpen, setIsManagerLoginModalOpen] = useState(false);
   const [isAdminConsoleOpen, setIsAdminConsoleOpen] = useState(false);
   const [adminConsoleInitialTab, setAdminConsoleInitialTab] = useState<
-    'users' | 'contact' | 'pictures' | 'navigation' | 'leaders' | 'moments' | 'products' | 'announcements' | 'applications' | 'careers' | 'job-applicants' | 'theme' | 'guide' | 'branches' | 'inquiries' | 'messages' | 'impact' | 'videos' | 'home-hero' | 'home-metrics' | 'about'
-  >('contact');
+  'overview' | 'users' | 'contact' | 'pictures' | 'navigation' | 'leaders' | 'moments' | 'products' | 'announcements' | 'applications' | 'careers' | 'job-applicants' | 'theme' | 'guide' | 'branches' | 'inquiries' | 'messages' | 'impact' | 'videos' | 'home-hero' | 'home-metrics' | 'about' | 'partners' | 'employment-types' | 'qualifications' | 'archive' | 'ai-assistant' | 'settings'
+    > ('overview');
+  const [isPreviewingWebsite, setIsPreviewingWebsite] = useState(false);
 
   // Authentication State (Manager: Mbitsemunda Phocas / Board: Wellarse, Bartazal)
   const [isManagerLoggedIn, setIsManagerLoggedIn] = useState<boolean>(() => {
@@ -496,7 +497,7 @@ export default function App() {
       const next = { ...prev, ...updates };
       try {
         localStorage.setItem('ubumwe_best_employee', JSON.stringify(next));
-      } catch {}
+      } catch { }
       return next;
     });
   };
@@ -1113,11 +1114,13 @@ export default function App() {
 
     setAdminConsoleInitialTab(targetTab);
     setIsAdminConsoleOpen(true);
+    setIsPreviewingWebsite(false);
     navigate(targetRoute);
   };
 
   const handleManagerLogout = () => {
     setIsManagerLoggedIn(false);
+    setIsPreviewingWebsite(false);
     setLoggedInUser(null);
     clearAuthToken();
     try {
@@ -2187,8 +2190,179 @@ export default function App() {
     );
   }
 
+  // ── Central Admin Console Renderer ─────────────────────────────────────────
+  const renderAdminConsole = (isStandalone: boolean) => (
+    <AdminConsoleModal
+      isOpen={isStandalone ? true : isAdminConsoleOpen}
+      isStandaloneView={isStandalone}
+      onClose={() => {
+        if (isStandalone) {
+          setIsPreviewingWebsite(true);
+        } else {
+          setIsAdminConsoleOpen(false);
+          if (location.pathname.startsWith('/admin')) {
+            navigate('/');
+          }
+        }
+      }}
+      onLogout={handleManagerLogout}
+      onPreviewWebsite={() => setIsPreviewingWebsite(true)}
+      currentLang={currentLang}
+      initialTab={adminConsoleInitialTab}
+      loggedInUser={loggedInUser}
+      saccoInfo={saccoInfo}
+      onUpdateSaccoInfo={handleUpdateSaccoInfo}
+      navItems={navItems}
+      onAddNavItem={handleAddNavItem}
+      onUpdateNavItem={handleUpdateNavItem}
+      onDeleteNavItem={handleDeleteNavItem}
+      onReorderNavItems={handleReorderNavItems}
+      onResetNavItems={handleResetNavItems}
+      systemImages={systemImages}
+      onUpdateSystemImage={handleUpdateSystemImage}
+      products={products}
+      announcements={announcements}
+      applications={applications}
+      moments={moments}
+      leaders={leaders}
+      currentTheme={currentTheme}
+      onAddProduct={handleAddProduct}
+      onUpdateProduct={handleUpdateProduct}
+      onDeleteProduct={handleDeleteProduct}
+      onAddAnnouncement={handleAddAnnouncement}
+      onUpdateAnnouncement={handleUpdateAnnouncement}
+      onDeleteAnnouncement={handleDeleteAnnouncement}
+      onAddMoment={handleAddMoment}
+      onUpdateMoment={handleUpdateMoment}
+      onDeleteMoment={handleDeleteMoment}
+      onAddLeader={handleAddLeader}
+      onUpdateLeader={handleUpdateLeader}
+      onDeleteLeader={handleDeleteLeader}
+      onUpdateApplicationStatus={handleUpdateApplicationStatus}
+      onDeleteApplication={handleDeleteApplication}
+      onThemeChange={setCurrentTheme}
+      branches={branches}
+      onAddBranch={handleAddBranch}
+      onUpdateBranch={handleUpdateBranch}
+      onDeleteBranch={handleDeleteBranch}
+      onAddSubBranch={handleAddSubBranch}
+      onUpdateSubBranch={handleUpdateSubBranch}
+      onDeleteSubBranch={handleDeleteSubBranch}
+      employmentTypes={employmentTypes}
+      onAddEmploymentType={handleAddEmploymentType}
+      onUpdateEmploymentType={handleUpdateEmploymentType}
+      onDeleteEmploymentType={handleDeleteEmploymentType}
+      qualifications={qualifications}
+      onAddQualification={handleAddQualification}
+      onUpdateQualification={handleUpdateQualification}
+      onDeleteQualification={handleDeleteQualification}
+      communityStories={communityStories}
+      onAddCommunityStory={handleAddCommunityStory}
+      onUpdateCommunityStory={handleUpdateCommunityStory}
+      onDeleteCommunityStory={handleDeleteCommunityStory}
+      homeVideos={homeVideos}
+      onAddHomeVideo={handleAddHomeVideo}
+      onUpdateHomeVideo={handleUpdateHomeVideo}
+      onDeleteHomeVideo={handleDeleteHomeVideo}
+      heroContent={heroContent}
+      onUpdateHeroContent={handleUpdateHeroContent}
+      homeMetrics={homeMetrics}
+      onAddHomeMetric={handleAddHomeMetric}
+      onUpdateHomeMetric={handleUpdateHomeMetric}
+      onDeleteHomeMetric={handleDeleteHomeMetric}
+      onResetHomeMetrics={handleResetHomeMetrics}
+      aboutContent={aboutContent}
+      onUpdateAboutContent={handleUpdateAboutContent}
+      onAddAboutValue={handleAddAboutValue}
+      onUpdateAboutValue={handleUpdateAboutValue}
+      onDeleteAboutValue={handleDeleteAboutValue}
+      contactInquiries={contactInquiries}
+      onAddContactInquiry={handleAddContactInquiry}
+      onUpdateContactInquiry={handleUpdateContactInquiry}
+      onDeleteContactInquiry={handleDeleteContactInquiry}
+      onResetContactInquiries={handleResetContactInquiries}
+      onSendContactInquiryFeedback={handleSendContactInquiryFeedback}
+      managerMessages={managerMessages}
+      onAddManagerMessage={handleAddManagerMessage}
+      onUpdateManagerMessage={handleUpdateManagerMessage}
+      onDeleteManagerMessage={handleDeleteManagerMessage}
+      jobPostings={jobPostings}
+      jobApplications={jobApplications}
+      onAddJobPosting={handleAddJobPosting}
+      onUpdateJobPosting={handleUpdateJobPosting}
+      onDeleteJobPosting={handleDeleteJobPosting}
+      onAddJobApplication={handleAddJobApplication}
+      onUpdateJobApplicationStatus={handleUpdateJobApplicationStatus}
+      onUpdateJobApplication={handleUpdateJobApplication}
+      onDeleteJobApplication={handleDeleteJobApplication}
+      onResetJobApplications={handleResetJobApplications}
+      partners={partners}
+      onAddPartner={handleAddPartner}
+      onUpdatePartner={handleUpdatePartner}
+      onDeletePartner={handleDeletePartner}
+      onResetPartners={handleResetPartners}
+      socialLinks={socialLinks}
+      onAddSocialLink={handleAddSocialLink}
+      onUpdateSocialLink={handleUpdateSocialLink}
+      onDeleteSocialLink={handleDeleteSocialLink}
+      onResetSocialLinks={handleResetSocialLinks}
+    />
+  );
+
+  // ── Full Dashboard Standalone View When Logged In ───────────────────────────
+  // If manager is authenticated and not currently previewing the website,
+  // display the Dashboard exclusively without showing the public website.
+  if (isManagerLoggedIn && !isPreviewingWebsite) {
+    return renderAdminConsole(true);
+  }
+
   return (
     <div className={`min-h-screen flex flex-col font-sans overflow-x-hidden w-full max-w-full selection:bg-emerald-100 selection:text-emerald-900 ${currentTheme === 'black' ? 'bg-[#09090b] text-zinc-100' : 'bg-slate-50 text-slate-900'}`}>
+      {/* Admin Live Preview Mode Sticky Top Banner */}
+      {isManagerLoggedIn && isPreviewingWebsite && (
+        <aside
+          aria-label="Admin Preview Mode Bar"
+          className="sticky top-0 z-50 bg-slate-900 border-b border-emerald-500/30 px-4 py-2.5 text-white flex items-center justify-between shadow-lg"
+        >
+          <div className="flex items-center gap-2 text-xs">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="font-extrabold text-emerald-400 tracking-wider">ADMIN PREVIEW MODE</span>
+            <span className="hidden sm:inline text-slate-300">• Viewing public website as a member</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsPreviewingWebsite(false)}
+              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+            >
+              <LayoutDashboard className="w-3.5 h-3.5" />
+              <span>Back to Dashboard</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setAdminConsoleInitialTab('settings');
+                setIsPreviewingWebsite(false);
+              }}
+              className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold transition cursor-pointer flex items-center gap-1 border border-slate-700"
+              title="Admin Settings & Logout"
+            >
+              <Settings className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">Settings</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleManagerLogout}
+              className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-xs"
+              title="Log Out of Admin"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Log Out</span>
+            </button>
+          </div>
+        </aside>
+      )}
+
       {/* Universal Top Header with Active Section Highlighting */}
       <Header
         currentLang={currentLang}
@@ -2481,115 +2655,8 @@ export default function App() {
         onLoginSuccess={handleManagerLoginSuccess}
       />
 
-      {/* Manager / Admin Console (Comprehensive CRUD Hub) */}
-      <AdminConsoleModal
-        isOpen={isAdminConsoleOpen}
-        onClose={() => {
-          setIsAdminConsoleOpen(false);
-          if (location.pathname.startsWith('/admin')) {
-            navigate('/');
-          }
-        }}
-        currentLang={currentLang}
-        initialTab={adminConsoleInitialTab}
-        loggedInUser={loggedInUser}
-        saccoInfo={saccoInfo}
-        onUpdateSaccoInfo={handleUpdateSaccoInfo}
-        navItems={navItems}
-        onAddNavItem={handleAddNavItem}
-        onUpdateNavItem={handleUpdateNavItem}
-        onDeleteNavItem={handleDeleteNavItem}
-        onReorderNavItems={handleReorderNavItems}
-        onResetNavItems={handleResetNavItems}
-        systemImages={systemImages}
-        onUpdateSystemImage={handleUpdateSystemImage}
-        products={products}
-        announcements={announcements}
-        applications={applications}
-        moments={moments}
-        leaders={leaders}
-        currentTheme={currentTheme}
-        onAddProduct={handleAddProduct}
-        onUpdateProduct={handleUpdateProduct}
-        onDeleteProduct={handleDeleteProduct}
-        onAddAnnouncement={handleAddAnnouncement}
-        onUpdateAnnouncement={handleUpdateAnnouncement}
-        onDeleteAnnouncement={handleDeleteAnnouncement}
-        onAddMoment={handleAddMoment}
-        onUpdateMoment={handleUpdateMoment}
-        onDeleteMoment={handleDeleteMoment}
-        onAddLeader={handleAddLeader}
-        onUpdateLeader={handleUpdateLeader}
-        onDeleteLeader={handleDeleteLeader}
-        onUpdateApplicationStatus={handleUpdateApplicationStatus}
-        onDeleteApplication={handleDeleteApplication}
-        onThemeChange={setCurrentTheme}
-        branches={branches}
-        onAddBranch={handleAddBranch}
-        onUpdateBranch={handleUpdateBranch}
-        onDeleteBranch={handleDeleteBranch}
-        onAddSubBranch={handleAddSubBranch}
-        onUpdateSubBranch={handleUpdateSubBranch}
-        onDeleteSubBranch={handleDeleteSubBranch}
-        employmentTypes={employmentTypes}
-        onAddEmploymentType={handleAddEmploymentType}
-        onUpdateEmploymentType={handleUpdateEmploymentType}
-        onDeleteEmploymentType={handleDeleteEmploymentType}
-        qualifications={qualifications}
-        onAddQualification={handleAddQualification}
-        onUpdateQualification={handleUpdateQualification}
-        onDeleteQualification={handleDeleteQualification}
-        communityStories={communityStories}
-        onAddCommunityStory={handleAddCommunityStory}
-        onUpdateCommunityStory={handleUpdateCommunityStory}
-        onDeleteCommunityStory={handleDeleteCommunityStory}
-        homeVideos={homeVideos}
-        onAddHomeVideo={handleAddHomeVideo}
-        onUpdateHomeVideo={handleUpdateHomeVideo}
-        onDeleteHomeVideo={handleDeleteHomeVideo}
-        heroContent={heroContent}
-        onUpdateHeroContent={handleUpdateHeroContent}
-        homeMetrics={homeMetrics}
-        onAddHomeMetric={handleAddHomeMetric}
-        onUpdateHomeMetric={handleUpdateHomeMetric}
-        onDeleteHomeMetric={handleDeleteHomeMetric}
-        onResetHomeMetrics={handleResetHomeMetrics}
-        aboutContent={aboutContent}
-        onUpdateAboutContent={handleUpdateAboutContent}
-        onAddAboutValue={handleAddAboutValue}
-        onUpdateAboutValue={handleUpdateAboutValue}
-        onDeleteAboutValue={handleDeleteAboutValue}
-        contactInquiries={contactInquiries}
-        onAddContactInquiry={handleAddContactInquiry}
-        onUpdateContactInquiry={handleUpdateContactInquiry}
-        onDeleteContactInquiry={handleDeleteContactInquiry}
-        onResetContactInquiries={handleResetContactInquiries}
-        onSendContactInquiryFeedback={handleSendContactInquiryFeedback}
-        managerMessages={managerMessages}
-        onAddManagerMessage={handleAddManagerMessage}
-        onUpdateManagerMessage={handleUpdateManagerMessage}
-        onDeleteManagerMessage={handleDeleteManagerMessage}
-        jobPostings={jobPostings}
-        jobApplications={jobApplications}
-        onAddJobPosting={handleAddJobPosting}
-        onUpdateJobPosting={handleUpdateJobPosting}
-        onDeleteJobPosting={handleDeleteJobPosting}
-        onAddJobApplication={handleAddJobApplication}
-        onUpdateJobApplicationStatus={handleUpdateJobApplicationStatus}
-        onUpdateJobApplication={handleUpdateJobApplication}
-        onDeleteJobApplication={handleDeleteJobApplication}
-        onResetJobApplications={handleResetJobApplications}
-        partners={partners}
-        onAddPartner={handleAddPartner}
-        onUpdatePartner={handleUpdatePartner}
-        onDeletePartner={handleDeletePartner}
-        onResetPartners={handleResetPartners}
-        socialLinks={socialLinks}
-        onAddSocialLink={handleAddSocialLink}
-        onUpdateSocialLink={handleUpdateSocialLink}
-        onDeleteSocialLink={handleDeleteSocialLink}
-        onResetSocialLinks={handleResetSocialLinks}
-      />
+      {/* Manager / Admin Console (Comprehensive CRUD Hub for Preview Mode) */}
+      {renderAdminConsole(false)}
 
       {/* Persistent Floating WhatsApp Quick-Action Widget */}
 
