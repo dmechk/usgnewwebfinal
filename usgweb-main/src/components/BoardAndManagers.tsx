@@ -5,6 +5,7 @@ import { ImigongoRibbon } from './ImigongoPattern';
 import { ImageUploader } from './ImageUploader';
 import { BestEmployeeCard } from './BestEmployeeCard';
 
+
 interface BoardAndManagersProps {
   currentLang: Language;
   leaders: LeaderMember[];

@@ -101,7 +101,7 @@ export const BestEmployeeCard: React.FC<BestEmployeeCardProps> = ({
   if (!employee.active) return null;
 
   const cardContent = (
-    <div className="relative bg-gradient-to-br from-slate-900 via-slate-850 to-emerald-950 text-white rounded-3xl border-2 border-amber-500/40 shadow-2xl overflow-hidden backdrop-blur-md">
+    <div className="relative bg-gradient-to-br from-slate-800 via-slate-700 to-emerald-900 text-white rounded-3xl border-2 border-amber-500/60 shadow-2xl overflow-hidden backdrop-blur-md hover:shadow-emerald-500/50 transition-shadow">
       {/* Hidden file input */}
       <input
         type="file"
