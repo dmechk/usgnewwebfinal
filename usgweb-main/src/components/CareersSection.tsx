@@ -1471,8 +1471,8 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
         {(!isAdmin || careersTab === 'vacancies') && (
           <div className="space-y-8 animate-in fade-in">
             {/* Highlight Stats Strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3 min-w-[220px]">
                 <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
                   <Briefcase className="w-5 h-5" />
                 </div>
@@ -1482,10 +1482,10 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
                 </div>
               </div>
 
-              {isAdmin ? (
+              {isAdmin && (
                 <div
                   onClick={() => setCareersTab('applicants')}
-                  className="p-4 bg-emerald-50 hover:bg-emerald-100 rounded-2xl border border-emerald-200 shadow-xs flex items-center gap-3 cursor-pointer transition-colors"
+                  className="p-4 bg-emerald-50 hover:bg-emerald-100 rounded-2xl border border-emerald-200 shadow-xs flex items-center gap-3 cursor-pointer transition-colors min-w-[220px]"
                   title="Admin: Click to view candidate applicants"
                 >
                   <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0">
@@ -1499,51 +1499,8 @@ export const CareersSection: React.FC<CareersSectionProps> = ({
                     </div>
                   </div>
                 </div>
-              ) : (
-                <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
-                    <CheckCircle2 className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <div className="text-xl font-extrabold text-slate-900">Equal Access</div>
-                    <div className="text-xs text-slate-500 font-medium">Fair &amp; Transparent Hiring</div>
-                  </div>
-                </div>
               )}
-
-              <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-800 flex items-center justify-center shrink-0">
-                  <Award className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-xl font-extrabold text-slate-900">RCA Certified</div>
-                  <div className="text-xs text-slate-500 font-medium">Regulated Cooperative</div>
-                </div>
-              </div>
-
-              <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
-                  <Building className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-xl font-extrabold text-slate-900">19 Sectors</div>
-                  <div className="text-xs text-slate-500 font-medium">Gakenke Coverage</div>
-                </div>
-              </div>
             </div>
-
-            {/* Spotlight: Best Employee of the Year */}
-            {employeeOfTheYear && (
-              <div className="mb-8">
-                <BestEmployeeCard
-                  employee={employeeOfTheYear}
-                  currentLang={currentLang}
-                  isAdmin={isAdmin}
-                  onUpdateEmployee={onUpdateEmployeeOfTheYear}
-                  variant="card"
-                />
-              </div>
-            )}
 
             {/* Filter and Search Bar */}
             <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">

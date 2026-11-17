@@ -2,7 +2,10 @@
  * Loads and validates environment configuration.
  * Secrets are never logged. Production MongoDB URIs are not printed.
  */
+const path = require('path');
+
 if (process.env.NODE_ENV !== 'test') {
+  require('dotenv').config({ path: path.resolve(__dirname, '../../.env'), quiet: true });
   require('dotenv').config({ quiet: true });
 }
 

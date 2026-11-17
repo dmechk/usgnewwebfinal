@@ -128,7 +128,7 @@ export const JobApplyPage: React.FC<JobApplyPageProps> = ({
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-slate-100">
       {/* Top bar */}
-      <div className="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-slate-200 shadow-sm">
+      <div className="sticky top-0 z-30 bg-white/90 border-b border-slate-200 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-4">
           <button
             onClick={onBack}

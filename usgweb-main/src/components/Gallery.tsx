@@ -707,7 +707,7 @@ export const Gallery: React.FC<GalleryProps> = ({
       {activeMomentDetail && (
         <div className="fixed inset-0 z-50 bg-white overflow-y-auto flex flex-col animate-in fade-in duration-200">
           {/* Top Sticky Bar */}
-          <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4 shadow-2xs">
+          <div className="sticky top-0 z-40 bg-white/95 border-b border-slate-200 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4 shadow-2xs">
             <button
               type="button"
               onClick={() => setActiveMomentDetail(null)}
@@ -1015,7 +1015,7 @@ export const Gallery: React.FC<GalleryProps> = ({
       {isAlbumModalOpen && (
         <div className="fixed inset-0 z-50 bg-white overflow-y-auto flex flex-col animate-in fade-in duration-200">
           {/* Top Sticky Header */}
-          <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4 shadow-2xs">
+          <div className="sticky top-0 z-40 bg-white/95 border-b border-slate-200 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4 shadow-2xs">
             <button
               type="button"
               onClick={() => setIsAlbumModalOpen(false)}
@@ -1228,7 +1228,7 @@ export const Gallery: React.FC<GalleryProps> = ({
       {activeAlbumPhoto && (
         <div className="fixed inset-0 z-60 bg-white overflow-y-auto flex flex-col animate-in fade-in duration-200">
           {/* Top Sticky Bar */}
-          <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4 shadow-2xs">
+          <div className="sticky top-0 z-40 bg-white/95 border-b border-slate-200 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4 shadow-2xs">
             <button
               type="button"
               onClick={() => setActiveAlbumPhoto(null)}

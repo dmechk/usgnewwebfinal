@@ -2154,14 +2154,14 @@ export default function App() {
   const isMDUser = currentUserRole === 'MD';
   const isSuperAdminUser = currentUserRole === 'ADMIN_IT' || currentUserRole === 'admin';
 
-  // Granular capability flags based on role
-  const canAccessIT = isManagerLoggedIn && isSuperAdminUser;
-  const canAccessMedia = isManagerLoggedIn && (isSuperAdminUser || isMediaAdminUser);
-  const canAccessRecruitment = isManagerLoggedIn && (isSuperAdminUser || isHRUser || isMDUser);
-  const canAccessFinance = isManagerLoggedIn && (isSuperAdminUser || isDAFUser);
-  const canAccessLeadership = isManagerLoggedIn && (isSuperAdminUser || isMDUser);
-  const canAccessCareers = isManagerLoggedIn && (isSuperAdminUser || isHRUser || isDAFUser || isMDUser);
-  const canAccessBranches = isManagerLoggedIn && (isSuperAdminUser || isMediaAdminUser || isDAFUser);
+  // Full system-wide CRUD capabilities for all authenticated administrators
+  const canAccessIT = isManagerLoggedIn;
+  const canAccessMedia = isManagerLoggedIn;
+  const canAccessRecruitment = isManagerLoggedIn;
+  const canAccessFinance = isManagerLoggedIn;
+  const canAccessLeadership = isManagerLoggedIn;
+  const canAccessCareers = isManagerLoggedIn;
+  const canAccessBranches = isManagerLoggedIn;
 
   // ── Full-page Job Apply Route ───────────────────────────────────────────────
   if (isCareersApplyRoute) {

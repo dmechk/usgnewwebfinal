@@ -653,18 +653,18 @@ export const ManagerLoginModal: React.FC<ManagerLoginModalProps> = ({
                   )}
                 </button>
 
-                {/* Forgot password / Change default password link in RED text color */}
-                <div className="text-center pt-2 border-t border-slate-100 space-y-1.5">
+                {/* Forgot password button */}
+                <div className="pt-2 border-t border-slate-100 space-y-2">
                   <button
                     type="button"
                     onClick={() => setIsForgotPasswordStep(true)}
-                    className="text-[11px] text-red-600 hover:text-red-700 font-bold flex items-center justify-center gap-1 mx-auto cursor-pointer transition-colors"
+                    className="w-full py-2.5 px-3 bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 border border-red-200 hover:border-red-300 rounded-xl text-xs font-bold shadow-2xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
                   >
                     <KeyRound className="w-3.5 h-3.5 text-red-600" />
-                    <span>FORGOT PASSWORD? (For those who don&apos;t remember current password)</span>
-                    <ArrowRight className="w-3 h-3 text-red-600" />
+                    <span>FORGOT PASSWORD? (Recover Account)</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-red-600" />
                   </button>
-                  <p className="text-[10px] text-slate-500">
+                  <p className="text-[11px] text-slate-500 text-center">
                     Have a temporary/default password?{' '}
                     <button
                       type="button"

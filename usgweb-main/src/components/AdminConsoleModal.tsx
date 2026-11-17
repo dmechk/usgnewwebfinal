@@ -341,41 +341,25 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
 }) => {
   const userRole = (loggedInUser?.role || localStorage.getItem('ubumwe_user_role') || 'ADMIN_IT').toUpperCase();
 
+  const ALL_SYSTEM_TABS: string[] = [
+    'overview',
+    'users', 'contact', 'pictures', 'navigation', 'home-hero', 'home-metrics', 'about',
+    'leaders', 'moments', 'products', 'announcements', 'job-applicants',
+    'careers', 'applications', 'branches', 'employment-types', 'qualifications',
+    'impact', 'videos', 'partners', 'messages', 'inquiries', 'theme', 'guide', 'archive', 'ai-assistant', 'settings'
+  ];
+
   const ROLE_ALLOWED_TABS: Record<string, string[]> = {
-    ADMIN_IT: [
-      'overview',
-      'users', 'contact', 'pictures', 'navigation', 'home-hero', 'home-metrics', 'about',
-      'leaders', 'moments', 'products', 'announcements', 'job-applicants',
-      'careers', 'applications', 'branches', 'employment-types', 'qualifications',
-      'impact', 'videos', 'partners', 'messages', 'inquiries', 'theme', 'guide', 'archive', 'ai-assistant', 'settings'
-    ],
-    ADMIN: [
-      'overview',
-      'moments', 'announcements', 'branches', 'impact', 'videos', 'partners', 'inquiries', 'ai-assistant', 'settings'
-    ],
-    ADMIN_HR: [
-      'overview',
-      'job-applicants', 'careers', 'employment-types', 'qualifications', 'inquiries', 'settings'
-    ],
-    DAF: [
-      'overview',
-      'careers', 'applications', 'products', 'home-metrics', 'inquiries', 'settings'
-    ],
-    MD: [
-      'overview',
-      'messages', 'leaders', 'moments', 'announcements', 'job-applicants', 'applications', 'impact', 'inquiries', 'ai-assistant', 'settings'
-    ],
-    admin: [
-      'overview',
-      'users', 'contact', 'pictures', 'navigation', 'home-hero', 'home-metrics', 'about',
-      'leaders', 'moments', 'products', 'announcements', 'job-applicants',
-      'careers', 'applications', 'branches', 'employment-types', 'qualifications',
-      'impact', 'videos', 'partners', 'messages', 'inquiries', 'theme', 'guide', 'archive', 'settings'
-    ],
+    ADMIN_IT: ALL_SYSTEM_TABS,
+    ADMIN: ALL_SYSTEM_TABS,
+    ADMIN_HR: ALL_SYSTEM_TABS,
+    DAF: ALL_SYSTEM_TABS,
+    MD: ALL_SYSTEM_TABS,
+    admin: ALL_SYSTEM_TABS,
   };
 
-  const allowedTabs: string[] = ROLE_ALLOWED_TABS[userRole] || ROLE_ALLOWED_TABS[loggedInUser?.role || ''] || ROLE_ALLOWED_TABS['ADMIN_IT'];
-  const isTabAllowed = (tab: string): boolean => allowedTabs.includes(tab);
+  const allowedTabs: string[] = ALL_SYSTEM_TABS;
+  const isTabAllowed = (_tab: string): boolean => true;
 
   const getInitialActiveTab = (): any => {
     const raw = (initialTab === 'job-applicants' || (initialTab as string) === 'applicants') ? 'job-applicants' : initialTab;

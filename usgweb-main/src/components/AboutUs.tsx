@@ -354,32 +354,18 @@ export const AboutUs: React.FC<AboutUsProps> = ({
           </div>
         </div>
 
-        {/* Spotlight: Best Employee of the Year */}
+        {/* Spotlight: Best Employee of the Year (Positioned gracefully under Mission & Institutional Pillars) */}
         {employeeOfTheYear && (
-          <section className="pt-8">
-            <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 text-center mb-6">
-              {currentLang === 'fr'
-                ? 'Meilleur Employé de l’Année'
-                : currentLang === 'rw'
-                ? "Umukozi w'Indashyikirwa w'Umwaka"
-                : 'Best Employee of the Year'}
-            </h3>
-            <div className="flex justify-center">
-              <BestEmployeeCard
-                employee={employeeOfTheYear}
-                currentLang={currentLang}
-                isAdmin={isAdmin}
-                onUpdateEmployee={onUpdateEmployeeOfTheYear}
-                variant="card"
-              />
-            </div>
-          </section>
+          <div className="pt-8">
+            <BestEmployeeCard
+              employee={employeeOfTheYear}
+              currentLang={currentLang}
+              isAdmin={isAdmin}
+              onUpdateEmployee={onUpdateEmployeeOfTheYear}
+              variant="section"
+            />
+          </div>
         )}
-
-        {/* Crisp & Small Imigongo Cultural Divider */}
-        <div className="mt-16">
-          <ImigongoRibbon height={10} variant="light" bordered={true} />
-        </div>
       </div>
     </section>
   );

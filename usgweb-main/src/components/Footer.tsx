@@ -196,13 +196,10 @@ export const Footer: React.FC<FooterProps> = ({
                   key={item.id}
                   type="button"
                   onClick={() => onNavigateToSection(item.targetSection)}
-                  className={`text-left text-xs transition-all flex items-center gap-1.5 py-1 px-1.5 rounded-lg cursor-pointer group ${item.isPrimary
-                      ? 'text-emerald-400 font-bold hover:text-emerald-300'
-                      : 'text-slate-300 font-medium hover:text-emerald-400 hover:bg-slate-800 hover:translate-x-1'
-                    }`}
+                  className="text-left text-xs transition-all flex items-center gap-1.5 py-1 px-1.5 rounded-lg cursor-pointer group text-slate-300 font-medium hover:text-white hover:translate-x-1"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 group-hover:bg-emerald-400 transition-colors shrink-0" />
-                  <span className="truncate">
+                  <span className="truncate group-hover:text-emerald-300 transition-colors">
                     {currentLang === 'fr'
                       ? item.labelFr || item.labelEn
                       : currentLang === 'rw'

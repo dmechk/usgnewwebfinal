@@ -91,8 +91,7 @@ export const Header: React.FC<HeaderProps> = ({
   const mobileNavs = visibleNavs.filter((item) => item.targetSection !== 'calculator' && item.targetSection !== 'contact');
 
   return (
-    <header className={`sticky top-0 z-40 bg-white/95 backdrop-blur-md transition-all duration-300 border-b border-transparent ${isScrolled ? 'shadow-md' : 'shadow-xs'
-      }`}>
+    <header className={`sticky top-0 z-40 bg-white border-b border-transparent ${isScrolled ? 'shadow-md' : 'shadow-xs'} transition-shadow duration-300`}>
       {/* Crisp & Small Imigongo Cultural Ribbon */}
       <ImigongoRibbon height={7} variant="light" bordered={true} />
 
@@ -361,8 +360,7 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Main Navigation Bar */}
-      <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-2 lg:gap-3 xl:gap-5 transition-all duration-300 border-b border-transparent ${isScrolled ? 'py-1 sm:py-1.5' : 'py-2 sm:py-2.5'
-        }`}>
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-2 lg:gap-3 xl:gap-5 py-2 sm:py-2.5">
         {/* Zone 1: SACCO Identity & Big, Prominent Circular Logo */}
         <button
           onClick={() => handleNavClick('hero')}
@@ -370,10 +368,7 @@ export const Header: React.FC<HeaderProps> = ({
           title="UBUMWE SACCO GAKENKE - Home"
         >
           {/* Circle logo badge — bold, sharp, and clearly visible */}
-          <div className={`relative shrink-0 rounded-full overflow-hidden border-2 sm:border-[2.5px] border-emerald-600/30 shadow-md bg-white transition-all duration-300 ease-out z-20 group-hover:scale-105 group-hover:shadow-lg p-0.5 ${isScrolled
-            ? 'w-11 h-11 sm:w-12 sm:h-12'
-            : 'w-14 h-14 sm:w-16 sm:h-16 lg:w-18 lg:h-18'
-            }`}>
+          <div className="relative shrink-0 rounded-full overflow-hidden border-2 sm:border-[2.5px] border-emerald-600/30 shadow-md bg-white z-20 group-hover:scale-105 group-hover:shadow-lg p-0.5 w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 transition-transform duration-200">
             <img
               src={systemImages?.saccoLogo || defaultLogo}
               alt="UBUMWE SACCO GAKENKE Logo"
@@ -386,22 +381,12 @@ export const Header: React.FC<HeaderProps> = ({
               }}
             />
           </div>
-          <div className="flex flex-col justify-center transition-all duration-300 select-none">
-            <span
-              className={
-                "font-black tracking-tight text-slate-900 leading-tight group-hover:text-emerald-700 transition-colors duration-300 " +
-                (isScrolled ? "text-sm sm:text-base" : "text-base sm:text-lg lg:text-lg xl:text-xl")
-              }
-            >
+          <div className="flex flex-col justify-center select-none">
+            <span className="font-black tracking-tight text-slate-900 leading-tight group-hover:text-emerald-700 transition-colors duration-300 text-base sm:text-lg lg:text-xl">
               UBUMWE SACCO
             </span>
             <div className="flex items-center gap-1.5">
-              <span
-                className={
-                  "font-extrabold tracking-widest text-emerald-700 uppercase transition-all duration-300 " +
-                  (isScrolled ? "text-[9px] sm:text-[10px]" : "text-[10px] sm:text-xs")
-                }
-              >
+              <span className="font-extrabold tracking-widest text-emerald-700 uppercase text-[10px] sm:text-xs">
                 GAKENKE
               </span>
               <span className="text-[10px] font-bold text-slate-500 hidden sm:inline tracking-normal font-sans">

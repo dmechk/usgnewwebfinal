@@ -283,8 +283,6 @@ export const Hero: React.FC<HeroProps> = ({
       {/* Full‑width cinematic slideshow */}
       <div
         className="relative w-full h-[450px] sm:h-[520px] md:h-[600px] lg:h-[680px] overflow-hidden select-none"
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
@@ -309,76 +307,60 @@ export const Hero: React.FC<HeroProps> = ({
           ))}
         </div>
 
-        <div className="absolute inset-0 pointer-events-none"></div>
-        <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-slate-950/85 via-slate-950/35 to-transparent pointer-events-none" />
-
-        {/* Text overlay – bottom‑left */}
-        <div className="absolute inset-0 flex flex-col justify-end pb-14 sm:pb-16 px-5 sm:px-10 lg:px-16 z-10 max-w-2xl">
+        {/* Text overlay – TOP‑LEFT (Crisp, High-Contrast & Clearly Visible) */}
+        <div className="absolute top-8 sm:top-12 lg:top-16 left-6 sm:left-12 lg:left-16 z-20 max-w-xl sm:max-w-2xl pr-4">
           {/* District badge */}
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-amber-400 text-[11px] sm:text-xs font-extrabold uppercase tracking-widest">
+            <span className="text-amber-400 text-xs sm:text-sm font-extrabold uppercase tracking-widest drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
               {districtBadge}
             </span>
             {isAdmin && onOpenAdminConsole && (
               <button type="button" onClick={() => onOpenAdminConsole('home-hero')}
-                className="text-[10px] underline text-emerald-300 hover:text-white cursor-pointer">
+                className="text-[10px] underline text-emerald-300 hover:text-white cursor-pointer drop-shadow">
                 (Edit)
               </button>
             )}
           </div>
 
           {/* Headline */}
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-extrabold tracking-tight text-white leading-tight mb-3 drop-shadow-lg">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-extrabold tracking-tight text-white leading-tight mb-3 drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">
             <span>{headlinePrefix} </span>
             <span className="text-emerald-400">{headlineFocus}</span>
             <span> {headlineSuffix}</span>
           </h1>
 
           {/* Sub‑heading */}
-          <p className="text-sm sm:text-base text-slate-200 leading-relaxed line-clamp-2 mb-3 max-w-xl drop-shadow">
+          <p className="text-sm sm:text-base text-slate-100 font-medium leading-relaxed line-clamp-3 mb-3 max-w-xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
             {subheading}
           </p>
 
           {/* Caption associated with the current image (if any) */}
-          <p className="text-xs sm:text-sm text-amber-200 italic mb-4 max-w-xl drop-shadow">
-            {allFlowImages[currentIndex].caption ? (
-              <span>{allFlowImages[currentIndex].caption}</span>
-            ) : (
-              <span className="text-gray-500">Enter caption for this image...</span>
-            )}
-            {isAdmin && onUpdateSlideObjects && (
-              <button
-                type="button"
-                onClick={() => {
-                  const newCap = window.prompt(
-                    'Edit caption',
-                    allFlowImages[currentIndex].caption || ''
-                  );
-                  if (newCap !== null) {
-                    const updated = [...allFlowImages];
-                    updated[currentIndex] = { ...updated[currentIndex], caption: newCap };
-                    onUpdateSlideObjects(updated);
-                  }
-                }}
-                className="ml-2 text-emerald-300 hover:text-emerald-100"
-              >
-                <Edit2 className="inline w-4 h-4" />
-              </button>
-            )}
-          </p>
+          {allFlowImages[currentIndex]?.caption && (
+            <p className="text-xs sm:text-sm text-amber-200 italic mb-2 max-w-xl drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
+              {allFlowImages[currentIndex].caption}
+            </p>
+          )}
 
-          {/* CTA buttons */}
-          <div className="flex flex-wrap items-center gap-2.5">
-
-
-
-
-            <button type="button" onClick={onOpenMomoModal}
-              className="px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-amber-300 bg-white/10 hover:bg-white/20 hover:text-amber-200 rounded-xl border border-amber-400/30 flex items-center gap-1.5 transition-all cursor-pointer backdrop-blur-sm font-mono-numbers">
-              <Smartphone className="w-4 h-4 text-amber-400 shrink-0" />
-              <span>USSD: <strong>{saccoInfo.ussdCode}</strong></span>
+          {isAdmin && onUpdateSlideObjects && (
+            <button
+              type="button"
+              onClick={() => {
+                const newCap = window.prompt(
+                  'Edit caption',
+                  allFlowImages[currentIndex].caption || ''
+                );
+                if (newCap !== null) {
+                  const updated = [...allFlowImages];
+                  updated[currentIndex] = { ...updated[currentIndex], caption: newCap };
+                  onUpdateSlideObjects(updated);
+                }
+              }}
+              className="text-xs text-emerald-300 hover:text-emerald-100 inline-flex items-center gap-1 mt-1 cursor-pointer drop-shadow"
+            >
+              <Edit2 className="w-3.5 h-3.5" />
+              <span>Edit Caption</span>
             </button>
-          </div>
+          )}
         </div>
 
         {/* Navigation arrows */}
@@ -457,6 +439,46 @@ export const Hero: React.FC<HeroProps> = ({
             <Edit2 className="w-3 h-3 text-emerald-300" /><span>Edit Text</span>
           </button>
         )}
+      </div>
+
+      {/* Hero Bottom Metrics & USSD Highlights Bar (Placed right below slideshow as in reference design) */}
+      <div className="bg-[#0b2416] border-t border-emerald-800/40 py-5 sm:py-6 px-4 sm:px-8 text-white shadow-inner">
+        <div className="max-w-4xl mx-auto grid grid-cols-3 gap-2 sm:gap-6 text-center items-center">
+          {/* Item 1: Branches */}
+          <div className="flex flex-col items-center">
+            <span className="text-2xl sm:text-3xl lg:text-4xl font-serif font-black text-amber-400 font-mono-numbers tracking-tight drop-shadow-xs">
+              19
+            </span>
+            <span className="text-[10px] sm:text-xs tracking-widest uppercase font-extrabold text-slate-300 mt-1">
+              {currentLang === 'fr' ? 'Agences' : currentLang === 'rw' ? 'Amashami' : 'Branches'}
+            </span>
+          </div>
+
+          {/* Item 2: Founded */}
+          <div className="flex flex-col items-center border-x border-emerald-800/50 px-2 sm:px-4">
+            <span className="text-2xl sm:text-3xl lg:text-4xl font-serif font-black text-amber-400 font-mono-numbers tracking-tight drop-shadow-xs">
+              2,026
+            </span>
+            <span className="text-[10px] sm:text-xs tracking-widest uppercase font-extrabold text-slate-300 mt-1">
+              {currentLang === 'fr' ? 'Fondée en' : currentLang === 'rw' ? 'Yashinzwe' : 'Founded'}
+            </span>
+          </div>
+
+          {/* Item 3: USSD Mobile Banking */}
+          <button
+            type="button"
+            onClick={onOpenMomoModal}
+            className="flex flex-col items-center group cursor-pointer transition-transform hover:scale-105 active:scale-95"
+            title="Click to view USSD & Mobile Banking details"
+          >
+            <span className="text-2xl sm:text-3xl lg:text-4xl font-serif font-black text-amber-400 group-hover:text-amber-300 font-mono-numbers tracking-tight drop-shadow-xs flex items-center justify-center gap-1">
+              {saccoInfo.ussdCode || '*541#'}
+            </span>
+            <span className="text-[10px] sm:text-xs tracking-widest uppercase font-extrabold text-slate-300 group-hover:text-white mt-1 transition-colors">
+              {currentLang === 'fr' ? 'Banque Mobile' : currentLang === 'rw' ? 'Kuri Telefone' : 'Mobile Banking'}
+            </span>
+          </button>
+        </div>
       </div>
     </section>
   );

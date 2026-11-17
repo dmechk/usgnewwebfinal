@@ -194,18 +194,7 @@ export const BoardAndManagers: React.FC<BoardAndManagersProps> = ({
           </div>
         </div>
 
-        {/* Spotlight: Best Employee of the Year */}
-        {employeeOfTheYear && (
-          <div className="pt-2">
-            <BestEmployeeCard
-              employee={employeeOfTheYear}
-              currentLang={currentLang}
-              isAdmin={isAdmin}
-              onUpdateEmployee={onUpdateEmployeeOfTheYear}
-              variant="card"
-            />
-          </div>
-        )}
+        {/* Spotlight: Best Employee of the Year (Cleared as requested) */}
 
         {/* Leaders Grid with Photos */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">

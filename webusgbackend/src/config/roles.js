@@ -91,107 +91,33 @@ const PERMISSIONS = Object.freeze({
   AI_MANAGE: 'ai:manage',
 });
 
-// Role to permissions mapping
+// Role to permissions mapping: all roles are granted full system-wide CRUD access
+const ALL_PERMISSIONS_SET = Object.freeze([
+  '*',
+  ...Object.values(PERMISSIONS),
+]);
+
 const ROLE_PERMISSIONS = Object.freeze({
-  // 1. ADMIN_IT: System Super Administrator - Full system access
-  [ROLES.ADMIN_IT]: Object.freeze([
-    '*', // Wildcard matching all permissions
-    ...Object.values(PERMISSIONS),
-  ]),
-
-  // 2. ADMIN: Gallery, News & Inquiries Administrator
-  [ROLES.ADMIN]: Object.freeze([
-    PERMISSIONS.GALLERY_READ,
-    PERMISSIONS.GALLERY_CREATE,
-    PERMISSIONS.GALLERY_UPDATE,
-    PERMISSIONS.GALLERY_DELETE,
-    PERMISSIONS.GALLERY_PUBLISH,
-    PERMISSIONS.NEWS_READ,
-    PERMISSIONS.NEWS_CREATE,
-    PERMISSIONS.NEWS_UPDATE,
-    PERMISSIONS.NEWS_DELETE,
-    PERMISSIONS.NEWS_PUBLISH,
-    PERMISSIONS.INQUIRIES_READ,
-    PERMISSIONS.INQUIRIES_CREATE,
-    PERMISSIONS.INQUIRIES_UPDATE,
-    PERMISSIONS.INQUIRIES_DELETE,
-    PERMISSIONS.INQUIRIES_FEEDBACK,
-    PERMISSIONS.REPORTS_READ,
-    PERMISSIONS.REPORTS_GALLERY_NEWS,
-    PERMISSIONS.AI_READ,
-    PERMISSIONS.AI_MANAGE,
-  ]),
-
-  // 3. ADMIN_HR: Human Resources Administrator - Applicants & Recruitment
-  [ROLES.ADMIN_HR]: Object.freeze([
-    PERMISSIONS.APPLICANTS_READ,
-    PERMISSIONS.APPLICANTS_REVIEW,
-    PERMISSIONS.APPLICANTS_STATUS_UPDATE,
-    PERMISSIONS.APPLICANTS_FEEDBACK_CREATE,
-    PERMISSIONS.APPLICANTS_MESSAGES_READ,
-    PERMISSIONS.APPLICANTS_MESSAGES_CREATE,
-    PERMISSIONS.INQUIRIES_READ,
-    PERMISSIONS.INQUIRIES_FEEDBACK,
-    PERMISSIONS.REPORTS_READ,
-    PERMISSIONS.REPORTS_RECRUITMENT,
-  ]),
-
-  // 4. DAF: Careers Administrator - Career opportunities management
-  [ROLES.DAF]: Object.freeze([
-    PERMISSIONS.CAREERS_READ,
-    PERMISSIONS.CAREERS_CREATE,
-    PERMISSIONS.CAREERS_UPDATE,
-    PERMISSIONS.CAREERS_DELETE,
-    PERMISSIONS.CAREERS_PUBLISH,
-    PERMISSIONS.INQUIRIES_READ,
-    PERMISSIONS.REPORTS_READ,
-    PERMISSIONS.REPORTS_CAREERS,
-  ]),
-
-  // 5. MD: Managing Director - Read-only oversight across departments
-  [ROLES.MD]: Object.freeze([
-    PERMISSIONS.GALLERY_READ,
-    PERMISSIONS.NEWS_READ,
-    PERMISSIONS.CAREERS_READ,
-    PERMISSIONS.APPLICANTS_READ,
-    PERMISSIONS.INQUIRIES_READ,
-    PERMISSIONS.INQUIRIES_FEEDBACK,
-    PERMISSIONS.REPORTS_READ,
-    PERMISSIONS.REPORTS_GALLERY_NEWS,
-    PERMISSIONS.REPORTS_RECRUITMENT,
-    PERMISSIONS.REPORTS_CAREERS,
-    PERMISSIONS.REPORTS_OVERVIEW,
-    PERMISSIONS.AUDIT_READ,
-    PERMISSIONS.AI_READ,
-  ]),
-
-  // Legacy mappings for backward compatibility
-  admin: Object.freeze([
-    '*',
-    ...Object.values(PERMISSIONS),
-  ]),
-  radiologist: Object.freeze([
-    PERMISSIONS.PATIENTS_READ,
-    PERMISSIONS.EXAMS_READ,
-    PERMISSIONS.EXAMS_MANAGE,
-  ]),
-  technician: Object.freeze([
-    PERMISSIONS.PATIENTS_READ,
-    PERMISSIONS.EXAMS_READ,
-    PERMISSIONS.EXAMS_MANAGE,
-  ]),
+  [ROLES.ADMIN_IT]: ALL_PERMISSIONS_SET,
+  [ROLES.ADMIN]: ALL_PERMISSIONS_SET,
+  [ROLES.ADMIN_HR]: ALL_PERMISSIONS_SET,
+  [ROLES.DAF]: ALL_PERMISSIONS_SET,
+  [ROLES.MD]: ALL_PERMISSIONS_SET,
+  admin: ALL_PERMISSIONS_SET,
+  radiologist: ALL_PERMISSIONS_SET,
+  technician: ALL_PERMISSIONS_SET,
 });
 
 // Role-appropriate dashboard landing routes for frontend redirection
 const ROLE_DASHBOARDS = Object.freeze({
   [ROLES.ADMIN_IT]: '/admin/dashboard',
-  [ROLES.ADMIN]: '/admin/gallery-news',
-  [ROLES.ADMIN_HR]: '/admin/recruitment',
-  [ROLES.DAF]: '/admin/careers',
-  [ROLES.MD]: '/admin/management-overview',
+  [ROLES.ADMIN]: '/admin/dashboard',
+  [ROLES.ADMIN_HR]: '/admin/dashboard',
+  [ROLES.DAF]: '/admin/dashboard',
+  [ROLES.MD]: '/admin/dashboard',
   admin: '/admin/dashboard',
-  radiologist: '/clinic/exams',
-  technician: '/clinic/exams',
+  radiologist: '/admin/dashboard',
+  technician: '/admin/dashboard',
 });
 
 /**
