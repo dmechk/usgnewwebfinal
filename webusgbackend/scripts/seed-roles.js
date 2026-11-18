@@ -44,6 +44,14 @@ const DEFAULT_ROLE_USERS = [
     password: 'Password123!',
     role: ROLES.MD,
   },
+  {
+    name: 'Chantal Mukandayisenga (Senior Loan Officer)',
+    email: 'loans@ubumwesacco.rw',
+    password: 'Password123!',
+    role: ROLES.LOAN_OFFICER, // Credit, Loans & KYC Officer
+    department: 'Credit & Microfinance Operations',
+    phone: '+250 788 541 004',
+  },
 ];
 
 async function seedRoles() {

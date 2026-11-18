@@ -45,7 +45,7 @@ describe('Role-Based Access Control (RBAC) Integration Tests', () => {
   });
 
   describe('1. Roles and Permissions Matrix Discovery', () => {
-    it('GET /api/v1/auth/roles returns all 5 canonical roles and permission matrices', async () => {
+    it('GET /api/v1/auth/roles returns canonical roles including LOAN_OFFICER and permission matrices', async () => {
       const res = await request(app).get('/api/v1/auth/roles');
 
       expect(res.status).toBe(200);
@@ -55,6 +55,7 @@ describe('Role-Based Access Control (RBAC) Integration Tests', () => {
       expect(res.body.data.roles).toContain(ROLES.ADMIN_HR);
       expect(res.body.data.roles).toContain(ROLES.DAF);
       expect(res.body.data.roles).toContain(ROLES.MD);
+      expect(res.body.data.roles).toContain(ROLES.LOAN_OFFICER);
     });
 
     it('Signin response includes permissions array and role-appropriate dashboard landing URL', async () => {

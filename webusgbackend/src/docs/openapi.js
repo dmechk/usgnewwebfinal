@@ -66,7 +66,7 @@ module.exports = {
           email: { type: 'string', example: 'admin@example.com' },
           role: {
             type: 'string',
-            enum: ['ADMIN_IT', 'ADMIN', 'ADMIN_HR', 'DAF', 'MD', 'admin', 'radiologist', 'technician'],
+            enum: ['ADMIN_IT', 'ADMIN', 'ADMIN_HR', 'DAF', 'MD', 'LOAN_OFFICER', 'admin', 'radiologist', 'technician'],
             example: 'ADMIN_IT',
           },
           isActive: { type: 'boolean' },
@@ -367,7 +367,7 @@ module.exports = {
                 type: 'object',
                 required: ['role'],
                 properties: {
-                  role: { type: 'string', enum: ['ADMIN_IT', 'ADMIN', 'ADMIN_HR', 'DAF', 'MD'] },
+                  role: { type: 'string', enum: ['ADMIN_IT', 'ADMIN', 'ADMIN_HR', 'DAF', 'MD', 'LOAN_OFFICER'] },
                 },
               },
             },

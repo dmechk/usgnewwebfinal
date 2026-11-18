@@ -19,6 +19,7 @@ const STAFF_USERS = [
   { name: "dushime mechack", email: "dushimemechack9@gmail.com", password: "Ubumwe@2026!", role: "ADMIN_IT", department: "Operations", phone: "+250784510083", isActive: true, passwordChangeRequired: false },
   { name: "dushime mechack", email: "dushimemechack12@gmail.com", password: "Kigali@123", role: "ADMIN_IT", department: "Operations", phone: "+250784510083", isActive: true, passwordChangeRequired: false },
   { name: "Patrick Habimana", email: "patrick.h@ubumwesacco.rw", password: "Password123!", role: "ADMIN_HR", department: "Human Resources", phone: "+250788777888", isActive: true, passwordChangeRequired: false },
+  { name: "Chantal Mukandayisenga (Senior Loan Officer)", email: "loans@ubumwesacco.rw", password: "Password123!", role: "LOAN_OFFICER", department: "Credit & Microfinance Operations", phone: "+250788541004", isActive: true, passwordChangeRequired: false },
   { name: "IT Operations Administrator", email: "admin.it@ubumwesacco.rw", password: "Password123!", role: "ADMIN_IT", department: "Information Technology", phone: "+250786422080", isActive: true, passwordChangeRequired: false },
 ];
 

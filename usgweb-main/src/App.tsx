@@ -2152,6 +2152,7 @@ export default function App() {
   const isMediaAdminUser = currentUserRole === 'ADMIN';
   const isDAFUser = currentUserRole === 'DAF';
   const isMDUser = currentUserRole === 'MD';
+  const isLoanOfficerUser = currentUserRole === 'LOAN_OFFICER';
   const isSuperAdminUser = currentUserRole === 'ADMIN_IT' || currentUserRole === 'admin';
 
   // Full system-wide CRUD capabilities for all authenticated administrators

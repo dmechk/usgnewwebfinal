@@ -355,6 +355,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
     ADMIN_HR: ALL_SYSTEM_TABS,
     DAF: ALL_SYSTEM_TABS,
     MD: ALL_SYSTEM_TABS,
+    LOAN_OFFICER: ALL_SYSTEM_TABS,
     admin: ALL_SYSTEM_TABS,
   };
 

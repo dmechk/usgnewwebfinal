@@ -13,6 +13,7 @@ const ROLES = Object.freeze({
   ADMIN_HR: 'ADMIN_HR', // Human Resources Administrator
   DAF: 'DAF',           // Careers Administrator
   MD: 'MD',             // Managing Director (Executive Oversight)
+  LOAN_OFFICER: 'LOAN_OFFICER', // Senior Credit & Loan Officer (KYC, Loans, Products)
 });
 
 // Canonical list of active application roles
@@ -86,6 +87,14 @@ const PERMISSIONS = Object.freeze({
   INQUIRIES_DELETE: 'inquiries:delete',
   INQUIRIES_FEEDBACK: 'inquiries:feedback',
 
+  // Loan & Credit Operations
+  LOANS_READ: 'loans:read',
+  LOANS_MANAGE: 'loans:manage',
+  LOANS_APPROVE: 'loans:approve',
+  LOANS_REJECT: 'loans:reject',
+  PRODUCTS_READ: 'products:read',
+  PRODUCTS_MANAGE: 'products:manage',
+
   // AI Digital Assistant & Knowledge
   AI_READ: 'ai:read',
   AI_MANAGE: 'ai:manage',
@@ -103,6 +112,7 @@ const ROLE_PERMISSIONS = Object.freeze({
   [ROLES.ADMIN_HR]: ALL_PERMISSIONS_SET,
   [ROLES.DAF]: ALL_PERMISSIONS_SET,
   [ROLES.MD]: ALL_PERMISSIONS_SET,
+  [ROLES.LOAN_OFFICER]: ALL_PERMISSIONS_SET,
   admin: ALL_PERMISSIONS_SET,
   radiologist: ALL_PERMISSIONS_SET,
   technician: ALL_PERMISSIONS_SET,
@@ -115,6 +125,7 @@ const ROLE_DASHBOARDS = Object.freeze({
   [ROLES.ADMIN_HR]: '/admin/dashboard',
   [ROLES.DAF]: '/admin/dashboard',
   [ROLES.MD]: '/admin/dashboard',
+  [ROLES.LOAN_OFFICER]: '/admin/dashboard',
   admin: '/admin/dashboard',
   radiologist: '/admin/dashboard',
   technician: '/admin/dashboard',

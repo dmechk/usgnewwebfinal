@@ -270,6 +270,13 @@ const ROLE_BADGE_CONFIG: Record<
     border: 'border-rose-300',
     desc: 'Executive board reports, institutional messages, and comprehensive governance oversight.',
   },
+  LOAN_OFFICER: {
+    label: 'Loan & Credit Officer',
+    bg: 'bg-teal-100',
+    text: 'text-teal-800',
+    border: 'border-teal-300',
+    desc: 'Credit assessments, borrower evaluation, member loan processing, and KYC verification.',
+  },
 };
 
 const ROLE_PERMISSIONS_PREVIEW: Record<string, string[]> = {
@@ -310,6 +317,13 @@ const ROLE_PERMISSIONS_PREVIEW: Record<string, string[]> = {
     'Cross-Department Read-Only Oversight',
     'Audit & Compliance Review',
     'Institutional Analytics',
+  ],
+  LOAN_OFFICER: [
+    'Member Loan Applications Processing',
+    'KYC & Borrower Verification',
+    'Financial Savings & Loan Products',
+    'Loan Approval & Credit Scoring',
+    'Credit Inquiries & Member Feedback',
   ],
 };
 
@@ -577,7 +591,8 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
     const hrAdmins = sourceList.filter((u) => u.role === 'ADMIN_HR').length;
     const daf = sourceList.filter((u) => u.role === 'DAF').length;
     const md = sourceList.filter((u) => u.role === 'MD').length;
-    return { total, active, inactive, itAdmins, mediaAdmins, hrAdmins, daf, md };
+    const loanOfficers = sourceList.filter((u) => u.role === 'LOAN_OFFICER').length;
+    return { total, active, inactive, itAdmins, mediaAdmins, hrAdmins, daf, md, loanOfficers };
   }, [users, totalCount]);
 
   // Handle Create User
@@ -1118,6 +1133,7 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
                   <option value="ADMIN_HR">ADMIN_HR (Recruitment)</option>
                   <option value="DAF">DAF (Finance &amp; Careers)</option>
                   <option value="MD">MD (Managing Director)</option>
+                  <option value="LOAN_OFFICER">LOAN_OFFICER (Loan Officer)</option>
                 </select>
               </div>
 
@@ -1704,6 +1720,12 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
                       badge: 'bg-rose-100 text-rose-800',
                     },
                     {
+                      id: 'LOAN_OFFICER',
+                      title: 'Loan Officer (LOAN_OFFICER)',
+                      desc: 'Credit evaluation, loan processing, KYC verification, member microfinance',
+                      badge: 'bg-teal-100 text-teal-800',
+                    },
+                    {
                       id: 'ADMIN_IT',
                       title: 'IT Super Admin (ADMIN_IT)',
                       desc: 'Full system privileges, user management, and security controls',
@@ -1988,6 +2010,7 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
                   <option value="ADMIN_HR">ADMIN_HR (Recruitment)</option>
                   <option value="DAF">DAF (Finance Director)</option>
                   <option value="MD">MD (Managing Director)</option>
+                  <option value="LOAN_OFFICER">LOAN_OFFICER (Loan Officer)</option>
                 </select>
               </div>
 

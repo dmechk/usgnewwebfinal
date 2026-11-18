@@ -20,7 +20,7 @@ router.get('/me', authenticate, me);
 router.post('/change-password', authenticate, changePasswordValidation, validate, changePassword);
 router.post('/activate', activateAccount);
 
-router.get('/admin', authenticate, requireRole('admin', 'ADMIN_IT', 'ADMIN', 'ADMIN_HR', 'DAF', 'MD'), (req, res) => {
+router.get('/admin', authenticate, requireRole('admin', 'ADMIN_IT', 'ADMIN', 'ADMIN_HR', 'DAF', 'MD', 'LOAN_OFFICER'), (req, res) => {
   res.json({
     success: true,
     message: 'Admin access granted',
@@ -31,7 +31,7 @@ router.get('/admin', authenticate, requireRole('admin', 'ADMIN_IT', 'ADMIN', 'AD
 router.post(
   '/register',
   authenticate,
-  requireRole('admin', 'ADMIN_IT', 'ADMIN', 'ADMIN_HR', 'DAF', 'MD'),
+  requireRole('admin', 'ADMIN_IT', 'ADMIN', 'ADMIN_HR', 'DAF', 'MD', 'LOAN_OFFICER'),
   registerValidation,
   validate,
   register
