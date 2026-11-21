@@ -107,21 +107,70 @@ const ALL_PERMISSIONS_SET = Object.freeze([
 ]);
 
 const ROLE_PERMISSIONS = Object.freeze({
+  // Super admin has full access
   [ROLES.ADMIN_IT]: ALL_PERMISSIONS_SET,
-  [ROLES.ADMIN]: ALL_PERMISSIONS_SET,
-  [ROLES.ADMIN_HR]: ALL_PERMISSIONS_SET,
-  [ROLES.DAF]: ALL_PERMISSIONS_SET,
-  [ROLES.MD]: ALL_PERMISSIONS_SET,
+
+  // Gallery & News admin – can manage galleries and news
+  [ROLES.ADMIN]: [
+    PERMISSIONS.GALLERY_READ,
+    PERMISSIONS.GALLERY_CREATE,
+    PERMISSIONS.GALLERY_UPDATE,
+    PERMISSIONS.GALLERY_DELETE,
+    PERMISSIONS.GALLERY_PUBLISH,
+    PERMISSIONS.NEWS_READ,
+    PERMISSIONS.NEWS_CREATE,
+    PERMISSIONS.NEWS_UPDATE,
+    PERMISSIONS.NEWS_DELETE,
+    PERMISSIONS.NEWS_PUBLISH,
+    PERMISSIONS.USERS_READ,
+    PERMISSIONS.USERS_MANAGE,
+  ],
+
+  // HR admin – can manage applicants but NOT gallery/news creation
+  [ROLES.ADMIN_HR]: [
+    PERMISSIONS.APPLICANTS_READ,
+    PERMISSIONS.APPLICANTS_REVIEW,
+    PERMISSIONS.APPLICANTS_STATUS_UPDATE,
+    PERMISSIONS.APPLICANTS_FEEDBACK_CREATE,
+    PERMISSIONS.APPLICANTS_MESSAGES_READ,
+    PERMISSIONS.APPLICANTS_MESSAGES_CREATE,
+    PERMISSIONS.USERS_READ,
+  ],
+
+  // Careers admin – can manage careers but NOT gallery/news creation
+  [ROLES.DAF]: [
+    PERMISSIONS.CAREERS_READ,
+    PERMISSIONS.CAREERS_CREATE,
+    PERMISSIONS.CAREERS_UPDATE,
+    PERMISSIONS.CAREERS_DELETE,
+    PERMISSIONS.CAREERS_PUBLISH,
+    PERMISSIONS.USERS_READ,
+  ],
+
+  // Managing Director – read‑only access to reports and applicants, no creates
+  [ROLES.MD]: [
+    PERMISSIONS.USERS_READ,
+    PERMISSIONS.REPORTS_READ,
+    PERMISSIONS.REPORTS_GALLERY_NEWS,
+    PERMISSIONS.REPORTS_RECRUITMENT,
+    PERMISSIONS.REPORTS_CAREERS,
+    PERMISSIONS.REPORTS_OVERVIEW,
+    PERMISSIONS.APPLICANTS_READ,
+  ],
+
+  // Loan officer – keep existing full permissions for now (can be refined later)
   [ROLES.LOAN_OFFICER]: ALL_PERMISSIONS_SET,
+
+  // Legacy roles – admin retains full access, others limited
   admin: ALL_PERMISSIONS_SET,
-  radiologist: ALL_PERMISSIONS_SET,
-  technician: ALL_PERMISSIONS_SET,
+  radiologist: [],
+  technician: [],
 });
 
 // Role-appropriate dashboard landing routes for frontend redirection
 const ROLE_DASHBOARDS = Object.freeze({
   [ROLES.ADMIN_IT]: '/admin/dashboard',
-  [ROLES.ADMIN]: '/admin/dashboard',
+  [ROLES.ADMIN]: '/admin/gallery-news',
   [ROLES.ADMIN_HR]: '/admin/dashboard',
   [ROLES.DAF]: '/admin/dashboard',
   [ROLES.MD]: '/admin/dashboard',

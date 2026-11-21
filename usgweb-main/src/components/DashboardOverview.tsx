@@ -20,6 +20,7 @@ import {
   Award,
   ChevronRight,
   Building,
+  Archive,
 } from 'lucide-react';
 
 interface DashboardOverviewProps {
@@ -487,6 +488,25 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                   </div>
                 </div>
                 <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-emerald-700 transition-all" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onNavigateTab('archive')}
+                className="w-full p-2.5 rounded-xl border border-slate-200 hover:border-violet-300 hover:bg-violet-50/50 flex items-center justify-between text-left transition-all cursor-pointer group"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-violet-100 text-violet-700 flex items-center justify-center shrink-0">
+                    <Archive className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-900 group-hover:text-violet-900">
+                      Backup &amp; Archive
+                    </div>
+                    <div className="text-[10px] text-slate-500">Restore items &amp; site snapshots</div>
+                  </div>
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-violet-700 transition-all" />
               </button>
             </div>
           </div>

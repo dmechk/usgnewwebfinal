@@ -4,5 +4,7 @@ uploads/
 *.log
 .DS_Store
 coverage/
+data/
+.jest-cache/
 .vscode/
 .idea/

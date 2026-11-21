@@ -11,6 +11,8 @@ export interface ThemeOption {
   accentHex: string;
   bgLightHex: string;
   badgeLabel: string;
+  name?: string;
+  primary?: string;
 }
 
 export interface SaccoProduct {
@@ -141,6 +143,7 @@ export interface SaccoContactInfo {
   district: string;
   province: string;
   headquarters: string;
+  address?: string;
   phone: string;
   managerPhone: string;
   email: string;
@@ -259,6 +262,7 @@ export interface JobPosting {
 
 export interface JobApplication {
   id: string;
+  referenceNumber?: string;
   jobId: string;
   jobTitle: string;
   fullName: string;

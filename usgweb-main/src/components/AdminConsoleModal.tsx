@@ -349,20 +349,40 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
     'impact', 'videos', 'partners', 'messages', 'inquiries', 'theme', 'guide', 'archive', 'ai-assistant', 'settings'
   ];
 
+  // For LOAN_OFFICER: strictly limited to loan & credit operations
+  const LOAN_OFFICER_TABS: string[] = [
+    'applications',  // KYC & Loan Requests
+    'products',      // Financial Loan & Savings Products
+    'home-metrics',  // Loan & Financial Metrics
+    'inquiries',     // Member Credit & Loan Inquiries
+    'overview',      // Executive & Credit Overview
+    'guide',         // Operational User Guide
+    'settings',      // Account & Logout
+  ];
+
   const ROLE_ALLOWED_TABS: Record<string, string[]> = {
     ADMIN_IT: ALL_SYSTEM_TABS,
+    admin: ALL_SYSTEM_TABS,
     ADMIN: ALL_SYSTEM_TABS,
     ADMIN_HR: ALL_SYSTEM_TABS,
     DAF: ALL_SYSTEM_TABS,
     MD: ALL_SYSTEM_TABS,
-    LOAN_OFFICER: ALL_SYSTEM_TABS,
-    admin: ALL_SYSTEM_TABS,
+    LOAN_OFFICER: LOAN_OFFICER_TABS,
   };
 
-  const allowedTabs: string[] = ALL_SYSTEM_TABS;
-  const isTabAllowed = (_tab: string): boolean => true;
+  const allowedTabs: string[] =
+    ROLE_ALLOWED_TABS[userRole] ||
+    ROLE_ALLOWED_TABS[loggedInUser?.role || ''] ||
+    ALL_SYSTEM_TABS;
+
+  const isTabAllowed = (tab: string): boolean => allowedTabs.includes(tab);
 
   const getInitialActiveTab = (): any => {
+    if (userRole === 'LOAN_OFFICER') {
+      const raw = initialTab;
+      if (raw && allowedTabs.includes(raw as string)) return raw;
+      return 'applications'; // Defaults directly to KYC & Member Loan Applications
+    }
     const raw = (initialTab === 'job-applicants' || (initialTab as string) === 'applicants') ? 'job-applicants' : initialTab;
     if (raw && allowedTabs.includes(raw)) return raw;
     return allowedTabs.includes('overview') ? 'overview' : (allowedTabs[0] || 'overview');
@@ -404,11 +424,20 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
   const [sidebarSearch, setSidebarSearch] = useState('');
 
   useEffect(() => {
+    if (userRole === 'LOAN_OFFICER') {
+      const raw = initialTab;
+      if (raw && isTabAllowed(raw)) {
+        setActiveTab(raw as any);
+      } else if (!isTabAllowed(activeTab)) {
+        setActiveTab('applications');
+      }
+      return;
+    }
     const raw = (initialTab === 'job-applicants' || (initialTab as string) === 'applicants') ? 'job-applicants' : initialTab;
     if (raw && isTabAllowed(raw)) {
       setActiveTab(raw as any);
     } else if (!isTabAllowed(activeTab)) {
-      setActiveTab((allowedTabs[0] || 'job-applicants') as any);
+      setActiveTab((allowedTabs[0] || 'overview') as any);
     }
   }, [initialTab, isOpen, userRole]);
 
@@ -2219,7 +2248,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
                 {
                   title: 'People & Access',
                   items: [
-                    { id: 'users', label: 'Staff & User Accounts', icon: <Users className="w-4 h-4 text-purple-400" />, badge: 14, badgeColor: 'bg-purple-900/60 text-purple-300' },
+                    { id: 'users', label: 'Staff & User Accounts', icon: <Users className="w-4 h-4 text-purple-400" />, badge: (() => { try { const c = localStorage.getItem('ubumwe_cached_staff_users'); if (c) { const p = JSON.parse(c); if (Array.isArray(p) && p.length > 0) return p.length; } } catch {} return 15; })(), badgeColor: 'bg-purple-900/60 text-purple-300' },
                     { id: 'leaders', label: `Board & Leadership (${leaders.length})`, icon: <Award className="w-4 h-4 text-amber-400" /> },
                   ],
                 },
@@ -2268,6 +2297,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
                     { id: 'pictures', label: 'System Pictures & Logos', icon: <ImageIcon className="w-4 h-4 text-blue-400" /> },
                     { id: 'navigation', label: 'Navigation Menus', icon: <Compass className="w-4 h-4 text-emerald-400" /> },
                     { id: 'theme', label: 'Theme & Brand Palette', icon: <Palette className="w-4 h-4 text-amber-400" /> },
+                    { id: 'archive', label: 'Data Backup & Restore', icon: <Archive className="w-4 h-4 text-violet-400" /> },
                     { id: 'guide', label: 'Operational User Guide', icon: <BookOpen className="w-4 h-4 text-teal-400" /> },
                     { id: 'settings', label: 'Admin Settings & Logout', icon: <Settings className="w-4 h-4 text-emerald-400" /> },
                   ],

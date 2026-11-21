@@ -67,7 +67,7 @@ export const ImigongoRibbon: React.FC<ImigongoRibbonProps> = ({
       <svg
         className="w-full h-full block"
         xmlns="http://www.w3.org/2000/svg"
-        preserveAspectRatio="repeat-x"
+        preserveAspectRatio="none"
       >
         <defs>
           <pattern

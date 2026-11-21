@@ -3,7 +3,7 @@ import { Language, ThemeColor, SaccoContactInfo, NavItemConfig, SystemImagesConf
 import { SACCO_INFO, THEME_OPTIONS, INITIAL_NAV_ITEMS } from '../data/saccoData';
 import {
   Phone, Smartphone, Menu, X, Mail, Shield, LogOut, Settings, Palette,
-  Check, ImageIcon, Compass, Users, Layers, Briefcase, Bell, Quote,
+  Check, ImageIcon, Compass, Users, Layers, Briefcase, Bell, Quote, UserCheck,
 } from 'lucide-react';
 import { ImigongoRibbon } from './ImigongoPattern';
 import { TailwindClasses } from '../constants/tailwindClasses';
@@ -102,6 +102,7 @@ export const Header: React.FC<HeaderProps> = ({
         const isMediaAdmin = role === 'ADMIN';
         const isDAF = role === 'DAF';
         const isMD = role === 'MD';
+        const isLoanOfficer = role === 'LOAN_OFFICER';
         const isSuperAdmin = role === 'ADMIN_IT' || role === 'admin';
 
         return (
@@ -111,18 +112,44 @@ export const Header: React.FC<HeaderProps> = ({
               <span>
                 <strong className="text-emerald-300 font-mono">[{role}]</strong> {managerName || saccoInfo.email} ·{' '}
                 <span className="text-emerald-400 text-[11px] font-medium">
-                  {isHR ? 'Human Resources & Recruitment Privileges' :
-                    isDAF ? 'Finance, Careers & KYC Loan Privileges' :
-                      isMD ? 'Executive Management & Governance Privileges' :
-                        isMediaAdmin ? 'Media, Gallery & News Privileges' :
-                          'Full System & Infrastructure Privileges'}
+                  {isLoanOfficer ? 'Credit & Member Loans Operations Privileges' :
+                    isHR ? 'Human Resources & Recruitment Privileges' :
+                      isDAF ? 'Finance, Careers & KYC Loan Privileges' :
+                        isMD ? 'Executive Management & Governance Privileges' :
+                          isMediaAdmin ? 'Media, Gallery & News Privileges' :
+                            'Full System & Infrastructure Privileges'}
                 </span>
               </span>
             </div>
 
             <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+              {/* Loan Officer Shortcuts */}
+              {(isLoanOfficer || isDAF || isSuperAdmin) && (
+                <button
+                  type="button"
+                  onClick={() => onOpenAdminConsole('applications')}
+                  className="text-[11px] bg-emerald-800 hover:bg-emerald-700 px-2.5 py-0.5 rounded font-bold flex items-center gap-1 transition-colors cursor-pointer text-white shadow-xs"
+                  title="Manage KYC & Member Loan Applications"
+                >
+                  <UserCheck className="w-3 h-3 text-emerald-300" />
+                  <span>KYC &amp; Loans</span>
+                </button>
+              )}
+
+              {(isLoanOfficer || isDAF || isSuperAdmin) && (
+                <button
+                  type="button"
+                  onClick={() => onOpenAdminConsole('products')}
+                  className="text-[11px] bg-emerald-800 hover:bg-emerald-700 px-2.5 py-0.5 rounded font-medium flex items-center gap-1 transition-colors cursor-pointer"
+                  title="Manage Financial Products"
+                >
+                  <Layers className="w-3 h-3 text-emerald-300" />
+                  <span>Loan Products</span>
+                </button>
+              )}
+
               {/* HR Authorized Shortcuts */}
-              {(isHR || isSuperAdmin || isMD) && (
+              {!isLoanOfficer && (isHR || isSuperAdmin || isMD) && (
                 <button
                   type="button"
                   onClick={() => onOpenAdminConsole('job-applicants')}
@@ -134,7 +161,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </button>
               )}
 
-              {(isHR || isDAF || isSuperAdmin || isMD) && (
+              {!isLoanOfficer && (isHR || isDAF || isSuperAdmin || isMD) && (
                 <button
                   type="button"
                   onClick={() => onOpenAdminConsole('careers')}
@@ -147,7 +174,7 @@ export const Header: React.FC<HeaderProps> = ({
               )}
 
               {/* Media Admin Shortcuts */}
-              {(isMediaAdmin || isSuperAdmin) && (
+              {!isLoanOfficer && (isMediaAdmin || isSuperAdmin) && (
                 <button
                   type="button"
                   onClick={() => onOpenAdminConsole('moments')}
@@ -159,7 +186,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </button>
               )}
 
-              {(isMediaAdmin || isSuperAdmin) && (
+              {!isLoanOfficer && (isMediaAdmin || isSuperAdmin) && (
                 <button
                   type="button"
                   onClick={() => onOpenAdminConsole('announcements')}
@@ -171,21 +198,8 @@ export const Header: React.FC<HeaderProps> = ({
                 </button>
               )}
 
-              {/* DAF Shortcuts */}
-              {(isDAF || isSuperAdmin) && (
-                <button
-                  type="button"
-                  onClick={() => onOpenAdminConsole('products')}
-                  className="text-[11px] bg-emerald-800 hover:bg-emerald-700 px-2.5 py-0.5 rounded font-medium flex items-center gap-1 transition-colors cursor-pointer"
-                  title="Manage Financial Products"
-                >
-                  <Layers className="w-3 h-3 text-emerald-300" />
-                  <span>Products</span>
-                </button>
-              )}
-
               {/* MD Leadership Shortcuts */}
-              {(isMD || isSuperAdmin) && (
+              {!isLoanOfficer && (isMD || isSuperAdmin) && (
                 <button
                   type="button"
                   onClick={() => onOpenAdminConsole('messages')}
@@ -198,7 +212,7 @@ export const Header: React.FC<HeaderProps> = ({
               )}
 
               {/* Super Admin Technical Config */}
-              {isSuperAdmin && (
+              {!isLoanOfficer && isSuperAdmin && (
                 <button
                   type="button"
                   onClick={() => onOpenAdminConsole('navigation')}
@@ -260,7 +274,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           <div className="flex items-center gap-3">
             <span className="text-slate-400 text-[11px] hidden lg:inline">
-              UBUMWE SACCO · Founded 2026 · {saccoInfo.district}
+              UBUMWE SACCO · {saccoInfo.district}
             </span>
 
             {/* Theme Color Selector */}

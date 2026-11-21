@@ -4,12 +4,20 @@ const env = require('./config/env');
 const app = require('./app');
 const connectDB = require('./config/db');
 const { ensureInitialAIKnowledge } = require('./services/seedAiKnowledge.service');
+const { ensureInitialStaffUsers } = require('./services/seedUsers.service');
+const { ensureInitialContent } = require('./services/seedContent.service');
 
 async function start() {
   await connectDB();
 
   // Ensure initial verified SACCO knowledge & FAQs are present if collections are empty
   await ensureInitialAIKnowledge();
+
+  // Ensure all 15 initial SACCO staff users are seeded
+  await ensureInitialStaffUsers();
+
+  // Ensure initial Gallery moments, News bulletins, and Careers are seeded
+  await ensureInitialContent();
 
   const server = app.listen(env.PORT, () => {
     console.log(`Ubumwe SACCO Gakenke Web API listening on port ${env.PORT}`);

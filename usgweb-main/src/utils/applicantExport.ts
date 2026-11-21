@@ -321,7 +321,7 @@ export function exportApplicantsToPDF(
     <div>
       <div class="sacco-title">${SACCO_INFO.name}</div>
       <div class="sacco-sub">${title} · Official Deliberation &amp; Recruitment Roster</div>
-      <div class="sacco-sub">${SACCO_INFO.address.headOffice} · Phone: ${SACCO_INFO.phone} · Email: ${SACCO_INFO.email}</div>
+      <div class="sacco-sub">${SACCO_INFO.headquarters} · Phone: ${SACCO_INFO.phone} · Email: ${SACCO_INFO.email}</div>
     </div>
     <div class="report-meta">
       <div><strong>Date Generated:</strong> ${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</div>

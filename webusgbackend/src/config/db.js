@@ -11,12 +11,22 @@ try {
   // Ignore if unsupported in environment
 }
 
+// New import for in‑memory fallback (dev only)
+let MongoMemoryServer;
+if (env.isDevelopment) {
+  try {
+    MongoMemoryServer = require('mongodb-memory-server').MongoMemoryServer;
+  } catch (e) {
+    console.warn('mongodb-memory-server not installed – will not use in‑memory fallback');
+  }
+}
+
 async function connectDB(uri = env.MONGODB_URI, maxRetries = 5) {
   if (!uri) {
     throw new Error('Missing required environment variable: MONGODB_URI');
   }
 
-  const isLocalhost = /localhost|127\.0\.0\.1/.test(uri);
+  const isLocalhost = /localhost|127\\.0\\.0\\.1/.test(uri);
   const os = require('os');
   const options = {
     autoIndex: !env.isProduction,       // Skip index building in prod (pre-built)
@@ -43,6 +53,16 @@ async function connectDB(uri = env.MONGODB_URI, maxRetries = 5) {
       }
       return mongoose.connection;
     } catch (err) {
+      // If we are in development and localhost connection fails, try in‑memory server
+      if (env.isDevelopment && MongoMemoryServer) {
+        console.warn('[MongoDB] Local connection failed – spinning up in‑memory server');
+        const mongod = await MongoMemoryServer.create();
+        const memUri = mongod.getUri();
+        await mongoose.connect(memUri, options);
+        console.log('MongoDB (in‑memory) connected successfully');
+        return mongoose.connection;
+      }
+
       if (attempt === maxRetries) {
         throw err;
       }
@@ -58,3 +78,4 @@ async function disconnectDB() {
 
 module.exports = connectDB;
 module.exports.disconnectDB = disconnectDB;
+

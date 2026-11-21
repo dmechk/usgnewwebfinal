@@ -217,7 +217,71 @@ const SEED_FALLBACK_USERS: SystemUser[] = [
     createdAt: '2026-10-26T11:00:00.000Z',
     lastLoginAt: '2026-10-26T13:45:00.000Z',
   },
+  {
+    id: '6b01d003f0e2d6012f148b9a',
+    name: 'mechack Dushime',
+    email: 'dushimemechack1@gmail.com',
+    role: 'LOAN_OFFICER',
+    department: 'Operations',
+    phone: '+250799361513',
+    isActive: true,
+    passwordChangeRequired: false,
+    currentPassword: 'Password123!',
+    createdAt: '2026-10-26T14:00:00.000Z',
+  },
+  {
+    id: '6b01d034f0e2d6012f148b9d',
+    name: 'mechack Dushime',
+    email: 'dushimemechack13333@gmail.com',
+    role: 'ADMIN',
+    department: 'Operations',
+    phone: '+250799361513',
+    isActive: true,
+    passwordChangeRequired: false,
+    currentPassword: 'Password123!',
+    createdAt: '2026-10-26T14:15:00.000Z',
+  },
+  {
+    id: '6b01d4abf18abee351a97bfc',
+    name: 'qqqqqqqq',
+    email: 'duuuushimemechack13333@gmail.com',
+    role: 'DAF',
+    department: 'Operations',
+    phone: '+250799361513',
+    isActive: true,
+    passwordChangeRequired: false,
+    currentPassword: 'Password123!',
+    createdAt: '2026-10-26T14:30:00.000Z',
+  },
+  {
+    id: '6b01d9d2801a8a8d0ff5f889',
+    name: 'Chantal Mukandayisenga (Senior Loan Officer)',
+    email: 'loans@ubumwesacco.rw',
+    role: 'LOAN_OFFICER',
+    department: 'Credit & Microfinance Operations',
+    phone: '+250788541004',
+    isActive: true,
+    passwordChangeRequired: false,
+    currentPassword: 'Password123!',
+    createdAt: '2026-10-26T14:45:00.000Z',
+  },
 ];
+
+const getMergedStaffUsers = (): SystemUser[] => {
+  try {
+    const cached = localStorage.getItem('ubumwe_cached_staff_users');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const userMap = new Map<string, SystemUser>();
+        SEED_FALLBACK_USERS.forEach((u) => userMap.set(u.email.toLowerCase(), u));
+        parsed.forEach((u: SystemUser) => userMap.set(u.email.toLowerCase(), u));
+        return Array.from(userMap.values());
+      }
+    }
+  } catch { }
+  return SEED_FALLBACK_USERS;
+};
 
 interface UserManagementDashboardProps {
   currentUserId?: string;
@@ -336,16 +400,7 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
 
   // User list state
   const [users, setUsers] = useState<SystemUser[]>(() => {
-    try {
-      const cached = localStorage.getItem('ubumwe_cached_staff_users');
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed) && parsed.length >= SEED_FALLBACK_USERS.length) {
-          return parsed.slice(0, 25);
-        }
-      }
-    } catch {}
-    return SEED_FALLBACK_USERS.slice(0, 25);
+    return getMergedStaffUsers().slice(0, 25);
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -358,16 +413,7 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState<number>(() => {
-    try {
-      const cached = localStorage.getItem('ubumwe_cached_staff_users');
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed) && parsed.length >= SEED_FALLBACK_USERS.length) {
-          return parsed.length;
-        }
-      }
-    } catch {}
-    return SEED_FALLBACK_USERS.length;
+    return getMergedStaffUsers().length;
   });
   const limit = 25;
 
@@ -468,12 +514,20 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
 
       const res = await usersApi.list(params);
       if (res.success && res.data) {
-        setUsers(res.data.users);
+        let currentUsers = res.data.users;
+        // Merge with seed fallback users if database has fewer than seed users and no filters applied
+        if (currentUsers.length < SEED_FALLBACK_USERS.length && !searchTerm && selectedRole === 'ALL' && selectedStatus === 'ALL') {
+          const map = new Map<string, SystemUser>();
+          SEED_FALLBACK_USERS.forEach((u) => map.set(u.email.toLowerCase(), u));
+          currentUsers.forEach((u) => map.set(u.email.toLowerCase(), u));
+          currentUsers = Array.from(map.values());
+        }
+        setUsers(currentUsers);
         setTotalPages(res.data.pagination.pages || 1);
-        setTotalCount(res.data.pagination.total || 0);
+        setTotalCount(Math.max(res.data.pagination.total || 0, currentUsers.length));
         try {
-          localStorage.setItem('ubumwe_cached_staff_users', JSON.stringify(res.data.users));
-        } catch {}
+          localStorage.setItem('ubumwe_cached_staff_users', JSON.stringify(currentUsers));
+        } catch { }
       }
     } catch (err: any) {
       const msg = err?.message || '';
@@ -484,17 +538,10 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
 
       // Offline/Local cache recovery
       try {
-        const cached = localStorage.getItem('ubumwe_cached_staff_users');
-        let fullList: SystemUser[] = SEED_FALLBACK_USERS;
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (Array.isArray(parsed) && parsed.length >= SEED_FALLBACK_USERS.length) {
-            fullList = parsed;
-          }
-        }
+        const fullList = getMergedStaffUsers();
         try {
           localStorage.setItem('ubumwe_cached_staff_users', JSON.stringify(fullList));
-        } catch {}
+        } catch { }
 
         // Apply filters in fallback mode
         let filtered = fullList;
@@ -522,8 +569,9 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
         const pageUsers = filtered.slice(startIndex, startIndex + limit);
         setUsers(pageUsers);
       } catch {
-        setUsers(SEED_FALLBACK_USERS);
-        setTotalCount(SEED_FALLBACK_USERS.length);
+        const fullList = getMergedStaffUsers();
+        setUsers(fullList);
+        setTotalCount(fullList.length);
         setTotalPages(1);
       }
 
@@ -579,7 +627,7 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
           sourceList = parsed;
         }
       }
-    } catch {}
+    } catch { }
     if (sourceList.length < SEED_FALLBACK_USERS.length) {
       sourceList = SEED_FALLBACK_USERS;
     }
@@ -630,15 +678,23 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
           role: res.data.user.role,
         });
 
+        const newUserObj: SystemUser = {
+          ...res.data.user,
+          currentPassword: issuedPassword,
+        };
+
         // Prepend new user with password to local state immediately
         setUsers((prev) => [
-          {
-            ...res.data.user,
-            currentPassword: issuedPassword,
-          },
-          ...prev.filter((u) => u.id !== res.data.user.id),
+          newUserObj,
+          ...prev.filter((u) => u.id !== res.data.user.id && u.email !== res.data.user.email),
         ]);
         setTotalCount((prev) => prev + 1);
+
+        try {
+          const current = getMergedStaffUsers();
+          const updated = [newUserObj, ...current.filter((u) => u.id !== res.data.user.id && u.email !== res.data.user.email)];
+          localStorage.setItem('ubumwe_cached_staff_users', JSON.stringify(updated));
+        } catch { }
 
         // Reset form
         setCreateForm({
@@ -668,8 +724,14 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
         passwordChangeRequired: createForm.passwordChangeRequired,
         createdAt: new Date().toISOString(),
       };
-      setUsers((prev) => [localUser, ...prev]);
+      setUsers((prev) => [localUser, ...prev.filter((u) => u.email !== localUser.email)]);
       setTotalCount((prev) => prev + 1);
+
+      try {
+        const current = getMergedStaffUsers();
+        const updated = [localUser, ...current.filter((u) => u.email !== localUser.email)];
+        localStorage.setItem('ubumwe_cached_staff_users', JSON.stringify(updated));
+      } catch { }
       const fallbackPass = (createForm.password && createForm.password.trim()) || 'Ubumwe@2026!';
       setNewCredentials({
         name: createForm.name.trim(),
@@ -725,13 +787,13 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
         prev.map((u) =>
           u.id === activeUser.id
             ? {
-                ...u,
-                name: editForm.name.trim(),
-                email: editForm.email.trim(),
-                phone: editForm.phone.trim(),
-                department: editForm.department.trim(),
-                role: editForm.role,
-              }
+              ...u,
+              name: editForm.name.trim(),
+              email: editForm.email.trim(),
+              phone: editForm.phone.trim(),
+              department: editForm.department.trim(),
+              role: editForm.role,
+            }
             : u
         )
       );
@@ -742,18 +804,18 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
           const updated = list.map((u) =>
             u.id === activeUser.id
               ? {
-                  ...u,
-                  name: editForm.name.trim(),
-                  email: editForm.email.trim(),
-                  phone: editForm.phone.trim(),
-                  department: editForm.department.trim(),
-                  role: editForm.role,
-                }
+                ...u,
+                name: editForm.name.trim(),
+                email: editForm.email.trim(),
+                phone: editForm.phone.trim(),
+                department: editForm.department.trim(),
+                role: editForm.role,
+              }
               : u
           );
           localStorage.setItem('ubumwe_cached_staff_users', JSON.stringify(updated));
         }
-      } catch {}
+      } catch { }
       setIsEditModalOpen(false);
       setSuccessMessage(`Account for ${editForm.name} updated successfully (Saved in local session).`);
     } finally {
@@ -787,7 +849,7 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
           const updated = list.map((u) => (u.id === activeUser.id ? { ...u, isActive: newStatus } : u));
           localStorage.setItem('ubumwe_cached_staff_users', JSON.stringify(updated));
         }
-      } catch {}
+      } catch { }
       setIsStatusConfirmModalOpen(false);
       setSuccessMessage(
         `User ${activeUser.name} has been ${newStatus ? 'activated' : 'deactivated'} (Saved in local session).`
@@ -836,7 +898,7 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
         list = list.map((u) => (u.id === activeUser.id ? { ...u, currentPassword: issuedPass } : u));
         localStorage.setItem('ubumwe_cached_staff_users', JSON.stringify(list));
         setUsers(list);
-      } catch {}
+      } catch { }
     } finally {
       setResetSubmitting(false);
     }
@@ -864,7 +926,7 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
           const updated = list.filter((u) => u.id !== activeUser.id);
           localStorage.setItem('ubumwe_cached_staff_users', JSON.stringify(updated));
         }
-      } catch {}
+      } catch { }
       setIsDeleteConfirmModalOpen(false);
       setSuccessMessage(`Account ${activeUser.name} (${activeUser.email}) removed (Saved in local session).`);
     } finally {
@@ -974,17 +1036,15 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
       {/* Error / Offline Notification Banner */}
       {error && (
         <div
-          className={`p-4 rounded-xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-in fade-in duration-200 ${
-            error.startsWith('Notice:')
+          className={`p-4 rounded-xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-in fade-in duration-200 ${error.startsWith('Notice:')
               ? 'bg-amber-50/95 border-amber-300 text-amber-950 shadow-xs'
               : 'bg-rose-50 border-rose-200 text-rose-900'
-          }`}
+            }`}
         >
           <div className="flex items-start sm:items-center gap-3">
             <AlertCircle
-              className={`w-5 h-5 shrink-0 mt-0.5 sm:mt-0 ${
-                error.startsWith('Notice:') ? 'text-amber-600' : 'text-rose-600'
-              }`}
+              className={`w-5 h-5 shrink-0 mt-0.5 sm:mt-0 ${error.startsWith('Notice:') ? 'text-amber-600' : 'text-rose-600'
+                }`}
             />
             <div className="text-xs sm:text-sm font-medium leading-relaxed">
               <span>{error}</span>
@@ -1006,9 +1066,8 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
             <button
               type="button"
               onClick={() => setError(null)}
-              className={`p-1.5 rounded-lg hover:bg-black/5 transition-colors cursor-pointer ${
-                error.startsWith('Notice:') ? 'text-amber-800' : 'text-rose-700'
-              }`}
+              className={`p-1.5 rounded-lg hover:bg-black/5 transition-colors cursor-pointer ${error.startsWith('Notice:') ? 'text-amber-800' : 'text-rose-700'
+                }`}
               title="Dismiss"
             >
               <X className="w-4 h-4" />
@@ -1073,11 +1132,10 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
         <button
           type="button"
           onClick={() => setSubTab('users')}
-          className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
-            subTab === 'users'
+          className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${subTab === 'users'
               ? 'bg-blue-600 text-white shadow-sm'
               : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-          }`}
+            }`}
         >
           <Users className="w-4 h-4" />
           <span>System Users ({totalCount})</span>
@@ -1086,11 +1144,10 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
         <button
           type="button"
           onClick={() => setSubTab('audit')}
-          className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
-            subTab === 'audit'
+          className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${subTab === 'audit'
               ? 'bg-blue-600 text-white shadow-sm'
               : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-          }`}
+            }`}
         >
           <Activity className="w-4 h-4" />
           <span>Security Audit Trail</span>
@@ -1402,17 +1459,16 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
                                   setActiveUser(user);
                                   setIsStatusConfirmModalOpen(true);
                                 }}
-                                className={`p-1.5 rounded-lg transition-colors ${
-                                  user.isActive
+                                className={`p-1.5 rounded-lg transition-colors ${user.isActive
                                     ? 'hover:bg-rose-50 text-rose-600 hover:text-rose-800'
                                     : 'hover:bg-emerald-50 text-emerald-600 hover:text-emerald-800'
-                                } ${isCurrentUser && user.isActive ? 'opacity-40 cursor-not-allowed' : ''}`}
+                                  } ${isCurrentUser && user.isActive ? 'opacity-40 cursor-not-allowed' : ''}`}
                                 title={
                                   isCurrentUser && user.isActive
                                     ? 'Cannot deactivate your own administrator account'
                                     : user.isActive
-                                    ? 'Deactivate account access'
-                                    : 'Activate account'
+                                      ? 'Deactivate account access'
+                                      : 'Activate account'
                                 }
                               >
                                 {user.isActive ? (
@@ -1430,9 +1486,8 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
                                   setActiveUser(user);
                                   setIsDeleteConfirmModalOpen(true);
                                 }}
-                                className={`p-1.5 rounded-lg hover:bg-rose-50 text-rose-500 hover:text-rose-700 transition-colors ${
-                                  isCurrentUser ? 'opacity-30 cursor-not-allowed' : ''
-                                }`}
+                                className={`p-1.5 rounded-lg hover:bg-rose-50 text-rose-500 hover:text-rose-700 transition-colors ${isCurrentUser ? 'opacity-30 cursor-not-allowed' : ''
+                                  }`}
                                 title={
                                   isCurrentUser
                                     ? 'Cannot delete your own account'
@@ -1560,11 +1615,10 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
                       </td>
                       <td className="py-2.5 px-4">
                         <span
-                          className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${
-                            log.outcome === 'SUCCESS'
+                          className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${log.outcome === 'SUCCESS'
                               ? 'bg-emerald-100 text-emerald-800'
                               : 'bg-rose-100 text-rose-800'
-                          }`}
+                            }`}
                         >
                           {log.outcome}
                         </span>
@@ -1734,11 +1788,10 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
                   ].map((roleOpt) => (
                     <label
                       key={roleOpt.id}
-                      className={`p-3 rounded-xl border flex flex-col cursor-pointer transition-all ${
-                        createForm.role === roleOpt.id
+                      className={`p-3 rounded-xl border flex flex-col cursor-pointer transition-all ${createForm.role === roleOpt.id
                           ? 'border-blue-500 bg-blue-50/50 ring-2 ring-blue-500/20'
                           : 'border-slate-200 bg-slate-50/50 hover:bg-slate-100/50'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center justify-between mb-1">
                         <span className="font-bold text-xs text-slate-900">{roleOpt.title}</span>
@@ -2076,9 +2129,8 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
               <div>
                 <span className="text-slate-400 block">Account Status:</span>
                 <span
-                  className={`font-bold ${
-                    activeUser.isActive ? 'text-emerald-600' : 'text-rose-600'
-                  }`}
+                  className={`font-bold ${activeUser.isActive ? 'text-emerald-600' : 'text-rose-600'
+                    }`}
                 >
                   {activeUser.isActive ? 'Active & Authorized' : 'Deactivated'}
                 </span>
@@ -2097,11 +2149,10 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
                   Staff Login Password (ADMIN_IT Access)
                 </span>
                 <span
-                  className={`text-[10px] px-2 py-0.5 rounded border font-semibold ${
-                    activeUser.passwordChangeRequired
+                  className={`text-[10px] px-2 py-0.5 rounded border font-semibold ${activeUser.passwordChangeRequired
                       ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
                       : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
-                  }`}
+                    }`}
                 >
                   {activeUser.passwordChangeRequired ? 'Change Required On Login' : 'Password Active'}
                 </span>
@@ -2308,9 +2359,8 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 text-center">
             <div
-              className={`w-12 h-12 rounded-2xl flex items-center justify-center mx-auto ${
-                activeUser.isActive ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'
-              }`}
+              className={`w-12 h-12 rounded-2xl flex items-center justify-center mx-auto ${activeUser.isActive ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'
+                }`}
             >
               {activeUser.isActive ? <Lock className="w-6 h-6" /> : <Unlock className="w-6 h-6" />}
             </div>
@@ -2340,11 +2390,10 @@ export const UserManagementDashboard: React.FC<UserManagementDashboardProps> = (
                 type="button"
                 disabled={statusSubmitting}
                 onClick={handleStatusToggle}
-                className={`flex-1 py-2.5 rounded-xl text-white text-xs font-bold flex items-center justify-center gap-1.5 ${
-                  activeUser.isActive
+                className={`flex-1 py-2.5 rounded-xl text-white text-xs font-bold flex items-center justify-center gap-1.5 ${activeUser.isActive
                     ? 'bg-rose-600 hover:bg-rose-700'
                     : 'bg-emerald-600 hover:bg-emerald-700'
-                }`}
+                  }`}
               >
                 {statusSubmitting ? 'Updating...' : activeUser.isActive ? 'Yes, Deactivate' : 'Yes, Activate'}
               </button>

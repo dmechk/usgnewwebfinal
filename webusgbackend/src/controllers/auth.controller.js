@@ -5,7 +5,7 @@ const AppError = require('../utils/appError');
 const { normalizeEmail } = require('../utils/email');
 const { toPublicUser } = require('../utils/userSerializer');
 const authService = require('../services/auth.service');
-const { getPermissionsForRole, getDashboardForRole, ROLE_LIST, ROLE_PERMISSIONS } = require('../config/roles');
+const { getPermissionsForRole, getDashboardForRole, ROLE_LIST, ROLE_PERMISSIONS, ROLES } = require('../config/roles');
 const { logAudit } = require('../services/audit.service');
 const { signAccessToken } = require('../utils/jwt');
 const { sendStaffOnboardingEmail } = require('../services/email.service');
@@ -57,38 +57,46 @@ async function register(req, res, next) {
     const { name, email, password, role } = req.body;
     const normalizedEmail = normalizeEmail(email);
 
-    try {
-      const user = await User.create({
-        name,
-        email: normalizedEmail,
-        password,
-        role: role || 'technician',
-        isActive: true,
-        passwordChangeRequired: false,
-      });
-
-      await logAudit({
-        actor: req.user,
-        action: 'USER_REGISTERED',
-        resourceType: 'User',
-        resourceId: user.id,
-        details: { email: user.email, role: user.role },
-        req,
-      });
-
-      return res.status(StatusCodes.CREATED).json({
-        success: true,
-        message: 'User created',
-        data: { user: toPublicUser(user) },
-      });
-    } catch (err) {
-      if (err && err.code === 11000) {
-        throw new AppError('Email already registered', StatusCodes.CONFLICT, {
-          code: 'EMAIL_EXISTS',
-        });
+    // ---- Validate supplied role (if any) ----
+    let safeRole;
+    if (role) {
+      if (!ROLES.includes(role)) {
+        throw new AppError(
+          'Invalid role supplied',
+          StatusCodes.BAD_REQUEST,
+          { code: 'INVALID_ROLE' }
+        );
       }
-      throw err;
+      safeRole = role;
+    } else {
+      // Default to a safe non-admin role
+      safeRole = 'technician';
     }
+
+    // ---- Create the user ----
+    const user = await User.create({
+      name,
+      email: normalizedEmail,
+      password,
+      role: safeRole,
+      isActive: true,
+      passwordChangeRequired: false,
+    });
+
+    await logAudit({
+      actor: req.user,
+      action: 'USER_REGISTERED',
+      resourceType: 'User',
+      resourceId: user.id,
+      details: { email: user.email, role: user.role },
+      req,
+    });
+
+    return res.status(StatusCodes.CREATED).json({
+      success: true,
+      message: 'User created',
+      data: { user: toPublicUser(user) },
+    });
   } catch (err) {
     return next(err);
   }

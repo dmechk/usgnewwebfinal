@@ -107,7 +107,7 @@ const env = Object.freeze({
   PORT: parsePositiveInt(process.env.PORT, 5000),
   MONGODB_URI: resolveMongoUri(process.env.MONGODB_URI, process.env.DB_PASSWORD),
   JWT_SECRET: jwtSecret,
-  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '1h',
+  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '3m',
   JWT_EXPIRES_IN_SECONDS: jwtExpiresInSeconds,
   JWT_ALGORITHM: 'HS256',
   JWT_ISSUER: process.env.JWT_ISSUER || 'webusg-api',
