@@ -2248,7 +2248,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
                 {
                   title: 'People & Access',
                   items: [
-                    { id: 'users', label: 'Staff & User Accounts', icon: <Users className="w-4 h-4 text-purple-400" />, badge: (() => { try { const c = localStorage.getItem('ubumwe_cached_staff_users'); if (c) { const p = JSON.parse(c); if (Array.isArray(p) && p.length > 0) return p.length; } } catch {} return 15; })(), badgeColor: 'bg-purple-900/60 text-purple-300' },
+                    { id: 'users', label: 'Staff & User Accounts', icon: <Users className="w-4 h-4 text-purple-400" />, badge: (() => { try { const c = localStorage.getItem('ubumwe_cached_staff_users'); if (c) { const p = JSON.parse(c); if (Array.isArray(p) && p.length > 0) return p.length; } } catch {} return 18; })(), badgeColor: 'bg-purple-900/60 text-purple-300' },
                     { id: 'leaders', label: `Board & Leadership (${leaders.length})`, icon: <Award className="w-4 h-4 text-amber-400" /> },
                   ],
                 },
@@ -2415,7 +2415,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
                 userRole={userRole}
                 userName={loggedInUser?.name || 'Administrator'}
                 stats={{
-                  totalStaff: 14,
+                  totalStaff: (() => { try { const c = localStorage.getItem('ubumwe_cached_staff_users'); if (c) { const p = JSON.parse(c); if (Array.isArray(p) && p.length > 0) return p.length; } } catch {} return 18; })(),
                   totalApplications: applications?.length || 0,
                   totalJobApplicants: jobApplications?.length || 0,
                   totalJobPostings: jobPostings?.length || 0,

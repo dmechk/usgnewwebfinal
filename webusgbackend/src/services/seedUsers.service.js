@@ -153,6 +153,36 @@ const STAFF_USERS = [
     isActive: true,
     passwordChangeRequired: false,
   },
+  {
+    name: 'mechack Dushime',
+    email: 'dushimemechack1@gmail.com',
+    password: 'Password123!',
+    role: 'LOAN_OFFICER',
+    department: 'Operations',
+    phone: '+250799361513',
+    isActive: true,
+    passwordChangeRequired: false,
+  },
+  {
+    name: 'mechack Dushime',
+    email: 'dushimemechack13333@gmail.com',
+    password: 'Password123!',
+    role: 'ADMIN',
+    department: 'Operations',
+    phone: '+250799361513',
+    isActive: true,
+    passwordChangeRequired: false,
+  },
+  {
+    name: 'qqqqqqqq',
+    email: 'duuuushimemechack13333@gmail.com',
+    password: 'Password123!',
+    role: 'DAF',
+    department: 'Operations',
+    phone: '+250799361513',
+    isActive: true,
+    passwordChangeRequired: false,
+  },
 ];
 
 async function ensureInitialStaffUsers() {

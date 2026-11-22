@@ -408,7 +408,7 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                     <div className="text-xs font-bold text-slate-900 group-hover:text-purple-900">
                       Staff &amp; Users
                     </div>
-                    <div className="text-[10px] text-slate-500">14 staff accounts &amp; RBAC</div>
+                    <div className="text-[10px] text-slate-500">{stats.totalStaff} staff accounts &amp; RBAC</div>
                   </div>
                 </div>
                 <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-purple-700 transition-all" />

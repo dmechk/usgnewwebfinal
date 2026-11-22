@@ -9,7 +9,7 @@ const { STAFF_USERS } = require("../src/services/seedUsers.service");
 
 async function seedAllUsers() {
   await connectDB();
-  console.log("\nSeeding all 14 Ubumwe SACCO staff users...\n");
+  console.log("\nSeeding all 18 Ubumwe SACCO staff users...\n");
   let created = 0, skipped = 0, errors = 0;
 
   for (const userData of STAFF_USERS) {
