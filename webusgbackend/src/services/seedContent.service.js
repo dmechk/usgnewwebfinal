@@ -3,6 +3,8 @@
 const Gallery = require('../models/Gallery');
 const News = require('../models/News');
 const Career = require('../models/Career');
+const BestEmployee = require('../models/BestEmployee');
+const { INITIAL_EMPLOYEE } = require('../controllers/bestEmployee.controller');
 
 const INITIAL_MOMENTS = [
   {
@@ -163,6 +165,12 @@ async function ensureInitialContent() {
     if (careersCount === 0) {
       await Career.insertMany(INITIAL_CAREERS);
       console.log(`[SeedContent] Seeded ${INITIAL_CAREERS.length} initial Career postings.`);
+    }
+
+    const bestEmployeeCount = await BestEmployee.countDocuments();
+    if (bestEmployeeCount === 0) {
+      await BestEmployee.create(INITIAL_EMPLOYEE);
+      console.log('[SeedContent] Seeded initial Best Employee of the Year.');
     }
   } catch (err) {
     console.warn('[SeedContent] Content seeding error:', err.message);

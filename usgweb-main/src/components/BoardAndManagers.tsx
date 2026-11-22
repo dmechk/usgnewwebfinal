@@ -13,7 +13,7 @@ interface BoardAndManagersProps {
   onAddLeader: (leader: Omit<LeaderMember, 'id'>) => void;
   onUpdateLeader: (id: string, updated: Partial<LeaderMember>) => void;
   onDeleteLeader: (id: string) => void;
-  employeeOfTheYear?: EmployeeOfTheYear;
+  employeeOfTheYear?: EmployeeOfTheYear | null;
   onUpdateEmployeeOfTheYear?: (updates: Partial<EmployeeOfTheYear>) => void;
 }
 

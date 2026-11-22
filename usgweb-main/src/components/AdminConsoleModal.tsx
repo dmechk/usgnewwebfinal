@@ -20,6 +20,7 @@ import {
   HomeMetricItem,
   AboutContentConfig,
   AboutValueItem,
+  EmployeeOfTheYear,
   PartnerItem,
   SocialMediaItem,
   SocialPlatform,
@@ -57,6 +58,7 @@ import {
   Users,
   Palette,
   BookOpen,
+  Trophy,
   Check,
   Shield,
   Search,
@@ -192,6 +194,10 @@ interface AdminConsoleModalProps {
   onAddAboutValue?: (val: Omit<AboutValueItem, 'id'>) => void;
   onUpdateAboutValue?: (id: string, updated: Partial<AboutValueItem>) => void;
   onDeleteAboutValue?: (id: string) => void;
+  employeeOfTheYear?: EmployeeOfTheYear | null;
+  onUpdateEmployeeOfTheYear?: (updates: Partial<EmployeeOfTheYear>) => void;
+  onCreateEmployeeOfTheYear?: (employee: EmployeeOfTheYear) => void;
+  onDeleteEmployeeOfTheYear?: () => void;
   contactInquiries: ContactInquiry[];
   onAddContactInquiry?: (inq: Omit<ContactInquiry, 'id'>) => void;
   onUpdateContactInquiry?: (id: string, updated: Partial<ContactInquiry>) => void;
@@ -308,6 +314,10 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
   onAddAboutValue,
   onUpdateAboutValue,
   onDeleteAboutValue,
+  employeeOfTheYear,
+  onUpdateEmployeeOfTheYear,
+  onCreateEmployeeOfTheYear,
+  onDeleteEmployeeOfTheYear,
   contactInquiries,
   onAddContactInquiry,
   onUpdateContactInquiry,
@@ -827,6 +837,41 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
   const [aboutCaptionEn, setAboutCaptionEn] = useState(aboutContent?.imageCaptionEn || 'Democratic Governance · Annual General Assembly (AGM) of Members');
   const [aboutCaptionRw, setAboutCaptionRw] = useState(aboutContent?.imageCaptionRw || "Imiyoborere Inoze · Inteko Rusange y'Abanyamuryango (AGM)");
   const [aboutSavedNotice, setAboutSavedNotice] = useState(false);
+
+  // Best Employee of the Year CRUD state in Admin Console
+  const [isEotyFormOpen, setIsEotyFormOpen] = useState(false);
+  const [eotyFormName, setEotyFormName] = useState(employeeOfTheYear?.name || '');
+  const [eotyFormRoleEn, setEotyFormRoleEn] = useState(employeeOfTheYear?.roleEn || '');
+  const [eotyFormRoleRw, setEotyFormRoleRw] = useState(employeeOfTheYear?.roleRw || '');
+  const [eotyFormRoleFr, setEotyFormRoleFr] = useState(employeeOfTheYear?.roleFr || '');
+  const [eotyFormDeptEn, setEotyFormDeptEn] = useState(employeeOfTheYear?.departmentEn || '');
+  const [eotyFormDeptRw, setEotyFormDeptRw] = useState(employeeOfTheYear?.departmentRw || '');
+  const [eotyFormYear, setEotyFormYear] = useState(employeeOfTheYear?.year || new Date().getFullYear().toString());
+  const [eotyFormMetric, setEotyFormMetric] = useState(employeeOfTheYear?.achievementMetric || '');
+  const [eotyFormCitationEn, setEotyFormCitationEn] = useState(employeeOfTheYear?.citationEn || '');
+  const [eotyFormCitationRw, setEotyFormCitationRw] = useState(employeeOfTheYear?.citationRw || '');
+  const [eotyFormCitationFr, setEotyFormCitationFr] = useState(employeeOfTheYear?.citationFr || '');
+  const [eotyFormImageUrl, setEotyFormImageUrl] = useState(employeeOfTheYear?.imageUrl || '');
+  const [eotyFormActive, setEotyFormActive] = useState(employeeOfTheYear?.active ?? true);
+  const [eotyConfirmDelete, setEotyConfirmDelete] = useState(false);
+
+  useEffect(() => {
+    if (employeeOfTheYear) {
+      setEotyFormName(employeeOfTheYear.name);
+      setEotyFormRoleEn(employeeOfTheYear.roleEn);
+      setEotyFormRoleRw(employeeOfTheYear.roleRw || '');
+      setEotyFormRoleFr(employeeOfTheYear.roleFr || '');
+      setEotyFormDeptEn(employeeOfTheYear.departmentEn);
+      setEotyFormDeptRw(employeeOfTheYear.departmentRw || '');
+      setEotyFormYear(employeeOfTheYear.year);
+      setEotyFormMetric(employeeOfTheYear.achievementMetric || '');
+      setEotyFormCitationEn(employeeOfTheYear.citationEn);
+      setEotyFormCitationRw(employeeOfTheYear.citationRw || '');
+      setEotyFormCitationFr(employeeOfTheYear.citationFr || '');
+      setEotyFormImageUrl(employeeOfTheYear.imageUrl);
+      setEotyFormActive(employeeOfTheYear.active ?? true);
+    }
+  }, [employeeOfTheYear, isOpen]);
 
   // About Core Value Item CRUD
   const [isValueFormOpen, setIsValueFormOpen] = useState(false);
@@ -3764,6 +3809,362 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
                           className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs shadow-sm cursor-pointer flex items-center gap-1.5 transition-colors">
                           <Check className="w-3.5 h-3.5" />
                           <span>{editingValueId ? 'Update Value' : 'Add Value'}</span>
+                        </button>
+                      </div>
+                    </form>
+                  )}
+                </div>
+
+                {/* Best Employee of the Year (Staff Excellence Award) CRUD */}
+                <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-xs space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-9 h-9 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-600 shadow-xs">
+                        <Trophy className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h5 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
+                          <span>Best Employee of the Year</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold border border-amber-300/60">
+                            About Us Section
+                          </span>
+                        </h5>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          Annual staff recognition spotlight featured prominently in the About Us section.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {employeeOfTheYear ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (onUpdateEmployeeOfTheYear) {
+                                onUpdateEmployeeOfTheYear({ active: !employeeOfTheYear.active });
+                              }
+                            }}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer border transition-colors shadow-xs ${
+                              employeeOfTheYear.active
+                                ? 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300'
+                                : 'bg-emerald-100 hover:bg-emerald-200 text-emerald-800 border-emerald-300'
+                            }`}
+                          >
+                            {employeeOfTheYear.active ? 'Hide from About Us' : 'Publish to About Us'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setIsEotyFormOpen(!isEotyFormOpen)}
+                            className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl text-xs flex items-center gap-1.5 shadow-sm cursor-pointer transition-colors"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                            <span>{isEotyFormOpen ? 'Close Editor' : 'Edit Awardee'}</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setEotyConfirmDelete(true)}
+                            className="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-bold cursor-pointer transition-colors"
+                            title="Remove Awardee"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEotyFormName('');
+                            setEotyFormRoleEn('');
+                            setEotyFormRoleRw('');
+                            setEotyFormDeptEn('');
+                            setEotyFormDeptRw('');
+                            setEotyFormYear(new Date().getFullYear().toString());
+                            setEotyFormMetric('');
+                            setEotyFormCitationEn('');
+                            setEotyFormCitationRw('');
+                            setEotyFormImageUrl('/src/assets/images/farmers_cooperative_1791989969904.jpg');
+                            setEotyFormActive(true);
+                            setIsEotyFormOpen(true);
+                          }}
+                          className="px-4 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl text-xs flex items-center gap-1.5 shadow-md cursor-pointer transition-colors"
+                        >
+                          <Plus className="w-4 h-4" />
+                          <span>Add Best Employee</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Delete Confirmation Alert */}
+                  {eotyConfirmDelete && (
+                    <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-center justify-between gap-3">
+                      <span>Are you sure you want to remove the Best Employee of the Year from About Us?</span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setEotyConfirmDelete(false)}
+                          className="px-2.5 py-1 bg-white border border-slate-300 rounded-lg text-slate-600 font-bold hover:bg-slate-50 cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (onDeleteEmployeeOfTheYear) {
+                              onDeleteEmployeeOfTheYear();
+                            } else if (onUpdateEmployeeOfTheYear) {
+                              onUpdateEmployeeOfTheYear({ active: false });
+                            }
+                            setEotyConfirmDelete(false);
+                            setIsEotyFormOpen(false);
+                          }}
+                          className="px-2.5 py-1 bg-rose-600 text-white rounded-lg font-bold hover:bg-rose-500 cursor-pointer"
+                        >
+                          Yes, Remove
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Current Awardee Summary Card */}
+                  {employeeOfTheYear && !isEotyFormOpen && (
+                    <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                      <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-amber-400 bg-slate-200 shrink-0 shadow-sm relative">
+                        {employeeOfTheYear.imageUrl ? (
+                          <img
+                            src={employeeOfTheYear.imageUrl}
+                            alt={employeeOfTheYear.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-slate-400 font-bold text-xs">
+                            No Photo
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex-1 space-y-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-extrabold text-slate-900 text-sm">{employeeOfTheYear.name}</span>
+                          <span className="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black text-[10px]">
+                            {employeeOfTheYear.year}
+                          </span>
+                          <span
+                            className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${
+                              employeeOfTheYear.active
+                                ? 'bg-emerald-100 text-emerald-800'
+                                : 'bg-rose-100 text-rose-800'
+                            }`}
+                          >
+                            {employeeOfTheYear.active ? 'Active on About Us' : 'Hidden'}
+                          </span>
+                        </div>
+                        <p className="text-xs font-bold text-slate-700">{employeeOfTheYear.roleEn}</p>
+                        <p className="text-[11px] text-slate-500">{employeeOfTheYear.departmentEn}</p>
+                        {employeeOfTheYear.achievementMetric && (
+                          <p className="text-[11px] text-emerald-700 font-semibold">{employeeOfTheYear.achievementMetric}</p>
+                        )}
+                        <p className="text-[11px] text-slate-600 italic line-clamp-2 mt-1">"{employeeOfTheYear.citationEn}"</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Empty state when no awardee */}
+                  {!employeeOfTheYear && !isEotyFormOpen && (
+                    <div className="p-6 bg-slate-50 border border-dashed border-slate-300 rounded-xl text-center space-y-2">
+                      <p className="text-xs text-slate-500">No Employee of the Year is currently showcased.</p>
+                    </div>
+                  )}
+
+                  {/* Edit / Create Form */}
+                  {isEotyFormOpen && (
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        if (!eotyFormName.trim() || !eotyFormRoleEn.trim()) return;
+
+                        const payload: EmployeeOfTheYear = {
+                          id: employeeOfTheYear?.id || `eoty-${Date.now()}`,
+                          name: eotyFormName.trim(),
+                          roleEn: eotyFormRoleEn.trim(),
+                          roleRw: eotyFormRoleRw.trim() || eotyFormRoleEn.trim(),
+                          roleFr: eotyFormRoleFr.trim() || eotyFormRoleEn.trim(),
+                          departmentEn: eotyFormDeptEn.trim(),
+                          departmentRw: eotyFormDeptRw.trim() || eotyFormDeptEn.trim(),
+                          year: eotyFormYear.trim() || new Date().getFullYear().toString(),
+                          achievementMetric: eotyFormMetric.trim(),
+                          citationEn: eotyFormCitationEn.trim(),
+                          citationRw: eotyFormCitationRw.trim() || eotyFormCitationEn.trim(),
+                          citationFr: eotyFormCitationFr.trim() || eotyFormCitationEn.trim(),
+                          imageUrl: eotyFormImageUrl.trim() || '/src/assets/images/farmers_cooperative_1791989969904.jpg',
+                          active: eotyFormActive,
+                        };
+
+                        if (employeeOfTheYear && onUpdateEmployeeOfTheYear) {
+                          onUpdateEmployeeOfTheYear(payload);
+                        } else if (onCreateEmployeeOfTheYear) {
+                          onCreateEmployeeOfTheYear(payload);
+                        } else if (onUpdateEmployeeOfTheYear) {
+                          onUpdateEmployeeOfTheYear(payload);
+                        }
+
+                        setIsEotyFormOpen(false);
+                      }}
+                      className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-4"
+                    >
+                      <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                        <span className="font-bold text-slate-800 text-xs">
+                          {employeeOfTheYear ? 'Edit Best Employee of the Year' : 'Nominate New Best Employee of the Year'}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setIsEotyFormOpen(false)}
+                          className="text-slate-400 hover:text-slate-600 text-xs font-bold cursor-pointer"
+                        >
+                          Close
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="sm:col-span-2">
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Employee Full Name *</label>
+                          <input
+                            type="text"
+                            required
+                            value={eotyFormName}
+                            onChange={(e) => setEotyFormName(e.target.value)}
+                            placeholder="e.g. Mukandayisenga Chantal"
+                            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:border-amber-500"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Role / Job Title (EN) *</label>
+                          <input
+                            type="text"
+                            required
+                            value={eotyFormRoleEn}
+                            onChange={(e) => setEotyFormRoleEn(e.target.value)}
+                            placeholder="e.g. Senior Credit Officer"
+                            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:border-amber-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Role / Job Title (RW)</label>
+                          <input
+                            type="text"
+                            value={eotyFormRoleRw}
+                            onChange={(e) => setEotyFormRoleRw(e.target.value)}
+                            placeholder="Umukozi Mukuru Ushinzwe..."
+                            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:border-amber-500"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Department & Branch (EN) *</label>
+                          <input
+                            type="text"
+                            required
+                            value={eotyFormDeptEn}
+                            onChange={(e) => setEotyFormDeptEn(e.target.value)}
+                            placeholder="e.g. Credit Operations — Gakenke Branch"
+                            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:border-amber-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Award Year *</label>
+                          <input
+                            type="text"
+                            required
+                            value={eotyFormYear}
+                            onChange={(e) => setEotyFormYear(e.target.value)}
+                            placeholder="e.g. 2026"
+                            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:border-amber-500"
+                          />
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Key Achievement Metric</label>
+                          <input
+                            type="text"
+                            value={eotyFormMetric}
+                            onChange={(e) => setEotyFormMetric(e.target.value)}
+                            placeholder="e.g. 99.8% Recovery · 420+ Farmers Supported"
+                            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:border-amber-500"
+                          />
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Official Award Citation (EN) *</label>
+                          <textarea
+                            rows={3}
+                            required
+                            value={eotyFormCitationEn}
+                            onChange={(e) => setEotyFormCitationEn(e.target.value)}
+                            placeholder="Awarded for extraordinary dedication to smallholder farmers..."
+                            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:border-amber-500"
+                          />
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Citation (RW)</label>
+                          <textarea
+                            rows={3}
+                            value={eotyFormCitationRw}
+                            onChange={(e) => setEotyFormCitationRw(e.target.value)}
+                            placeholder="Yahawe iki gihembo kubera ubwitange bidasanzwe..."
+                            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:border-amber-500"
+                          />
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Awardee Photo</label>
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={eotyFormImageUrl}
+                              onChange={(e) => setEotyFormImageUrl(e.target.value)}
+                              placeholder="Image URL or upload"
+                              className="flex-1 px-3 py-2 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:border-amber-500"
+                            />
+                            <ImageUploader
+                              value={eotyFormImageUrl}
+                              onChange={(url: string) => setEotyFormImageUrl(url)}
+                              label="Upload Awardee Photo"
+                              aspectRatio="square"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="sm:col-span-2 flex items-center gap-2 pt-1">
+                          <input
+                            type="checkbox"
+                            id="eotyActiveCheck"
+                            checked={eotyFormActive}
+                            onChange={(e) => setEotyFormActive(e.target.checked)}
+                            className="w-4 h-4 text-emerald-600 rounded border-slate-300"
+                          />
+                          <label htmlFor="eotyActiveCheck" className="text-xs text-slate-700 font-bold cursor-pointer">
+                            Active (Showcase prominently on the About Us page)
+                          </label>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
+                        <button
+                          type="button"
+                          onClick={() => setIsEotyFormOpen(false)}
+                          className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="px-5 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl text-xs shadow-sm cursor-pointer flex items-center gap-1.5 transition-colors"
+                        >
+                          <Check className="w-3.5 h-3.5" />
+                          <span>{employeeOfTheYear ? 'Save Awardee Changes' : 'Create & Publish Awardee'}</span>
                         </button>
                       </div>
                     </form>

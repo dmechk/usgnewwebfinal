@@ -65,7 +65,7 @@ interface CareersSectionProps {
   onResetJobApplications?: () => void;
   employmentTypes?: EmploymentTypeItem[];
   onNavigate?: (view: string) => void;
-  employeeOfTheYear?: EmployeeOfTheYear;
+  employeeOfTheYear?: EmployeeOfTheYear | null;
   onUpdateEmployeeOfTheYear?: (updates: Partial<EmployeeOfTheYear>) => void;
 }
 

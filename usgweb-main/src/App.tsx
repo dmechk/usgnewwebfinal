@@ -89,6 +89,7 @@ import { ChatWidget } from './components/ChatWidget';
 import { Footer } from './components/Footer';
 import { Shield, Phone, ImageIcon, Compass, Settings, LogOut, Quote, Briefcase, Eye, ArrowRight, LayoutGrid, Users, Video, Archive, Layers, UserCheck, Bell, LayoutDashboard } from 'lucide-react';
 import { galleryApi, newsApi, careersApi, applicantsApi, inquiryService, getUploadUrl, clearAuthToken, getAuthToken, settingsApi } from './services/api';
+import { fetchBestEmployees, createBestEmployee, updateBestEmployee, deleteBestEmployee } from './services/bestEmployee.service';
 
 export default function App() {
   const [currentLang, setCurrentLang] = useState<Language>(() => {
@@ -207,6 +208,42 @@ export default function App() {
       return 'Mbitsemunda Phocas (Manager)';
     }
   });
+
+  // ---------- Best Employee of the Year state ----------
+  const [bestEmployee, setBestEmployee] = useState<EmployeeOfTheYear | null>(null);
+
+  // Load best employee on mount (fallback to initial static data)
+  useEffect(() => {
+    fetchBestEmployees()
+      .then((employees) => setBestEmployee(employees[0] ?? null))
+      .catch(() => {
+        // If backend not reachable, use the bundled initial data
+        setBestEmployee(INITIAL_EMPLOYEE_OF_THE_YEAR ?? null);
+      });
+  }, []);
+
+  // CRUD handlers for admin console
+  const handleCreateEmployeeOfTheYear = async (employee: Omit<EmployeeOfTheYear, '_id'>) => {
+    const created = await createBestEmployee(employee);
+    setBestEmployee(created);
+  };
+
+  const handleUpdateEmployeeOfTheYear = async (updates: Partial<EmployeeOfTheYear>) => {
+    if (!bestEmployee?.id) return;
+    const updated = await updateBestEmployee(bestEmployee.id, updates);
+    setBestEmployee(updated);
+  };
+
+
+  const handleDeleteBestEmployee = async () => {
+    if (!bestEmployee?.id) return;
+    await deleteBestEmployee(bestEmployee.id);
+    setBestEmployee(null);
+  };
+
+  const handleDeleteEmployeeOfTheYear = handleDeleteBestEmployee;
+
+
 
   // Logged-in user details (role, permissions) from backend JWT
   const [loggedInUser, setLoggedInUser] = useState<{
@@ -482,25 +519,7 @@ export default function App() {
     }
   });
 
-  // Dynamic Best Employee of the Year (CRUD by Admin)
-  const [employeeOfTheYear, setEmployeeOfTheYear] = useState<EmployeeOfTheYear>(() => {
-    try {
-      const saved = localStorage.getItem('ubumwe_best_employee');
-      return saved ? JSON.parse(saved) : INITIAL_EMPLOYEE_OF_THE_YEAR;
-    } catch {
-      return INITIAL_EMPLOYEE_OF_THE_YEAR;
-    }
-  });
 
-  const handleUpdateEmployeeOfTheYear = (updates: Partial<EmployeeOfTheYear>) => {
-    setEmployeeOfTheYear((prev) => {
-      const next = { ...prev, ...updates };
-      try {
-        localStorage.setItem('ubumwe_best_employee', JSON.stringify(next));
-      } catch { }
-      return next;
-    });
-  };
 
   // Dynamic Job Postings (Careers)
   const [jobPostings, setJobPostings] = useState<JobPosting[]>(() => {
@@ -2142,7 +2161,7 @@ export default function App() {
     setIsMembershipModalOpen(true);
   };
 
-  // User role and capability evaluation
+
   const currentUserRole = (
     loggedInUser?.role ||
     (isManagerLoggedIn ? localStorage.getItem('ubumwe_user_role') || 'ADMIN_IT' : '')
@@ -2307,6 +2326,10 @@ export default function App() {
       onUpdateSocialLink={handleUpdateSocialLink}
       onDeleteSocialLink={handleDeleteSocialLink}
       onResetSocialLinks={handleResetSocialLinks}
+      employeeOfTheYear={bestEmployee}
+      onCreateEmployeeOfTheYear={handleCreateEmployeeOfTheYear}
+      onUpdateEmployeeOfTheYear={handleUpdateEmployeeOfTheYear}
+      onDeleteEmployeeOfTheYear={handleDeleteEmployeeOfTheYear}
     />
   );
 
@@ -2441,7 +2464,7 @@ export default function App() {
                   <ManagerMessageCard
                     messages={homeManagerMessages}
                     currentLang={currentLang}
-                    isAdmin={canAccessLeadership || canAccessIT}
+                    isAdmin={canAccessLeadership || canAccessIT || isHRUser || isDAFUser}
                     onEdit={() => handleOpenAdminConsole('messages')}
                     onUpdateImage={(id, newUrl) => handleUpdateManagerMessage(id, { imageUrl: newUrl })}
                     variant="home"
@@ -2487,17 +2510,22 @@ export default function App() {
             {/* 2. About Us Section (Cooperative History, Licensing, Mission & Leadership Message) */}
             {(activeView === 'all' || activeView === 'about' || activeView === 'mission' || activeView === 'vision' || activeView === 'history' || activeView === 'objectives') && (
               <AboutUs
-                currentLang={currentLang}
-                saccoInfo={saccoInfo}
-                aboutContent={aboutContent}
-                managerMessage={aboutManagerMessage}
-                isAdmin={canAccessLeadership || canAccessMedia || canAccessIT}
-                onOpenAdminConsole={handleOpenAdminConsole}
-                onUpdateManagerMessage={handleUpdateManagerMessage}
-                onDeleteValue={handleDeleteAboutValue}
-                employeeOfTheYear={employeeOfTheYear}
-                onUpdateEmployeeOfTheYear={handleUpdateEmployeeOfTheYear}
-              />
+                 currentLang={currentLang}
+                 saccoInfo={saccoInfo}
+                 aboutContent={aboutContent}
+                 managerMessage={aboutManagerMessage}
+                 isAdmin={canAccessLeadership || canAccessIT || isHRUser || isDAFUser}
+                 isHRUser={isHRUser}
+                 isDAFUser={isDAFUser}
+                 onOpenAdminConsole={handleOpenAdminConsole}
+                 onUpdateManagerMessage={handleUpdateManagerMessage}
+                 onDeleteValue={handleDeleteAboutValue}
+                 employeeOfTheYear={bestEmployee}
+                 onUpdateEmployeeOfTheYear={handleUpdateEmployeeOfTheYear}
+                 onCreateEmployeeOfTheYear={handleCreateEmployeeOfTheYear}
+                 onDeleteEmployeeOfTheYear={handleDeleteEmployeeOfTheYear}
+               />
+
             )}
 
             {/* 3. Our Services Section (Savings, Agri Loans, SME Microfinance, USSD *541# & Loan Calculator) */}
@@ -2518,11 +2546,11 @@ export default function App() {
               <BoardAndManagers
                 currentLang={currentLang}
                 leaders={leaders}
-                isAdmin={canAccessLeadership || canAccessIT}
+                isAdmin={canAccessLeadership || canAccessIT || isHRUser || isDAFUser}
                 onAddLeader={handleAddLeader}
                 onUpdateLeader={handleUpdateLeader}
                 onDeleteLeader={handleDeleteLeader}
-                employeeOfTheYear={employeeOfTheYear}
+                employeeOfTheYear={bestEmployee}
                 onUpdateEmployeeOfTheYear={handleUpdateEmployeeOfTheYear}
               />
             )}
@@ -2579,7 +2607,7 @@ export default function App() {
                 onDeleteJobApplication={handleDeleteJobApplication}
                 onResetJobApplications={handleResetJobApplications}
                 onNavigate={(view) => setActiveView(view)}
-                employeeOfTheYear={employeeOfTheYear}
+                employeeOfTheYear={bestEmployee}
                 onUpdateEmployeeOfTheYear={handleUpdateEmployeeOfTheYear}
               />
             )}
@@ -2587,10 +2615,12 @@ export default function App() {
             {/* Standalone Best Employee of the Year Recognition */}
             {(activeView === 'employee-of-the-year' || activeView === 'best-employee') && (
               <BestEmployeeCard
-                employee={employeeOfTheYear}
+                employee={bestEmployee}
                 currentLang={currentLang}
-                isAdmin={canAccessLeadership || canAccessIT}
+                isAdmin={canAccessLeadership || canAccessIT || isHRUser || isDAFUser}
                 onUpdateEmployee={handleUpdateEmployeeOfTheYear}
+                onDeleteEmployee={handleDeleteEmployeeOfTheYear}
+                onCreateEmployee={handleCreateEmployeeOfTheYear}
                 variant="section"
               />
             )}

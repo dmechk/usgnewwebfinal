@@ -17,6 +17,7 @@ const uploadRoutes = require('./upload.routes');
 const inquiryRoutes = require('./inquiry.routes');
 const settingsRoutes = require('./settings.routes');
 const aiRoutes = require('./ai.routes');
+const bestEmployeeRoutes = require('./bestEmployee.routes');
 
 const router = express.Router();
 
@@ -45,6 +46,7 @@ router.use('/reports', reportRoutes);
 router.use('/audit-logs', authenticate, requirePasswordChanged, auditRoutes);
 router.use('/audit', authenticate, requirePasswordChanged, auditRoutes);
 router.use('/settings', settingsRoutes);
+router.use('/best-employee', bestEmployeeRoutes);
 
 // AI Digital Assistant & Knowledge System
 router.use('/ai', aiRoutes);

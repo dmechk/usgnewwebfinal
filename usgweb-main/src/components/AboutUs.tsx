@@ -27,12 +27,17 @@ interface AboutUsProps {
   aboutContent?: AboutContentConfig;
   managerMessage?: ManagerMessage;
   isAdmin?: boolean;
+  isHRUser?: boolean;
+  isDAFUser?: boolean;
   onOpenAdminConsole?: (tab?: string) => void;
   onUpdateManagerMessage?: (id: string, updated: Partial<ManagerMessage>) => void;
   onDeleteValue?: (id: string) => void;
-  employeeOfTheYear?: EmployeeOfTheYear;
+  employeeOfTheYear?: EmployeeOfTheYear | null;
   onUpdateEmployeeOfTheYear?: (updates: Partial<EmployeeOfTheYear>) => void;
+  onDeleteEmployeeOfTheYear?: () => void;
+  onCreateEmployeeOfTheYear?: (employee: EmployeeOfTheYear) => void;
 }
+
 
 export const AboutUs: React.FC<AboutUsProps> = ({
   currentLang,
@@ -45,6 +50,8 @@ export const AboutUs: React.FC<AboutUsProps> = ({
   onDeleteValue,
   employeeOfTheYear,
   onUpdateEmployeeOfTheYear,
+  onDeleteEmployeeOfTheYear,
+  onCreateEmployeeOfTheYear,
 }) => {
   const getValueIcon = (iconName: string) => {
     switch (iconName.toLowerCase()) {
@@ -355,17 +362,17 @@ export const AboutUs: React.FC<AboutUsProps> = ({
         </div>
 
         {/* Spotlight: Best Employee of the Year (Positioned gracefully under Mission & Institutional Pillars) */}
-        {employeeOfTheYear && (
-          <div className="pt-8">
-            <BestEmployeeCard
-              employee={employeeOfTheYear}
-              currentLang={currentLang}
-              isAdmin={isAdmin}
-              onUpdateEmployee={onUpdateEmployeeOfTheYear}
-              variant="section"
-            />
-          </div>
-        )}
+        <div className="pt-8">
+          <BestEmployeeCard
+            employee={employeeOfTheYear}
+            currentLang={currentLang}
+            isAdmin={isAdmin}
+            onUpdateEmployee={onUpdateEmployeeOfTheYear}
+            onDeleteEmployee={onDeleteEmployeeOfTheYear}
+            onCreateEmployee={onCreateEmployeeOfTheYear}
+            variant="section"
+          />
+        </div>
       </div>
     </section>
   );
