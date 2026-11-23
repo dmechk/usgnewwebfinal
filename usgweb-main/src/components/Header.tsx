@@ -403,9 +403,6 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="font-extrabold tracking-widest text-emerald-700 uppercase text-[10px] sm:text-xs">
                 GAKENKE
               </span>
-              <span className="text-[10px] font-bold text-slate-500 hidden sm:inline tracking-normal font-sans">
-                · Founded 2026
-              </span>
             </div>
           </div>
         </button>
