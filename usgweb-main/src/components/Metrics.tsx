@@ -339,28 +339,8 @@ export const Metrics: React.FC<MetricsProps> = ({
           })}
         </div>
 
-        {/* Regulatory reassurance footer strip with contact details */}
-        <div className="mt-6 pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-600">
-          <div className="flex flex-wrap items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0" />
-            <span className="font-semibold text-slate-800">{oversightLabel}</span>
-            <span className="font-mono-numbers">{saccoInfo.rcaRegistration}</span>
-            <span aria-hidden="true" className="text-slate-400">·</span>
-            <span className="text-emerald-800 font-medium">{licensedLabel}</span>
-
-            {/* Admin In-Place CRUD Edit Trigger */}
-            {isAdmin && (
-              <button
-                type="button"
-                onClick={() => setIsEditOversightModalOpen(true)}
-                className="ml-2 px-2.5 py-0.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-900 rounded-md font-bold text-[11px] flex items-center gap-1 transition-colors cursor-pointer shadow-2xs border border-emerald-300"
-                title="Edit Cooperative Oversight & RCA Registration"
-              >
-                <Edit2 className="w-3 h-3 text-emerald-700" />
-                <span>Edit (CRUD)</span>
-              </button>
-            )}
-          </div>
+        {/* Quick contact strip */}
+        <div className="mt-6 pt-6 border-t border-slate-100 flex items-center justify-end text-xs text-slate-600">
           <div className="flex items-center gap-4 text-slate-600 font-mono-numbers text-xs">
             <span>
               {helpDeskLabel} <strong className="text-slate-900">{saccoInfo.phone}</strong>

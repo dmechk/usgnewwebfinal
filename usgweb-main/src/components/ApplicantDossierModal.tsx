@@ -123,7 +123,7 @@ export const ApplicantDossierModal: React.FC<ApplicantDossierModalProps> = ({
                   {SACCO_INFO.name}
                 </h1>
                 <p className="text-xs text-slate-600 font-medium">
-                  Savings &amp; Credit Cooperative Society · Regulated by RCA ({SACCO_INFO.rcaRegistration}) &amp; BNR
+                  Savings &amp; Credit Cooperative Society · Regulated by RCA &amp; BNR
                 </p>
                 <p className="text-xs text-slate-500">
                   Headquarters: {SACCO_INFO.headquarters} · Tel: {SACCO_INFO.phone} · Email: {SACCO_INFO.email}

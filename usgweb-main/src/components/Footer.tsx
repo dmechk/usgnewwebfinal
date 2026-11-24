@@ -112,29 +112,6 @@ export const Footer: React.FC<FooterProps> = ({
                   ? "Koperative y'imari igamije iterambere ry'ubukungu n'imibereho myiza y'abahinzi, aborozi n'abaturage bo mu mirenge 19 ya Gakenke."
                   : 'Financial cooperative dedicated to the socio-economic prosperity of farmers, merchants, and families across the 19 sectors of Gakenke District.'}
             </p>
-
-            <div className="pt-2 space-y-1.5 text-[11px] text-slate-400">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span>
-                  {currentLang === 'fr'
-                    ? `Enregistrement Microfinance RCA : ${saccoInfo.rcaRegistration}`
-                    : currentLang === 'rw'
-                      ? `Icyangombwa cya RCA : ${saccoInfo.rcaRegistration}`
-                      : `RCA Microfinance Registration: ${saccoInfo.rcaRegistration}`}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span className="text-emerald-300 font-semibold">
-                    {currentLang === 'fr'
-                        ? 'Institution Financière Coopérative Agréée'
-                        : currentLang === 'rw'
-                    ? "Ikigo cy'Imari cya Koperative Cyemewe"
-                    : 'Certified Financial Cooperative Institution'}
-                  </span>
-              </div>
-            </div>
           </div>
 
           {/* Direct Contact Details: WhatsApp, Phone, Email (4 cols) */}

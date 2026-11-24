@@ -164,16 +164,6 @@ export const AboutUs: React.FC<AboutUsProps> = ({
         {/* 2-Column Story and Assembly Visual */}
         <div id="history" className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center scroll-mt-24">
           <div className="lg:col-span-6 space-y-5 text-slate-700 leading-relaxed text-sm sm:text-base">
-            <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-100 flex items-start gap-3 text-xs sm:text-sm text-emerald-950">
-              <Award className="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" />
-              <div>
-                <span className="font-bold">{currentLang === 'fr' ? 'Institution Coopérative Réglementée & Auditée' : currentLang === 'rw' ? "Koperative Yemejwe n'Ingenzurabikorwa" : 'Regulated & Audited Cooperative Institution'}</span>
-                <p className="text-emerald-800 text-xs mt-0.5 font-mono-numbers">
-                  {regulationNotice ? regulationNotice.replace(/^(Regulated\s*&\s*Audited\s*Cooperative\s*Institution|Institution\s*Coopérative\s*Réglementée\s*&\s*Auditée|Koperative\s*Yemejwe\s*n'Ingenzurabikorwa)\s*·?\s*/i, '') : regulationNotice}
-                </p>
-              </div>
-            </div>
-
             <p className="whitespace-pre-line">{storyP1}</p>
             {storyP2 && <p className="whitespace-pre-line">{storyP2}</p>}
 

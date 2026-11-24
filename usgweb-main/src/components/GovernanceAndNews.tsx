@@ -322,7 +322,7 @@ export const GovernanceAndNews: React.FC<GovernanceAndNewsProps> = ({
                     <div>
                       <h4 className="text-sm font-bold text-slate-900">Cooperative Governance &amp; Compliance Statement</h4>
                       <p className="text-xs text-slate-500">
-                        RCA Microfinance Regulation: {SACCO_INFO.rcaRegistration} · District: {SACCO_INFO.district}
+                        District: {SACCO_INFO.district}
                       </p>
                     </div>
                   </div>
