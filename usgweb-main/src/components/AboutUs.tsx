@@ -103,7 +103,7 @@ export const AboutUs: React.FC<AboutUsProps> = ({
 
   const storyP1 =
     currentLang === 'fr'
-        ? "Fondée en 2026 par des citoyens visionnaires de Gakenke, UBUMWE SACCO a été créée pour bâtir une institution financière coopérative détenue et gérée par sa propre communauté."
+        ? "Fondée par des citoyens visionnaires de Gakenke, UBUMWE SACCO a été créée pour bâtir une institution financière coopérative détenue et gérée par sa propre communauté."
         : currentLang === 'rw'
           ? aboutContent.storyP1Rw
           : aboutContent.storyP1En;
@@ -134,9 +134,6 @@ export const AboutUs: React.FC<AboutUsProps> = ({
             <div className="inline-flex items-center gap-2 text-xs font-bold text-emerald-800 tracking-wider uppercase mb-2">
               <Landmark className="w-4 h-4 text-emerald-700" />
               <span>{badgeTitle}</span>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-extrabold border border-emerald-200">
-                Founded 2026
-              </span>
             </div>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight" style={{ textWrap: 'balance' }}>
               {mainTitle}
@@ -172,7 +169,7 @@ export const AboutUs: React.FC<AboutUsProps> = ({
               <div>
                 <span className="font-bold">{currentLang === 'fr' ? 'Institution Coopérative Réglementée & Auditée' : currentLang === 'rw' ? "Koperative Yemejwe n'Ingenzurabikorwa" : 'Regulated & Audited Cooperative Institution'}</span>
                 <p className="text-emerald-800 text-xs mt-0.5 font-mono-numbers">
-                  {regulationNotice}
+                  {regulationNotice ? regulationNotice.replace(/^(Regulated\s*&\s*Audited\s*Cooperative\s*Institution|Institution\s*Coopérative\s*Réglementée\s*&\s*Auditée|Koperative\s*Yemejwe\s*n'Ingenzurabikorwa)\s*·?\s*/i, '') : regulationNotice}
                 </p>
               </div>
             </div>

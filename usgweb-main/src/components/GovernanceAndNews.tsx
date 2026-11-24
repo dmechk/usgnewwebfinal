@@ -84,10 +84,10 @@ export const GovernanceAndNews: React.FC<GovernanceAndNewsProps> = ({
                 </h3>
                 <p className="text-slate-600 mt-2 text-sm sm:text-base max-w-3xl">
                   {currentLang === 'fr'
-                    ? `Annonces des assemblées générales, dividendes et avis officiels. Ligne directe : ${SACCO_INFO.phone}`
+                    ? "Annonces des assemblées générales, dividendes et avis officiels."
                     : currentLang === 'rw'
-                      ? `Amatangazo y'inama rusange, amakuru y'inyungu n'imigabane. Telefone: ${SACCO_INFO.phone}`
-                      : `General assembly notices, dividend releases, and official updates. Direct inquiries: ${SACCO_INFO.phone}`}
+                      ? "Amatangazo y'inama rusange, amakuru y'inyungu n'imigabane."
+                      : "General assembly notices, dividend releases, and official updates."}
                 </p>
               </div>
 
@@ -328,7 +328,7 @@ export const GovernanceAndNews: React.FC<GovernanceAndNewsProps> = ({
                   </div>
 
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    This bulletin has been issued under the cooperative authority of Executive Manager (Mbitsemunda Phocas) and the Board of Directors (Wellarse, Bartazal). For questions regarding meeting resolutions, dividend distribution formulas, or credit policies, please contact our help desk.
+                    This bulletin has been issued under the cooperative authority of Executive Management and the Board of Directors. For questions regarding meeting resolutions, dividend distribution formulas, or credit policies, please contact our help desk.
                   </p>
 
                   <div className="pt-2 flex flex-wrap items-center gap-4 text-xs font-mono-numbers text-slate-700">

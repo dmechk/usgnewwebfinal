@@ -271,7 +271,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                 ? "Contactez notre service d'assistance client, les membres du conseil ou la direction via WhatsApp, téléphone, e-mail ou demande directe."
                 : currentLang === 'rw'
                 ? "Vugana n'abayobozi bacu cyangwa itsinda ryita ku banyamuryango ukoresheje WhatsApp, telefone, imeri cyangwa ubutumwa bwihuse."
-                : 'Reach our customer desk, Board Directors (Wellarse, Bartazal), or Manager (Mbitsemunda Phocas) via WhatsApp, telephone, email, or direct inquiry.'}
+                : 'Reach our customer desk, Board Directors, or Executive Management via WhatsApp, telephone, email, or direct inquiry.'}
             </p>
           </div>
 
@@ -521,15 +521,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                       : `USSD Mobile Banking: Dial ${saccoInfo.ussdCode} (Active 24 Hours / 7 Days a Week)`}
                   </span>
                 </div>
-              </div>
-
-              <div className="pt-2 flex flex-wrap items-center gap-2 text-xs">
-                <span className="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700">
-                  Manager: Mbitsemunda Phocas ({saccoInfo.managerPhone || saccoInfo.phone})
-                </span>
-                <span className="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700">
-                  Board: Wellarse &amp; Bartazal
-                </span>
               </div>
 
               <div className="pt-2">

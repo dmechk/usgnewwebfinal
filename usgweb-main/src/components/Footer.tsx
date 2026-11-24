@@ -128,10 +128,10 @@ export const Footer: React.FC<FooterProps> = ({
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                   <span className="text-emerald-300 font-semibold">
                     {currentLang === 'fr'
-                        ? 'Fondée en 2026 · Institution Financière Coopérative Agréée'
+                        ? 'Institution Financière Coopérative Agréée'
                         : currentLang === 'rw'
-                    ? "Yashinzwe 2026 · Ikigo cy'Imari cya Koperative Cyemewe"
-                    : 'Founded 2026 · Certified Financial Cooperative Institution'}
+                    ? "Ikigo cy'Imari cya Koperative Cyemewe"
+                    : 'Certified Financial Cooperative Institution'}
                   </span>
               </div>
             </div>

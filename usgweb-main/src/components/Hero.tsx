@@ -393,10 +393,10 @@ export const Hero: React.FC<HeroProps> = ({
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           <span className="text-[11px] text-slate-300 font-semibold tracking-wide">
             {currentLang === 'fr'
-                ? 'UBUMWE SACCO · Fondée en 2026 · District de Gakenke'
+                ? 'UBUMWE SACCO · District de Gakenke'
                 : currentLang === 'rw'
-            ? 'UBUMWE SACCO · Yashinzwe 2026 · Akarere ka Gakenke'
-                : 'UBUMWE SACCO · Founded 2026 · Gakenke District'}
+            ? 'UBUMWE SACCO · Akarere ka Gakenke'
+                : 'UBUMWE SACCO · Gakenke District'}
           </span>
         </div>
 
@@ -457,7 +457,7 @@ export const Hero: React.FC<HeroProps> = ({
           {/* Item 2: Founded */}
           <div className="flex flex-col items-center border-x border-emerald-800/50 px-2 sm:px-4">
             <span className="text-2xl sm:text-3xl lg:text-4xl font-serif font-black text-amber-400 font-mono-numbers tracking-tight drop-shadow-xs">
-              2,026
+              2011
             </span>
             <span className="text-[10px] sm:text-xs tracking-widest uppercase font-extrabold text-slate-300 mt-1">
               {currentLang === 'fr' ? 'Fondée en' : currentLang === 'rw' ? 'Yashinzwe' : 'Founded'}

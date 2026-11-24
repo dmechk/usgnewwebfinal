@@ -201,7 +201,7 @@ function getLocalKnowledgeAnswer(query: string, lang: Language): { reply: string
   }
   if (q.includes('about') || q.includes('what is ubumwe') || q.includes('history') || q.includes('cooperative') || q.includes('rca') || q.includes('bnr') || q.includes('mission')) {
     return {
-      reply: `UBUMWE SACCO GAKENKE is a premier savings and credit cooperative licensed, regulated, and supervised by the National Bank of Rwanda (BNR) and the Rwanda Cooperative Agency (RCA). Founded in 2026, it serves over 18,640 members across Gakenke District through 19 branch outposts, providing secure community savings and affordable credit.`,
+      reply: `UBUMWE SACCO GAKENKE is a premier savings and credit cooperative licensed, regulated, and supervised by the National Bank of Rwanda (BNR) and the Rwanda Cooperative Agency (RCA). Serving over 18,640 members across Gakenke District through 19 branch outposts, providing secure community savings and affordable credit.`,
       isEscalated: false,
     };
   }
