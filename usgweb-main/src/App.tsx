@@ -339,6 +339,12 @@ export default function App() {
         if (!parsed.supportEmail || parsed.supportEmail !== 'ubumwesaccogakenke@gmail.com') {
           parsed.supportEmail = 'ubumwesaccogakenke@gmail.com';
         }
+        if (parsed.rcaRegistration === 'RCA / COOP / 042 / 2011') {
+          parsed.rcaRegistration = '';
+        }
+        if (parsed.yearFounded === 2026) {
+          parsed.yearFounded = 2011;
+        }
         return { ...SACCO_INFO, ...parsed };
       }
       return SACCO_INFO;

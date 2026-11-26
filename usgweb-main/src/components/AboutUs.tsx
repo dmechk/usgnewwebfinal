@@ -277,7 +277,7 @@ export const AboutUs: React.FC<AboutUsProps> = ({
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-200/60 text-[11px] font-semibold text-emerald-700">
-              UBUMWE SACCO · 2026+
+              UBUMWE SACCO · Est. 2011
             </div>
           </div>
 

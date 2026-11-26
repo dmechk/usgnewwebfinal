@@ -51,7 +51,7 @@ function getLocalKnowledgeAnswer(query: string, lang: Language): { reply: string
     }
     if (q.includes('abo turibo') || q.includes('ni iki') || q.includes('koperative') || q.includes('rca') || q.includes('bnr') || (q.includes('ubumwe') && q.includes('sacco'))) {
       return {
-        reply: `UBUMWE SACCO GAKENKE ni koperative yo kubitsa no kugurizanya yemewe kandi igenzurwa na Banki Nkuru y'u Rwanda (BNR) hamwe n'Ikigo cy'Igihugu Gishinzwe Amakoperative (RCA). Yashinzwe mu 2026, ifite abanyamuryango barenze 18,640 n'amashami 19 mu mirenge yose igize Akarere ka Gakenke.`,
+        reply: `UBUMWE SACCO GAKENKE ni koperative yo kubitsa no kugurizanya yemewe kandi igenzurwa na Banki Nkuru y'u Rwanda (BNR) hamwe n'Ikigo cy'Igihugu Gishinzwe Amakoperative (RCA). Yashinzwe mu 2011, ifite abanyamuryango barenze 18,640 n'amashami 19 mu mirenge yose igize Akarere ka Gakenke.`,
         isEscalated: false,
       };
     }
@@ -127,7 +127,7 @@ function getLocalKnowledgeAnswer(query: string, lang: Language): { reply: string
     }
     if (q.includes('a propos') || q.includes('à propos') || q.includes('qui sommes') || q.includes('histoire') || q.includes('cooperative') || q.includes('coopérative') || q.includes('bnr') || q.includes('rca')) {
       return {
-        reply: `UBUMWE SACCO GAKENKE est une coopérative d'épargne et de crédit agréée et régulée par la Banque Nationale du Rwanda (BNR) et la RCA. Fondée en 2026, elle compte plus de 18 640 membres et 19 agences réparties dans l'ensemble des 19 secteurs du district de Gakenke.`,
+        reply: `UBUMWE SACCO GAKENKE est une coopérative d'épargne et de crédit agréée et régulée par la Banque Nationale du Rwanda (BNR) et la RCA. Fondée en 2011, elle compte plus de 18 640 membres et 19 agences réparties dans l'ensemble des 19 secteurs du district de Gakenke.`,
         isEscalated: false,
       };
     }
@@ -930,7 +930,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ currentLang, onLanguageC
                 <div className="mt-2 flex items-center justify-between text-[10px] text-slate-500">
                   <span className="flex items-center gap-1">
                     <ShieldCheck className="w-3 h-3 text-emerald-500" />
-                    <span>UBUMWE SACCO GAKENKE &middot; 2026</span>
+                    <span>UBUMWE SACCO GAKENKE &middot; Est. 2011</span>
                   </span>
                   <span>USSD: *541#</span>
                 </div>

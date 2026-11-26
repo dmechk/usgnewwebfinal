@@ -130,7 +130,7 @@ export const TRANSLATIONS = {
       storiesTitle: "Community Impact Stories",
     },
     footer: {
-      coopReg: "Registered with Rwanda Cooperative Agency (RCA / COOP / 042 / 2011)",
+      coopReg: "Registered with Rwanda Cooperative Agency",
       bnrLic: "",
       rights: "All rights reserved. Dedicated to the economic dignity of Gakenke citizens.",
       quickLinks: "Quick Navigation",
@@ -269,7 +269,7 @@ export const TRANSLATIONS = {
       storiesTitle: "Ubuhamya bw'Abanyamuryango Bacu",
     },
     footer: {
-      coopReg: "Yanditswe mu Kigo cy'Igihugu gishinzwe Amakoperative (RCA / COOP / 042 / 2011)",
+      coopReg: "Yanditswe mu Kigo cy'Igihugu gishinzwe Amakoperative",
       bnrLic: "",
       rights: "Uburenganzira bwose burabitswe. Iterambere n'ishema ry'abaturage ba Gakenke.",
       quickLinks: "Ibyihutirwa",
@@ -408,7 +408,7 @@ export const TRANSLATIONS = {
       storiesTitle: "Histoires d'Impact Communautaire",
     },
     footer: {
-      coopReg: "Enregistré auprès de l'Agence Rwandaise des Coopératives (RCA / COOP / 042 / 2011)",
+      coopReg: "Enregistré auprès de l'Agence Rwandaise des Coopératives",
       bnrLic: "",
       rights: "Tous droits réservés. Dédié à la dignité économique des citoyens de Gakenke.",
       quickLinks: "Navigation Rapide",

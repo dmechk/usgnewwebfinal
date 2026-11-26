@@ -112,7 +112,7 @@ export const Metrics: React.FC<MetricsProps> = ({
 
   // In-Place Oversight CRUD Modal State
   const [isEditOversightModalOpen, setIsEditOversightModalOpen] = useState(false);
-  const [formRcaReg, setFormRcaReg] = useState(saccoInfo.rcaRegistration || 'RCA / COOP / 042 / 2011');
+  const [formRcaReg, setFormRcaReg] = useState(saccoInfo.rcaRegistration || '');
   const [formOversightEn, setFormOversightEn] = useState(saccoInfo.oversightLabelEn || 'Cooperative Oversight:');
   const [formOversightRw, setFormOversightRw] = useState(saccoInfo.oversightLabelRw || 'Ubugenzuzi bwa Koperative :');
   const [formOversightFr, setFormOversightFr] = useState(saccoInfo.oversightLabelFr || 'Supervision Coopérative :');
@@ -124,7 +124,7 @@ export const Metrics: React.FC<MetricsProps> = ({
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   useEffect(() => {
-    setFormRcaReg(saccoInfo.rcaRegistration || 'RCA / COOP / 042 / 2011');
+    setFormRcaReg(saccoInfo.rcaRegistration || '');
     setFormOversightEn(saccoInfo.oversightLabelEn || 'Cooperative Oversight:');
     setFormOversightRw(saccoInfo.oversightLabelRw || 'Ubugenzuzi bwa Koperative :');
     setFormOversightFr(saccoInfo.oversightLabelFr || 'Supervision Coopérative :');

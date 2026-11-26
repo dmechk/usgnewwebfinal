@@ -462,7 +462,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
   const [contactHeadquarters, setContactHeadquarters] = useState(saccoInfo.headquarters);
   const [contactHoursEn, setContactHoursEn] = useState(saccoInfo.operatingHoursEn || 'Mon - Fri: 8:00 AM - 5:00 PM | Sat: 8:00 AM - 1:00 PM');
   const [contactHoursRw, setContactHoursRw] = useState(saccoInfo.operatingHoursRw || 'Kuwa Mbere - Kuwa Gatanu: Saa 8:00 - 17:00 | Kuwa Gatandatu: Saa 8:00 - 13:00');
-  const [contactRcaReg, setContactRcaReg] = useState(saccoInfo.rcaRegistration || 'RCA / COOP / 042 / 2011');
+  const [contactRcaReg, setContactRcaReg] = useState(saccoInfo.rcaRegistration || '');
   const [contactOversightEn, setContactOversightEn] = useState(saccoInfo.oversightLabelEn || 'Cooperative Oversight:');
   const [contactOversightRw, setContactOversightRw] = useState(saccoInfo.oversightLabelRw || 'Ubugenzuzi bwa Koperative :');
   const [contactLicensedEn, setContactLicensedEn] = useState(saccoInfo.licensedLabelEn || 'Licensed Financial Cooperative');
@@ -481,7 +481,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
     setContactHeadquarters(saccoInfo.headquarters);
     setContactHoursEn(saccoInfo.operatingHoursEn || 'Mon - Fri: 8:00 AM - 5:00 PM | Sat: 8:00 AM - 1:00 PM');
     setContactHoursRw(saccoInfo.operatingHoursRw || 'Kuwa Mbere - Kuwa Gatanu: Saa 8:00 - 17:00 | Kuwa Gatandatu: Saa 8:00 - 13:00');
-    setContactRcaReg(saccoInfo.rcaRegistration || 'RCA / COOP / 042 / 2011');
+    setContactRcaReg(saccoInfo.rcaRegistration || '');
     setContactOversightEn(saccoInfo.oversightLabelEn || 'Cooperative Oversight:');
     setContactOversightRw(saccoInfo.oversightLabelRw || 'Ubugenzuzi bwa Koperative :');
     setContactLicensedEn(saccoInfo.licensedLabelEn || 'Licensed Financial Cooperative');
